@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <!-- Metadata Settings -->
+    <meta charset="UTF-8" http-equiv="Content-Type" content="text/html;"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#353535"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="X-Content-Type-Options=nosniff"/>
+    <meta http-equiv="Content-Security-Policy" content="child-src 'none'; object-src 'none'"/>
+    <meta http-equiv="content-language" content="ko"/>
+
+    <title>로그인 : 스마트문풀</title>
+
+    <!-- Scripts -->
+    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- BootStrap -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f8f8f8;
+            padding: 60px 0;
+        }
+
+        #login-form > div {
+            margin: 15px 0;
+        }
+
+        .topLogo {
+            height: 50px;
+            margin: auto;
+        }
+
+    </style>
+
+</head>
+
+<body style="background: #edfffe;">
+
+<div class="container">
+    <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="panel panel-success">
+            <div class="panel-body text-center">
+                <img class="topLogo" src="img/logo.png"/>
+            </div>
+            <div class="panel-body">
+                <form id="login-form" method="POST" action="">
+                    <div>
+                        <input type="text" class="form-control" name="id" placeholder="아이디" autofocus>
+                    </div>
+                    <div>
+                        <input type="password" class="form-control" name="pw" placeholder="비밀번호">
+                    </div>
+                    <div>
+                        <button type="submit" class="form-control btn btn-primary">로그인</button>
+                    </div>
+                </form>
+                <a href="/register">회원이 아니십니까?</a>
+                <a href="/forgot" style="float: right;" >비밀번호를 잊었습니다.</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
