@@ -99,3 +99,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+
+# IntelliJ PyCharm 2017.2.1 IDE Files
+.idea/
