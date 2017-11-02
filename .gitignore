@@ -103,3 +103,6 @@ ENV/
 
 # IntelliJ PyCharm 2017.2.1 IDE Files
 .idea/
+
+# Important Information File
+general_settings.py
