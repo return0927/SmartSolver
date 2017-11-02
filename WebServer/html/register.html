@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <!-- Metadata Settings -->
+    <meta charset="UTF-8" http-equiv="Content-Type" content="text/html;"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#353535"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="X-Content-Type-Options=nosniff"/>
+    <meta http-equiv="Content-Security-Policy" content="child-src 'none'; object-src 'none'"/>
+    <meta http-equiv="content-language" content="ko"/>
+
+    <title>회원가입 : 스마트문풀</title>
+
+    <!-- Scripts -->
+    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- BootStrap -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f8f8f8;
+            padding: 60px 0;
+        }
+
+        #login-form > div {
+            margin: 15px 0;
+        }
+
+        .topLogo {
+            height: 50px;
+            margin: auto;
+        }
+
+    </style>
+
+</head>
+
+<body style="background: #edfffe;">
+
+<div class="container">
+    <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="panel panel-success">
+            <div class="panel-body text-center">
+                <img class="topLogo" src="img/logo.png"/>
+            </div>
+            <div class="panel-body">
+                <form id="login-form" method="POST" action="">
+                    <div>
+                        <input type="text" class="form-control" name="name" placeholder="성명" autofocus>
+                    </div>
+                    <div>
+                        <input type="date" class="form-control" name="birthday" placeholder="생년월일">
+                    </div>
+                    <div>
+                        <select name="school" >
+                            <option value="0">중학교</option>
+                            <option value="1">고등학교</option>
+                            <option value="2">기타</option>
+                        </select>
+                        <select name="grade" >
+                            <option value="1">1학년</option>
+                            <option value="2">2학년</option>
+                            <option value="3">3학년</option>
+                        </select>
+                    </div>
+
+                    <hr />
+
+                    <div>
+                        <input type="email" class="form-control" name="email" placeholder="이메일">
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" name="id" placeholder="아이디">
+                    </div>
+                    <div>
+                        <input type="password" class="form-control" name="pw" placeholder="비밀번호">
+                    </div>
+                    <div>
+                        <input type="password" class="form-control" name="pw-confirm" placeholder="비밀번호 확인">
+                    </div>
+                    <div>
+                        <button type="submit" class="form-control btn btn-primary">회원가입</button>
+                    </div>
+                </form>
+                <a href="/login">이미 회원이신가요?</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
