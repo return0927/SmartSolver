@@ -47,11 +47,11 @@ class DB:
         _data = cur.fetchall()
         return _data
 
-    def addUser(self, _id, _pw, _name, _bir, _gra, _email):
+    def addUser(self, _id, _pw, _name, _bir, _gra, _email, _ip):
         cur = self.getCursor()
         try:
-            cur.execute('INSERT INTO "User" VALUES(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\')' % (
-                _id, _pw, _name, _bir, _gra, _email))
+            cur.execute('INSERT INTO "User" VALUES(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\''')' % (
+                _id, _pw, _name, _bir, _gra, _email, _ip, _ip))
             self.conn.commit()
             return False
         except Exception as ex:

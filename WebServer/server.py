@@ -15,11 +15,15 @@ encrypt = lambda x: hashlib.sha256(x.encode()).hexdigest().upper()
 
 @app.route("/")
 def root():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     return gSet.html.root
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/' />"
+
     isPost = request.method == "POST"
 
     if not isPost:
@@ -49,11 +53,14 @@ def logout():
     del session["Info"]
     return "<script>alert('로그아웃 되었습니다.');location.href='/';</script>"
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     isPost = request.method == "POST"
 
     if isPost:
+        ip = request.environ['REMOTE_ADDR']
+
         postData = parse_qs(request.get_data().decode())
         pw, pw_confirm = encrypt(postData['pw'][0]), encrypt(postData['pw-confirm'][0])
 
@@ -71,7 +78,7 @@ def register():
         if DB.checkIDExist(_id): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
         if DB.checkEmailExist(_email): return "<script>alert('이미 등록되어있는 이메일입니다!');history.go(-1);</script>"
 
-        result = DB.addUser(_id, _pw, _name, _birthday, _grade, _email)
+        result = DB.addUser(_id, _pw, _name, _birthday, _grade, _email, ip)
         if result:
             return "오류가 발생하였습니다!<br /><br />%s"%result
 
