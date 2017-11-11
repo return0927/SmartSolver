@@ -66,3 +66,13 @@ class DB:
             return [False, result]
         except Exception as ex:
             return [True, str(ex)]
+
+    def getTextBooks(self, selection="*"):
+        cur = self.getCursor()
+
+        try:
+            cur.execute('SELECT %s FROM "tbooks";'%selection)
+            result = cur.fetchall()
+            return [False, result]
+        except Exception as ex:
+            return [True, str(ex)]

@@ -1,4 +1,5 @@
 import hashlib
+import json
 from urllib.parse import parse_qs
 
 import db
@@ -88,11 +89,31 @@ def register():
         return gSet.html.register
 
 
+@app.route("/api/textbooks", methods=["GET"])
+def getTextbookDB():
+    keys = request.args.get("key")
+
+    if keys:
+        try:
+            result, data = DB.getTextBooks(keys)
+            if result: return "{'result':'%s'}"%data
+            return json.dumps({"result":data})
+        except Exception as ex:
+            return "{'result':'%s'}"%str(ex)
+
+    return ""
+
 
 @app.route("/css/<path:filename>")
 def css(filename):
     print(filename)
     return send_from_directory(gSet.htmlDir + "/css/", filename)
+
+
+@app.route("/js/<path:filename>")
+def js(filename):
+    print(filename)
+    return send_from_directory(gSet.htmlDir + "/js/", filename)
 
 
 @app.route("/img/<path:filename>")
