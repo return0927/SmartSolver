@@ -1,28 +1,107 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <!-- Metadata Settings -->
-    <meta charset="UTF-8" http-equiv="Content-Type" content="text/html;"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="theme-color" content="#353535"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta http-equiv="X-Content-Type-Options=nosniff"/>
-    <meta http-equiv="Content-Security-Policy" content="child-src 'none'; object-src 'none'"/>
-    <meta http-equiv="content-language" content="ko"/>
+	<meta charset="UTF-8" http-equiv="Content-Type" content="text/html;"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta http-equiv="X-Content-Type-Options=nosniff"/>
+	<meta http-equiv="Content-Security-Policy" content="child-src 'none'; object-src 'none'"/>
+	<meta http-equiv="content-language" content="ko"/>
+	<meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
 
-    <title>스마트문풀</title>
+	<link rel="stylesheet" type="text/css" href="css/index.css" />
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-
-    <!-- StyleSheets -->
-    <link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
-
+    <title></title>
 </head>
+<body>
+	<div id="head">
+		<h1 class="question">나의 질문</h1>
+		<span class="menu" onclick="toggle(this);">+</span>
+		<div class="hide_menu">
+			<p class="title">질문하기</p>
+			<hr/>
+			<span class="subtitle">과목</span>
+			<select class="dropdown" id="curriculum">
+                <option disabled>선택해주세요.</option>
+			</select>
+			<br/>
+			<span class="subtitle">종류</span>
+			<select class="dropdown" id="type">
+                <option disabled>선택해주세요.</option>
+			</select>
+			<br/>
+			<span class="subtitle">교재</span>
+			<select class="dropdown" id="book">
+                <option disabled>선택해주세요.</option>
+			</select>
+			<br/>
+			<span class="subtitle">개정</span>
+			<select class="dropdown" id="modified_year">
+                <option disabled>선택해주세요.</option>
+			</select>
+			<p class="footer">해설 확인이 바로 가능합니다.</p>
+		</div>
+	</div>
 
-<body style="background: #f2f2f2;">
+	<div id="body">
+		<table class="table">
+			<tbody>
+				<tr>
+					<td class="table-head">
+						<h3 class="headText">질문 일자</h3>
+					</td>
+					<td class="table-head">
+						<h3 class="headText">교육 과정</h3>
+					</td>
+					<td class="table-head">
+						<h3 class="headText">교재명</h3>
+					</td>
+					<td class="table-head">
+						<h3 class="headText">페이지</h3>
+					</td>
+					<td class="table-head">
+						<h3 class="headText">문항 번호</h3>
+					</td>
+					<td class="table-head">
+						<h3 class="headText">상태</h3>
+					</td>
+					<td class="table-head">
+						<h3 class="headText">해설 영상</h3>
+					</td>
+				</tr>
+				<tr>
+					<td class="bodyText">
+						<p class="table-body">2017 - 11 - 10</p>
+					</td>
+					<td class="bodyText">
+						<p class="table-body">미적분 II</p>
+					</td>
+					<td class="bodyText">
+						<p class="table-body">블랙라벨</p>
+					</td>
+					<td class="bodyText">
+						<p class="table-body">126549318(노바보)</p>
+					</td>
+					<td class="bodyText">
+						<p class="table-body">D39</p>
+					</td>
+					<td class="bodyText">
+						<p class="table-body">지연응답 완료</p>
+					</td>
+					<td class="bodyText">
+						<p class="table-body">-</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 
+	<div id="foot">
+		<a href="#" class="ftms prev">< prev</a>
+		<a href="#" class="ftms num">1</a>
+		<a href="#" class="ftms next">next ></a>
+	</div>
+
+	<script src="js/index.js" charset="UTF-8"></script>
 </body>
-
 </html>
