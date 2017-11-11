@@ -1,0 +1,177 @@
+@import url(https://cdn.rawgit.com/moonspam/NanumSquare/master/nanumsquare.css);
+
+body {
+	color: #404d5b;
+	font-weight: 500;
+	font-size: 1.05em;
+	position: relative;
+	background: #fefff4;
+	margin-top: 10%;
+	font-family: 'NanumSquare', sans-serif;
+}
+
+a {
+	color: #2fa0ec;
+	text-decoration: none;
+	outline: none;
+	font-family: 'NanumSquare', sans-serif;
+}
+
+a:hover, a:focus {
+	color: #404d5b;
+}
+
+#foot {
+	margin-top: 20%;
+	text-align: center;
+}
+
+#head {
+	text-align: left;
+	margin-top: 30px;
+}
+
+#head .question {
+	top: -10%;
+	left: 7.2%;
+	position: absolute;
+	letter-spacing: -1.5px;
+}
+
+#head .menu {
+	top: -8%;
+	left: 91%;
+	color: #63aeff;
+	font-size: 40px;
+	position: absolute;
+	transition: transform 0.5s;
+}
+
+#head .menu:hover {
+	transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+}
+
+#head .hide_menu {
+	top: -3%;
+	left: 79%;
+	opacity: 0;
+	width: 200px;
+	height: 230px;
+	position: absolute;
+	border: 2px solid #000000;
+	border-radius: 4px 4px 4px 4px;
+	background-color: rgba(255, 255, 255, 0.2);
+	transition: opacity 0.5s, top 0.5s, left 0.5s, background-color 0.5s;
+}
+
+#head .hide_menu .title {
+	font-size: 18px;
+	margin-top: 20px;
+	margin-left: 8px;
+}
+
+#head .hide_menu .subtitle {
+	font-size: 14px;
+	margin-top: -15px;
+	margin-left: 20px;
+}
+
+#head .hide_menu .dropdown {
+	width: 60%;
+	height: 20px;
+	margin-top: 8px;
+	margin-left: 15px;
+	letter-spacing: -0.5px;
+	background-color: #eeeeee;
+	border: 2px solid #dddddd;
+	border-radius: 2px 2px 2px 2px;
+	font-family: 'NanumSquare', sans-serif;
+}
+
+#head .hide_menu .footer {
+	color: #00c45e;
+	margin-top: 30px;
+	margin-left: 12px;
+}
+
+.table {
+	width: 68%;
+	border: none;
+	border-collapse: collapse;
+	margin-top: 100px;
+	margin-left: 7.5%;
+}
+
+.table .table-head {
+	vertical-align: top;
+	letter-spacing: -0.5px;
+	padding: 5pt 5pt 5pt 5pt;
+	border-bottom: solid #000 2pt;
+}
+
+#headText {
+	text-align: center;
+}
+
+.table .bodyText {
+	margin-bottom: 15px;
+	padding:5pt 5pt 5pt 5pt;
+}
+
+.table-body {
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	text-align: center;
+}
+
+@media only screen and (max-width: 1000px) {
+	#head .hide_menu {
+		top: 2%;
+		left: 71%;
+		background-color: rgba(255, 255, 255, 0.7);
+	}
+}
+
+@media only screen and (max-width: 725px) {
+	.table {
+		width: 85%;
+		border: none;
+		border-collapse: collapse;
+		margin-top: 100px;
+		margin-left: 3%;
+	}
+	
+	.headText {
+		text-align: center;
+		font-size: 16px;
+	}
+	
+	#head .hide_menu {
+		top: 4%;
+		left: 63%;
+		background-color: rgba(255, 255, 255, 0.7);
+	}
+}
+
+@media only screen and (max-width: 560px) {
+	#head .hide_menu {
+		top: 5%;
+		left: 55%;
+		background-color: rgba(255, 255, 255, 0.7);
+	}
+}
+
+@media only screen and (max-width: 450px) {
+	#head .hide_menu {
+		top: 5%;
+		left: 40%;
+		background-color: rgba(255, 255, 255, 0.7);
+	}
+}
+
+#foot .ftms {
+	font-size: 20px;
+	margin-left: 15px;
+}
