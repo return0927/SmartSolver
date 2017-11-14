@@ -1,0 +1,27 @@
+<manifest alg="2" build="2018.0.0.379" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="onpul.return0927.xyz" resolutions="1x" timestamp="1510674016120">
+  <folder name="css">
+    <file name="site_global.css" crc="444006867"/>
+    <file name="index.css" crc="4272931684" ref="index"/>
+    <file name="____.css" crc="32541424" ref="질문제출"/>
+  </folder>
+  <folder name="scripts">
+    <file name="jquery-1.8.3.min.js" crc="209076791" ref="index:질문제출"/>
+    <file name="museutils.js" crc="3803043152" ref="index:질문제출"/>
+    <file name="whatinput.js" crc="86476730" ref="index:질문제출"/>
+    <file name="museconfig.js" crc="4153641093" ref="index:질문제출"/>
+    <file name="jquery.watch.js" crc="99325471" ref="index:질문제출"/>
+    <file name="require.js" crc="4157109226" ref="index:질문제출"/>
+  </folder>
+  <folder name="images">
+    <file name="u219-4.png" crc="4061335339" ref="index"/>
+    <file name="온풀 1.png" crc="4055887899" seo="true" ref="index:질문제출">
+      <caption webpage="index" alt=""/>
+      <caption webpage="질문제출" alt=""/>
+    </file>
+    <file name="u264-4.png" crc="180329894" ref="index"/>
+    <file name="u366-4.png" crc="292213586" ref="질문제출"/>
+    <file name="u363-4.png" crc="180329894" ref="질문제출"/>
+  </folder>
+  <file name="index.html" crc="4249566902" seo="true" mt="1510672244866" redirect="true"/>
+  <file name="질문제출.html" crc="3994135074" seo="true" mt="1510673821306" redirect="true"/>
+</manifest>

@@ -1,9 +1,9 @@
 /*
 
 */
-.version.index {
-    color: #0000F6;
-    background-color: #F8BCE4;
+.version._____ {
+    color: #0000E9;
+    background-color: #16E3FC;
 }
 
 #muse_css_mq {
@@ -28,7 +28,7 @@
     z-index: 8;
     padding-bottom: 0px;
     margin-right: -10000px;
-    margin-top: 20px;
+    margin-top: 250px;
     width: 28.82%;
 }
 
@@ -59,7 +59,65 @@
     margin-left: 4.82%;
 }
 
-#u106 {
+#pu366-4 {
+    z-index: 8;
+    padding-bottom: 0px;
+    margin-right: -10000px;
+    margin-top: 20px;
+    width: 75.91%;
+}
+
+#u366-4 {
+    z-index: 8;
+    width: 150px;
+    min-height: 42px;
+    background-color: transparent;
+    font-size: 30px;
+    text-align: center;
+    line-height: 36px;
+    font-family: '__NanumBarunGothic_5';
+    font-weight: 300;
+    position: relative;
+    left: 0px;
+    margin-left: 20px;
+}
+
+#pu367 {
+    z-index: 12;
+    margin-top: -1px;
+    width: 100%;
+    left: 0%;
+    margin-left: 1.83%;
+}
+
+#u367 {
+    z-index: 12;
+    width: 415px;
+    height: 1px;
+    background-color: #000000;
+    position: relative;
+    margin-right: -10000px;
+}
+
+#u607 {
+    z-index: 13;
+    height: 377px;
+    position: relative;
+    margin-right: -10000px;
+    width: 100%;
+    font-size: 20px;
+    line-height: 36px;
+    font-family: '__NanumBarunGothic_5';
+}
+
+.ie #u607 {
+    background-color: #FFFFFF;
+    opacity: 0.01;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=1)";
+    filter: alpha(opacity=1);
+}
+
+#u370 {
     z-index: 2;
     width: 108px;
     background-color: transparent;
@@ -69,13 +127,12 @@
     margin-left: -54px;
 }
 
-#u106_img {
+#u370_img {
     margin-bottom: -1px;
 }
 
-#u264-4 {
+#u363-4 {
     z-index: 4;
-    width: 147px;
     min-height: 20px;
     background-color: transparent;
     font-size: 16px;
@@ -90,7 +147,7 @@
 }
 
 .css_verticalspacer .verticalspacer {
-    height: calc(100vh - 571px);
+    height: calc(100vh - 947px);
 }
 
 .html {

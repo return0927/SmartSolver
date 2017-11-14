@@ -6,3 +6,10 @@ window.toggle = function (elem) {
 
 	hidden_menu.style.opacity = opened ? 0 : 1;
 };
+
+function getBooks(elem){
+	var data = elem.value;
+	$.get("/api/textbooks?key=bookname&curr="+data, function(data){
+	    console.log(JSON.parse(data).result);
+    })
+}

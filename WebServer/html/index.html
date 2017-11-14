@@ -1,107 +1,97 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html class="nojs html css_verticalspacer" lang="ko-KR" xmlns="http://www.w3.org/1999/html">
 <head>
-	<meta charset="UTF-8" http-equiv="Content-Type" content="text/html;"/>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-	<meta http-equiv="X-Content-Type-Options=nosniff"/>
-	<meta http-equiv="Content-Security-Policy" content="child-src 'none'; object-src 'none'"/>
-	<meta http-equiv="content-language" content="ko"/>
-	<meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"/>
-	<meta name="apple-mobile-web-app-capable" content="yes"/>
 
-	<link rel="stylesheet" type="text/css" href="css/index.css" />
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
+    <meta name="generator" content="2018.0.0.379"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-    <title></title>
+    <title>온풀 : 수학을 쉽게</title>
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="css/site_global.css?crc=444006867"/>
+    <link rel="stylesheet" type="text/css" href="css/____.css?crc=3910591484" id="pagesheet"/>
+    <!--/*
+
+*/
+-->
 </head>
 <body>
-	<div id="head">
-		<h1 class="question">나의 질문</h1>
-		<span class="menu" onclick="toggle(this);">+</span>
-		<div class="hide_menu">
-			<p class="title">질문하기</p>
-			<hr/>
-			<span class="subtitle">과목</span>
-			<select class="dropdown" id="curriculum">
-                <option disabled>선택해주세요.</option>
-			</select>
-			<br/>
-			<span class="subtitle">종류</span>
-			<select class="dropdown" id="type">
-                <option disabled>선택해주세요.</option>
-			</select>
-			<br/>
-			<span class="subtitle">교재</span>
-			<select class="dropdown" id="book">
-                <option disabled>선택해주세요.</option>
-			</select>
-			<br/>
-			<span class="subtitle">개정</span>
-			<select class="dropdown" id="modified_year">
-                <option disabled>선택해주세요.</option>
-			</select>
-			<p class="footer">해설 확인이 바로 가능합니다.</p>
-		</div>
-	</div>
+<div class="clearfix borderbox" id="page">
 
-	<div id="body">
-		<table class="table">
-			<tbody>
-				<tr>
-					<td class="table-head">
-						<h3 class="headText">질문 일자</h3>
-					</td>
-					<td class="table-head">
-						<h3 class="headText">교육 과정</h3>
-					</td>
-					<td class="table-head">
-						<h3 class="headText">교재명</h3>
-					</td>
-					<td class="table-head">
-						<h3 class="headText">페이지</h3>
-					</td>
-					<td class="table-head">
-						<h3 class="headText">문항 번호</h3>
-					</td>
-					<td class="table-head">
-						<h3 class="headText">상태</h3>
-					</td>
-					<td class="table-head">
-						<h3 class="headText">해설 영상</h3>
-					</td>
-				</tr>
-				<tr>
-					<td class="bodyText">
-						<p class="table-body">2017 - 11 - 10</p>
-					</td>
-					<td class="bodyText">
-						<p class="table-body">미적분 II</p>
-					</td>
-					<td class="bodyText">
-						<p class="table-body">블랙라벨</p>
-					</td>
-					<td class="bodyText">
-						<p class="table-body">126549318(노바보)</p>
-					</td>
-					<td class="bodyText">
-						<p class="table-body">D39</p>
-					</td>
-					<td class="bodyText">
-						<p class="table-body">지연응답 완료</p>
-					</td>
-					<td class="bodyText">
-						<p class="table-body">-</p>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+    <!-- group -->
+    <div class="clearfix grpelem" id="pu366-4">
 
-	<div id="foot">
-		<a href="#" class="ftms prev">< prev</a>
-		<a href="#" class="ftms num">1</a>
-		<a href="#" class="ftms next">next ></a>
-	</div>
+        <!-- column -->
+        <div class="clearfix colelem" id="u366-4" data-sizePolicy="fixed" data-pintopage="page_fixedLeft">
+            <!-- content -->
+            <p>질문 제출</p>
+        </div>
 
-	<script src="js/index.js" charset="UTF-8"></script>
+        <div class="clearfix colelem" id="pu367">
+            <!-- group -->
+            <div class="grpelem" id="u367" data-sizePolicy="fixed" data-pintopage="page_fluidx"></div>
+
+            <br style="font-size: 10px;"/>
+
+            <div class="grpelem" id="u607">
+                <p>
+                    교육과정
+                    <select id="curr" onchange="getBooks(this);">
+                        <option value="수1">수학 1</option>
+                        <option value="수2">수학 2</option>
+                        <option value="미1">미적분 1</option>
+                        <option value="미2">미적분 2</option>
+                        <option value="확통">확률과 통계</option>
+                        <option value="기벡">기하와 벡터</option>
+                    </select>
+                </p>
+                <p>
+                    교재
+                    <select id="book" onchange="">
+                        <option selected>------</option>
+                    </select>
+                </p>
+                <p>
+                    개정년도
+                    <select id="year" onchange="">
+                        <option selected>------</option>
+                    </select>
+                </p>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="clearfix grpelem" id="pu219-4"><!-- column -->
+        <div class="clearfix colelem" id="u219-4" data-sizePolicy="fixed" data-pintopage="page_fixedLeft">
+            <!-- content -->
+            <p>나의 질문</p>
+        </div>
+        <div class="colelem" id="u220" data-sizePolicy="fixed" data-pintopage="page_fluidx">
+            <!-- simple frame --></div>
+    </div>
+
+    <div class="clip_frame clearfix" id="u370">
+        <!-- image -->
+        <img class="position_content" id="img/logo.png" src="img/logo.png" alt=""
+             width="108" height="73"/>
+    </div>
+
+    <div class="clearfix grpelem" id="u363-4" data-sizePolicy="fixed" data-pintopage="page_fixedRight"><!-- content -->
+        <p>안녕하세요. <a onclick="javascript:if(confirm('로그아웃 하시겠습니까?')){location.href = '/logout';}"><font color="#6495ed">%s</font></a> 님!</p>
+    </div>
+    <div class="verticalspacer" data-offset-top="62" data-content-above-spacer="510" data-content-below-spacer="437"
+         data-sizePolicy="fixed" data-pintopage="page_fixedLeft"></div>
+    </div>
+
+
+    <!-- Other scripts -->
+    <script type="text/javascript" src="js/index.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        // Decide weather to suppress missing file error or not based on preference setting
+        var suppressMissingFileError = false
+    </script>
+    <script type="text/javascript" src="js/muse.js"></script>
 </body>
 </html>

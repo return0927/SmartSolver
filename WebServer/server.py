@@ -14,11 +14,19 @@ app.config['SECRET_KEY'] = gSet.hostKey
 encrypt = lambda x: hashlib.sha256(x.encode()).hexdigest().upper()
 
 
+class Tools():
+    def getNick(self, session):
+        _, _, nick = session['Info']
+        return nick
+
+tool = Tools()
+
+
 @app.route("/")
 def root():
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
 
-    return gSet.html.root
+    return gSet.html.root%(tool.getNick(session))
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -89,19 +97,42 @@ def register():
         return gSet.html.register
 
 
+# --- API Controller ---
+
+
+"""
+교학사교과서, 금성교과서, 동아교과서, 미래엔교과서, 비상교과서, 신사고교과서, 지학사교과서, 천재(이)교과서
+라이트쎈, 쎈, 일품, RPM, 블랙라벨, 기본정석, 실력정석, 마플수능기출, 자이스토리(고3)
+"""
+
+
 @app.route("/api/textbooks", methods=["GET"])
 def getTextbookDB():
     keys = request.args.get("key")
+    curr = request.args.get("curr")
 
     if keys:
         try:
-            result, data = DB.getTextBooks(keys)
+            result, data = DB.getTextBooks(keys, curr if curr else None)
             if result: return "{'result':'%s'}"%data
             return json.dumps({"result":data})
         except Exception as ex:
             return "{'result':'%s'}"%str(ex)
 
     return ""
+
+@app.route("/api/curriculumn", methods=["GET"])
+def getCurriculumn():
+    try:
+        result, data = DB.getCurriculumn()
+        data = [x[0] for x in data]
+
+        print(result, data)
+        if result: return "{'result':'%s'}"%data
+        return json.dumps({"result":data})
+    except Exception as ex:
+        print(ex)
+        return "{'result':'%s'}"%str(ex)
 
 
 @app.route("/css/<path:filename>")

@@ -67,11 +67,24 @@ class DB:
         except Exception as ex:
             return [True, str(ex)]
 
-    def getTextBooks(self, selection="*"):
+    def getTextBooks(self, selection="*", curr=None):
         cur = self.getCursor()
 
         try:
-            cur.execute('SELECT %s FROM "tbooks";'%selection)
+            if curr:
+                cur.execute('SELECT %s FROM "tbooks" WHERE "curriculum" = \'%s\';'%(selection, curr))
+            else:
+                cur.execute('SELECT %s FROM "tbook";' % (selection))
+            result = cur.fetchall()
+            return [False, result]
+        except Exception as ex:
+            return [True, str(ex)]
+
+    def getCurriculumn(self):
+        cur = self.getCursor()
+
+        try:
+            cur.execute('SELECT DISTINCT "curriculum" FROM "tbooks";')
             result = cur.fetchall()
             return [False, result]
         except Exception as ex:
