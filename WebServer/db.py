@@ -72,7 +72,7 @@ class DB:
 
         try:
             if curr:
-                cur.execute('SELECT %s FROM "tbooks" WHERE "curriculum" = \'%s\';'%(selection, curr))
+                cur.execute('SELECT %s FROM "tbooks" WHERE curriculumn = \'%s\';' % (selection, curr))
             else:
                 cur.execute('SELECT %s FROM "tbook";' % (selection))
             result = cur.fetchall()
@@ -84,8 +84,28 @@ class DB:
         cur = self.getCursor()
 
         try:
-            cur.execute('SELECT DISTINCT "curriculum" FROM "tbooks";')
+            cur.execute('SELECT DISTINCT curriculumn FROM "tbooks";')
             result = cur.fetchall()
             return [False, result]
+        except Exception as ex:
+            return [True, str(ex)]
+
+    def getBookModifiedYear(self, curr, book):
+        cur = self.getCursor()
+
+        try:
+            cur.execute('SELECT year_modified FROM "tbooks" WHERE curriculumn=\'%s\' and bookname = \'%s\';'%(curr,book))
+            result = cur.fetchall()
+            return [False, result]
+        except Exception as ex:
+            return [True, str(ex)]
+
+    def getBookPublisher(self, curr, book):
+        cur = self.getCursor()
+
+        try:
+            cur.execute('SELECT publisher FROM "tbooks" WHERE curriculumn=\'%s\' and bookname = \'%s\';'%(curr,book))
+            result = cur.fetchall()
+            return [False, result[0]]
         except Exception as ex:
             return [True, str(ex)]
