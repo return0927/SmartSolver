@@ -119,7 +119,8 @@ def getTextbookDB():
         except Exception as ex:
             return "{'result':'%s'}"%str(ex)
 
-    return ""
+    return "{'result':'Invalid Request'}"
+
 
 @app.route("/api/curriculumn", methods=["GET"])
 def getCurriculumn():
@@ -127,7 +128,44 @@ def getCurriculumn():
         result, data = DB.getCurriculumn()
         data = [x[0] for x in data]
 
-        print(result, data)
+        if result: return "{'result':'%s'}"%data
+        return json.dumps({"result":data})
+    except Exception as ex:
+        print(ex)
+        return "{'result':'%s'}"%str(ex)
+
+
+@app.route("/api/bookModifiedYear", methods=["GET"])
+def getBookModifiedYear():
+    curr = request.args.get("curr")
+    book = request.args.get("book")
+
+    if not (curr and book):
+        return "{'result':'Invalid Request'}"
+
+    try:
+        result, data = DB.getBookModifiedYear(curr, book)
+        data = data[0]
+
+        if result: return "{'result':'%s'}"%data
+        return json.dumps({"result":data})
+    except Exception as ex:
+        print(ex)
+        return "{'result':'%s'}"%str(ex)
+
+
+@app.route("/api/bookPublisher", methods=["GET"])
+def getBookPublisher():
+    curr = request.args.get("curr")
+    book = request.args.get("book")
+
+    if not (curr and book):
+        return "{'result':'Invalid Request'}"
+
+    try:
+        result, data = DB.getBookPublisher(curr, book)
+        data = data[0]
+
         if result: return "{'result':'%s'}"%data
         return json.dumps({"result":data})
     except Exception as ex:
@@ -137,20 +175,22 @@ def getCurriculumn():
 
 @app.route("/css/<path:filename>")
 def css(filename):
-    print(filename)
     return send_from_directory(gSet.htmlDir + "/css/", filename)
 
 
 @app.route("/js/<path:filename>")
 def js(filename):
-    print(filename)
     return send_from_directory(gSet.htmlDir + "/js/", filename)
 
 
 @app.route("/img/<path:filename>")
 def img(filename):
-    print(filename)
     return send_from_directory(gSet.htmlDir + "/img/", filename)
+
+
+@app.route("/fonts/<path:filename>")
+def fonts(filename):
+    return send_from_directory(gSet.htmlDir + "/fonts/", filename)
 
 
 app.run(gSet.host, gSet.port)
