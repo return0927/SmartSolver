@@ -3,7 +3,7 @@ import htmls
 class Settings:
     def __init__(self):
         self.host = "0.0.0.0"
-        self.port = 80
+        self.port = 88
 
         self.html = htmls.Html()
 

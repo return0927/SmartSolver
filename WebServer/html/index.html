@@ -10,10 +10,6 @@
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="css/site_global.css?crc=444006867"/>
     <link rel="stylesheet" type="text/css" href="css/____.css?crc=3910591484" id="pagesheet"/>
-    <!--/*
-
-*/
--->
 </head>
 <body>
 <div class="clearfix borderbox" id="page">
@@ -34,29 +30,45 @@
             <br style="font-size: 10px;"/>
 
             <div class="grpelem" id="u607">
-                <p>
-                    교육과정
-                    <select id="curr" onchange="getBooks(this);">
-                        <option value="수1">수학 1</option>
-                        <option value="수2">수학 2</option>
-                        <option value="미1">미적분 1</option>
-                        <option value="미2">미적분 2</option>
-                        <option value="확통">확률과 통계</option>
-                        <option value="기벡">기하와 벡터</option>
-                    </select>
-                </p>
-                <p>
-                    교재
-                    <select id="book" onchange="">
-                        <option selected>------</option>
-                    </select>
-                </p>
-                <p>
-                    개정년도
-                    <select id="year" onchange="">
-                        <option selected>------</option>
-                    </select>
-                </p>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td align="right">교육과정</td>
+                        <td width="20"><!-- Whitespace --></td>
+                        <td align="left">
+                            <select id="curr" onchange="setBooks();">
+                                <option value="수1">수학 1</option>
+                                <option value="수2">수학 2</option>
+                                <option value="미1">미적분 1</option>
+                                <option value="미2">미적분 2</option>
+                                <option value="확통">확률과 통계</option>
+                                <option value="기벡">기하와 벡터</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">교재</td>
+                        <td width="20"><!-- Whitespace --></td>
+                        <td align="left">
+                            <select id="book" onchange="setYears();setBookPublisher();">
+                                <option selected>------</option>
+                            </select>
+                        </td>
+                        <td width="20"></td>
+                        <td id="bookPublisher"><!-- Whitespace --></td>
+                    </tr>
+                    <tr>
+                        <td align="right">개정년도</td>
+                        <td width="20"><!-- Whitespace --></td>
+                        <td align="left">
+                            <select id="year" onchange="">
+                                <option selected>------</option>
+                            </select>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
             </div>
         </div>
 
@@ -91,7 +103,9 @@
     <script type="text/javascript">
         // Decide weather to suppress missing file error or not based on preference setting
         var suppressMissingFileError = false
+        $(document).ready(function(){
+            setBooks();
+        });
     </script>
-    <script type="text/javascript" src="js/muse.js"></script>
 </body>
 </html>
