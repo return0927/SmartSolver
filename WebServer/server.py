@@ -1,5 +1,8 @@
 import hashlib
 import json
+import validater
+import string
+import random
 from urllib.parse import parse_qs
 
 import db
@@ -33,6 +36,7 @@ def root():
 def login():
     if "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/' />"
 
+    ip = request.environ["REMOTE_ADDR"]
     isPost = request.method == "POST"
 
     if not isPost:
@@ -43,7 +47,7 @@ def login():
         _id = postData["id"][0]
         _pw = encrypt(postData["pw"][0])
 
-    result, info = DB.getAccount(_id, _pw)
+    result, info = DB.getAccount(_id, _pw, ip)
 
     if result:
         return "오류가 발생했습니다.<br/><br/>%s"%info
@@ -51,6 +55,8 @@ def login():
         if len(info):
             name = info[0][0]
             session["Info"] = _id, _pw, name
+
+            if DB.submitRecentIP(_id, ip): return "<script>alert('서버에 오류가 발생하였습니다. \nCODE:L_UPD_Ad');history.go(-1);</script>"
 
             return "<script>alert('환영합니다, %s님!');location.href='/';</script>"%name
         else:
@@ -77,6 +83,7 @@ def register():
             del pw_confirm
 
 
+            # --- Parse data --- #
             _name = postData['name'][0]
             _birthday = postData['birthday'][0]
             _grade = int(postData['school'][0])*10 + int(postData['grade'][0])
@@ -85,9 +92,19 @@ def register():
             _pw = pw
             del pw, postData
 
-            if DB.checkIDExist(_id): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
-            if DB.checkEmailExist(_email): return "<script>alert('이미 등록되어있는 이메일입니다!');history.go(-1);</script>"
+            # --- Check Validation --- #
+            if DB.checkIDExist(_id, ip): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
+            if DB.checkEmailExist(_email, ip): return "<script>alert('이미 등록되어있는 이메일입니다!');history.go(-1);</script>"
+            if _grade not in [1, 2, 3, 11, 12, 13, 21, 22, 23]: return "<script>alert('학교/학년을 다시 한 번 확인해주세요.');history.go(-1);</script>"
 
+            err, data = validater.birthday(_birthday)
+            if err: return "<script>alert('%s');history.go(-1);</script>"%data
+
+            err, data = validater.email(_email)
+            if err: return "<script>alert('%s');history.go(-1);</script>"%data
+
+
+            # --- IP Info Update --- #
             result = DB.addUser(_id, _pw, _name, _birthday, _grade, _email, ip)
             if result:
                 return "오류가 발생하였습니다!<br /><br />%s"%result
@@ -110,12 +127,14 @@ def register():
 
 @app.route("/api/textbooks", methods=["GET"])
 def getTextbookDB():
+    ip = request.environ['REMOTE_ADDR']
+
     keys = request.args.get("key")
     curr = request.args.get("curr")
 
     if keys:
         try:
-            result, data = DB.getTextBooks(keys, curr if curr else None)
+            result, data = DB.getTextBooks(ip, keys, curr if curr else None)
             if result: return "{'result':'%s'}"%data
             return json.dumps({"result":data})
         except Exception as ex:
@@ -126,8 +145,10 @@ def getTextbookDB():
 
 @app.route("/api/curriculumn", methods=["GET"])
 def getCurriculumn():
+    ip = request.environ['REMOTE_ADDR']
+
     try:
-        result, data = DB.getCurriculumn()
+        result, data = DB.getCurriculumn(ip)
         data = [x[0] for x in data]
 
         if result: return "{'result':'%s'}"%data
@@ -139,6 +160,8 @@ def getCurriculumn():
 
 @app.route("/api/bookModifiedYear", methods=["GET"])
 def getBookModifiedYear():
+    ip = request.environ['REMOTE_ADDR']
+
     curr = request.args.get("curr")
     book = request.args.get("book")
 
@@ -146,7 +169,7 @@ def getBookModifiedYear():
         return "{'result':'Invalid Request'}"
 
     try:
-        result, data = DB.getBookModifiedYear(curr, book)
+        result, data = DB.getBookModifiedYear(curr, book, ip)
         data = data[0]
 
         if result: return "{'result':'%s'}"%data
@@ -158,6 +181,8 @@ def getBookModifiedYear():
 
 @app.route("/api/bookPublisher", methods=["GET"])
 def getBookPublisher():
+    ip = request.environ['REMOTE_ADDR']
+
     curr = request.args.get("curr")
     book = request.args.get("book")
 
@@ -165,7 +190,7 @@ def getBookPublisher():
         return "{'result':'Invalid Request'}"
 
     try:
-        result, data = DB.getBookPublisher(curr, book)
+        result, data = DB.getBookPublisher(curr, book, ip)
         data = data[0]
 
         if result: return "{'result':'%s'}"%data
@@ -177,6 +202,8 @@ def getBookPublisher():
 
 @app.route("/api/bookNotice", methods=["GET"])
 def getBookNotice():
+    ip = request.environ['REMOTE_ADDR']
+
     curr = request.args.get("curr")
     book = request.args.get("book")
 
@@ -184,7 +211,7 @@ def getBookNotice():
         return "{'result':'Invalid Request'}"
 
     try:
-        result, data = DB.getBookNotice(curr, book)
+        result, data = DB.getBookNotice(curr, book, ip)
         data = data[0]
 
         if result: return "{'result':'%s'}"%data

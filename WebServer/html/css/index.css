@@ -2,6 +2,174 @@
 
 */
 .version.index {
+    color: #0000E9;
+    background-color: #16E3FC;
+}
+
+#muse_css_mq {
+    background-color: #FFFFFF;
+}
+
+#page {
+    z-index: 1;
+    min-height: 438px;
+    background-image: none;
+    border-width: 0px;
+    border-color: #000000;
+    background-color: transparent;
+    padding-bottom: 62px;
+    width: 100%;
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#pu219-4 {
+    z-index: 8;
+    padding-bottom: 0px;
+    margin-right: -10000px;
+    margin-top: 250px;
+    width: 28.82%;
+}
+
+#u219-4 {
+    z-index: 8;
+    width: 150px;
+    min-height: 42px;
+    background-color: transparent;
+    font-size: 30px;
+    text-align: center;
+    line-height: 36px;
+    font-family: '__NanumBarunGothic_5';
+    font-weight: 300;
+    position: relative;
+    left: 0px;
+    margin-left: 20px;
+}
+
+#u220 {
+    z-index: 12;
+    width: 415px;
+    height: 1px;
+    background-color: #000000;
+    top: -1px;
+    margin-bottom: -1px;
+    position: relative;
+    left: 0%;
+    margin-left: 4.82%;
+}
+
+#pu366-4 {
+    z-index: 8;
+    padding-bottom: 0px;
+    margin-right: -10000px;
+    margin-top: 20px;
+    width: 75.91%;
+}
+
+#u366-4 {
+    z-index: 8;
+    width: 150px;
+    min-height: 42px;
+    background-color: transparent;
+    font-size: 30px;
+    text-align: center;
+    line-height: 36px;
+    font-family: '__NanumBarunGothic_5';
+    font-weight: 300;
+    position: relative;
+    left: 0px;
+    margin-left: 20px;
+}
+
+#pu367 {
+    z-index: 12;
+    margin-top: -1px;
+    width: 100%;
+    left: 0%;
+    margin-left: 1.83%;
+}
+
+#u367 {
+    z-index: 12;
+    width: 415px;
+    height: 1px;
+    background-color: #000000;
+    position: relative;
+    margin-right: -10000px;
+}
+
+#bookTable, #questionTable {
+    z-index: 13;
+    height: 377px;
+    position: relative;
+    margin-right: -10000px;
+    width: 100%;
+    font-size: 20px;
+    line-height: 36px;
+    font-family: '__NanumBarunGothic_5';
+}
+
+.ie {
+    background-color: #FFFFFF;
+    opacity: 0.01;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=1)";
+    filter: alpha(opacity=1);
+}
+
+#u370 {
+    z-index: 2;
+    width: 108px;
+    background-color: transparent;
+    position: fixed;
+    top: 0px;
+    left: 50%;
+    margin-left: -54px;
+}
+
+#u370_img {
+    margin-bottom: -1px;
+}
+
+#u363-4 {
+    z-index: 4;
+    min-height: 20px;
+    background-color: transparent;
+    font-size: 16px;
+    text-align: right;
+    line-height: 19px;
+    font-family: '__NanumBarunGothic_5';
+    font-weight: 300;
+    position: relative;
+    margin-right: -10000px;
+    margin-left: 100%;
+    left: -167px;
+}
+
+.css_verticalspacer .verticalspacer {
+    height: calc(100vh - 947px);
+}
+
+.html {
+    background-color: #FEFFF4;
+}
+
+body {
+    position: relative;
+    min-width: 720px;
+    padding-top: 72px;
+}
+
+@font-face {
+    font-family: '__NanumBarunGothic_5';
+    src: url('../fonts/nanumbarungothicultralight.eot');
+    src: local('☺'), url('../fonts/nanumbarungothicultralight.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
+
+/*
+.version.index {
     color: #0000F6;
     background-color: #F8BCE4;
 }
@@ -110,3 +278,4 @@ body {
     font-weight: 300;
     font-style: normal;
 }
+*/

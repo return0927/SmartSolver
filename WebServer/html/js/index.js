@@ -1,79 +1,132 @@
 var Doc = window.document;
 
 window.toggle = function (elem) {
-	var hidden_menu = Doc.querySelector('.hide_menu');
-	var opened = hidden_menu.style.opacity ? Boolean(parseInt(hidden_menu.style.opacity)) : false;
+    var hidden_menu = Doc.querySelector('.hide_menu');
+    var opened = hidden_menu.style.opacity ? Boolean(parseInt(hidden_menu.style.opacity)) : false;
 
-	hidden_menu.style.opacity = opened ? 0 : 1;
+    hidden_menu.style.opacity = opened ? 0 : 1;
 };
 
-function setBooks(){
-	var data = $("select#curr")[0].value;
-	$.get("/api/textbooks?key=bookname&curr="+data, function(response){_setBooks(JSON.parse(response).result);});
+function setBooks() {
+    var data = $("select#curr")[0].value;
+    $.get("/api/textbooks?key=bookname&curr=" + data, function (response) {
+        _setBooks(JSON.parse(response).result);
+    });
 }
 
 function _setBooks(arr) {
-	var book = $("select#book")[0], i;
-	book.length = 0;
+    var book = $("select#book")[0], i;
+    book.length = 0;
 
-	for(i=0;i<arr.length;i++){
-		var data = arr[i];
+    for (i = 0; i < arr.length; i++) {
+        var data = arr[i];
 
-		var elem = document.createElement("option");
-		elem.value = data;
-		elem.innerHTML = data;
-		book.add(elem, null);
-	}
+        var elem = document.createElement("option");
+        elem.value = data;
+        elem.innerHTML = data;
+        book.add(elem, null);
+    }
 
-	/* Iterable YearInfo */
-	setYears();
+    /* Iterable YearInfo */
+    setYears();
 
-	return true;
+    return true;
 }
 
 
-function setYears(){
-	var curr = $("select#curr")[0].value;
-	var book = $("select#book")[0].value;
-	$.get("/api/bookModifiedYear?&curr="+curr+"&book="+book, function(response){_setYears(JSON.parse(response).result);});
+function setYears() {
+    var curr = $("select#curr")[0].value;
+    var book = $("select#book")[0].value;
+    $.get("/api/bookModifiedYear?&curr=" + curr + "&book=" + book, function (response) {
+        _setYears(JSON.parse(response).result);
+    });
 }
 
 function _setYears(arr) {
-	var book = $("select#year")[0], i;
-	book.length = 0;
+    var book = $("select#year")[0], i;
+    book.length = 0;
 
-	for(i=0;i<arr.length;i++){
-		var data = arr[i];
+    for (i = 0; i < arr.length; i++) {
+        var data = arr[i];
 
-		var elem = document.createElement("option");
-		elem.value = data.toString();
-		elem.innerHTML = data.toString();
-		book.add(elem, null);
-	}
-	return true;
+        var elem = document.createElement("option");
+        elem.value = data.toString();
+        elem.innerHTML = data.toString();
+        book.add(elem, null);
+    }
+    return true;
 }
 
 
-function setBookPublisher(){
-	var curr = $("select#curr")[0].value;
-	var book = $("select#book")[0].value;
-	$.get("/api/bookPublisher?curr="+curr+"&book="+book, function(response){_setBookPublisher(JSON.parse(response).result);});
+function setBookPublisher() {
+    var curr = $("select#curr")[0].value;
+    var book = $("select#book")[0].value;
+    $.get("/api/bookPublisher?curr=" + curr + "&book=" + book, function (response) {
+        _setBookPublisher(JSON.parse(response).result);
+    });
 }
 
 function _setBookPublisher(data) {
-	var pub = $("#bookPublisher")[0];
-	pub.innerHTML = "출판사: <font color='#8b0000'>"+data+"</font>";
+    console.log(data);
+    var pub = $("#bookPublisher")[0];
+    pub.innerHTML = "출판사: <font color='#8b0000'>" + data + "</font>";
 
-	return true;
+    return true;
 }
 
 
-function setBookNotice(){
-	var curr = $("select#curr")[0].value;
-	var book = $("select#book")[0].value;
-	$.get("/api/bookNotice?curr="+curr+"&book="+book, function(response){_setBookNotice(JSON.parse(response).result);});
+function setBookNotice() {
+    var curr = $("select#curr")[0].value;
+    var book = $("select#book")[0].value;
+    $.get("/api/bookNotice?curr=" + curr + "&book=" + book, function (response) {
+        _setBookNotice(JSON.parse(response).result);
+    });
 }
 
 function _setBookNotice(data) {
-	$("#book_notice")[0].innerHTML = data;
+    $("#book_notice")[0].innerHTML = data;
+}
+
+
+/*
+	Popup
+ */
+
+$('.btn-example').click(function () {
+    var $href = $(this).attr('href');
+    layer_popup($href);
+});
+
+function layer_popup(el) {
+
+    var $el = $(el);        //레이어의 id를 $el 변수에 저장
+    var isDim = $el.prev().hasClass('dimBg');   //dimmed 레이어를 감지하기 위한 boolean 변수
+
+    isDim ? $('.dim-layer').fadeIn() : $el.fadeIn();
+
+    var $elWidth = ~~($el.outerWidth()),
+        $elHeight = ~~($el.outerHeight()),
+        docWidth = $(document).width(),
+        docHeight = $(document).height();
+
+    // 화면의 중앙에 레이어를 띄운다.
+    if ($elHeight < docHeight || $elWidth < docWidth) {
+        $el.css({
+            marginTop: -$elHeight / 2,
+            marginLeft: -$elWidth / 2
+        })
+    } else {
+        $el.css({top: 0, left: 0});
+    }
+
+    $el.find('a.btn-layerClose').click(function () {
+        isDim ? $('.dim-layer').fadeOut() : $el.fadeOut(); // 닫기 버튼을 클릭하면 레이어가 닫힌다.
+        return false;
+    });
+
+    $('.layer .dimBg').click(function () {
+        $('.dim-layer').fadeOut();
+        return false;
+    });
+
 }

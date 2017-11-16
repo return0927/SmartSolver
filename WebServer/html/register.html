@@ -51,7 +51,7 @@
             <div class="panel-body">
                 <form id="login-form" method="POST" action="">
                     <div>
-                        <input type="text" class="form-control" name="name" placeholder="성명" autofocus>
+                        <input type="text" class="form-control" name="name" placeholder="성명" autofocus maxlength="5">
                     </div>
                     <div>
                         <input type="date" class="form-control" name="birthday" placeholder="생년월일">
@@ -72,16 +72,16 @@
                     <hr />
 
                     <div>
-                        <input type="email" class="form-control" name="email" placeholder="이메일">
+                        <input type="email" class="form-control" name="email" placeholder="이메일" maxlength="40">
                     </div>
                     <div>
-                        <input type="text" class="form-control" name="id" placeholder="아이디">
+                        <input type="text" class="form-control" name="id" placeholder="아이디" maxlength="20">
                     </div>
                     <div>
-                        <input type="password" class="form-control" name="pw" placeholder="비밀번호">
+                        <input type="password" class="form-control" name="pw" placeholder="비밀번호" maxlength="64">
                     </div>
                     <div>
-                        <input type="password" class="form-control" name="pw-confirm" placeholder="비밀번호 확인">
+                        <input type="password" class="form-control" name="pw-confirm" placeholder="비밀번호 확인" maxlength="64">
                     </div>
                     <div>
                         <button type="submit" class="form-control btn btn-primary">회원가입</button>
