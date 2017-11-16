@@ -37,10 +37,10 @@
                         <td width="20"><!-- Whitespace --></td>
                         <td align="left">
                             <select id="curr" onchange="setBooks();">
-                                <option value="수1">수학 1</option>
-                                <option value="수2">수학 2</option>
-                                <option value="미1">미적분 1</option>
-                                <option value="미2">미적분 2</option>
+                                <option value="수I">수학 I</option>
+                                <option value="수II">수학 II</option>
+                                <option value="미I">미적분 I</option>
+                                <option value="미II">미적분 II</option>
                                 <option value="확통">확률과 통계</option>
                                 <option value="기벡">기하와 벡터</option>
                             </select>
@@ -50,7 +50,7 @@
                         <td align="right">교재</td>
                         <td width="20"><!-- Whitespace --></td>
                         <td align="left">
-                            <select id="book" onchange="setYears();setBookPublisher();">
+                            <select id="book" onchange="setYears();setBookPublisher();setBookNotice();">
                                 <option selected>------</option>
                             </select>
                         </td>
@@ -68,6 +68,8 @@
                     </tr>
                     </tbody>
                 </table>
+
+                <p id="book_notice"></p>
 
             </div>
         </div>
