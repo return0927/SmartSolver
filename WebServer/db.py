@@ -76,7 +76,7 @@ class DB:
             else:
                 cur.execute('SELECT %s FROM "tbook";' % (selection))
             result = cur.fetchall()
-            return [False, result]
+            return [False, sorted(result)]
         except Exception as ex:
             return [True, str(ex)]
 
@@ -105,6 +105,16 @@ class DB:
 
         try:
             cur.execute('SELECT publisher FROM "tbooks" WHERE curriculumn=\'%s\' and bookname = \'%s\';'%(curr,book))
+            result = cur.fetchall()
+            return [False, result[0]]
+        except Exception as ex:
+            return [True, str(ex)]
+
+    def getBookNotice(self, curr, book):
+        cur = self.getCursor()
+
+        try:
+            cur.execute('SELECT notice FROM "tbooks" WHERE curriculumn=\'%s\' and bookname = \'%s\';'%(curr,book))
             result = cur.fetchall()
             return [False, result[0]]
         except Exception as ex:

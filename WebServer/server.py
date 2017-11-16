@@ -69,30 +69,32 @@ def register():
 
     if isPost:
         ip = request.environ['REMOTE_ADDR']
+        try:
+            postData = parse_qs(request.get_data().decode())
+            pw, pw_confirm = encrypt(postData['pw'][0]), encrypt(postData['pw-confirm'][0])
 
-        postData = parse_qs(request.get_data().decode())
-        pw, pw_confirm = encrypt(postData['pw'][0]), encrypt(postData['pw-confirm'][0])
+            if pw != pw_confirm: return "<script>alert('비밀번호, 비밀번호 확인이 일치하지 않습니다.');history.go(-1);</script>"
+            del pw_confirm
 
-        if pw != pw_confirm: return "<script>alert('비밀번호, 비밀번호 확인이 일치하지 않습니다.');history.go(-1);</script>"
-        del pw_confirm
 
-        _name = postData['name'][0]
-        _birthday = postData['birthday'][0]
-        _grade = int(postData['school'][0])*10 + int(postData['grade'][0])
-        _email = postData['email'][0]
-        _id = postData['id'][0]
-        _pw = pw
-        del pw, postData
+            _name = postData['name'][0]
+            _birthday = postData['birthday'][0]
+            _grade = int(postData['school'][0])*10 + int(postData['grade'][0])
+            _email = postData['email'][0]
+            _id = postData['id'][0]
+            _pw = pw
+            del pw, postData
 
-        if DB.checkIDExist(_id): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
-        if DB.checkEmailExist(_email): return "<script>alert('이미 등록되어있는 이메일입니다!');history.go(-1);</script>"
+            if DB.checkIDExist(_id): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
+            if DB.checkEmailExist(_email): return "<script>alert('이미 등록되어있는 이메일입니다!');history.go(-1);</script>"
 
-        result = DB.addUser(_id, _pw, _name, _birthday, _grade, _email, ip)
-        if result:
-            return "오류가 발생하였습니다!<br /><br />%s"%result
+            result = DB.addUser(_id, _pw, _name, _birthday, _grade, _email, ip)
+            if result:
+                return "오류가 발생하였습니다!<br /><br />%s"%result
 
-        return "<script>alert('가입에 성공하였습니다!');location.href='/login';</script>"
-
+            return "<script>alert('가입에 성공하였습니다!');location.href='/login';</script>"
+        except Exception as ex:
+            return "<script>alert(\"입력한 정보를 다시 한 번 확인해주세요.\"); history.go(-1);</script>"
     else:
         return gSet.html.register
 
@@ -164,6 +166,25 @@ def getBookPublisher():
 
     try:
         result, data = DB.getBookPublisher(curr, book)
+        data = data[0]
+
+        if result: return "{'result':'%s'}"%data
+        return json.dumps({"result":data})
+    except Exception as ex:
+        print(ex)
+        return "{'result':'%s'}"%str(ex)
+
+
+@app.route("/api/bookNotice", methods=["GET"])
+def getBookNotice():
+    curr = request.args.get("curr")
+    book = request.args.get("book")
+
+    if not (curr and book):
+        return "{'result':'Invalid Request'}"
+
+    try:
+        result, data = DB.getBookNotice(curr, book)
         data = data[0]
 
         if result: return "{'result':'%s'}"%data

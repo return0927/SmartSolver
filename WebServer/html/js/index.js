@@ -35,7 +35,7 @@ function _setBooks(arr) {
 function setYears(){
 	var curr = $("select#curr")[0].value;
 	var book = $("select#book")[0].value;
-	$.get("/api/bookModifiedYear?key=bookname&curr="+curr+"&book="+book, function(response){_setYears(JSON.parse(response).result);});
+	$.get("/api/bookModifiedYear?&curr="+curr+"&book="+book, function(response){_setYears(JSON.parse(response).result);});
 }
 
 function _setYears(arr) {
@@ -57,7 +57,7 @@ function _setYears(arr) {
 function setBookPublisher(){
 	var curr = $("select#curr")[0].value;
 	var book = $("select#book")[0].value;
-	$.get("/api/bookPublisher?key=bookname&curr="+curr+"&book="+book, function(response){_setBookPublisher(JSON.parse(response).result);});
+	$.get("/api/bookPublisher?curr="+curr+"&book="+book, function(response){_setBookPublisher(JSON.parse(response).result);});
 }
 
 function _setBookPublisher(data) {
@@ -65,4 +65,15 @@ function _setBookPublisher(data) {
 	pub.innerHTML = "출판사: <font color='#8b0000'>"+data+"</font>";
 
 	return true;
+}
+
+
+function setBookNotice(){
+	var curr = $("select#curr")[0].value;
+	var book = $("select#book")[0].value;
+	$.get("/api/bookNotice?curr="+curr+"&book="+book, function(response){_setBookNotice(JSON.parse(response).result);});
+}
+
+function _setBookNotice(data) {
+	$("#book_notice")[0].innerHTML = data;
 }
