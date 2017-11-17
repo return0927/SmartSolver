@@ -221,6 +221,7 @@ def getBookNotice():
         return "{'result':'%s'}"%str(ex)
 
 
+# --- File hosts ---
 @app.route("/css/<path:filename>")
 def css(filename):
     return send_from_directory(gSet.htmlDir + "/css/", filename)
@@ -239,6 +240,12 @@ def img(filename):
 @app.route("/fonts/<path:filename>")
 def fonts(filename):
     return send_from_directory(gSet.htmlDir + "/fonts/", filename)
+
+
+# --- Player ---
+@app.route("/video/flowplayer/<path:filename>")
+def flowplayer(filename):
+    return send_from_directory(gSet.htmlDir + "/players/", filename)
 
 
 app.run(gSet.host, gSet.port)
