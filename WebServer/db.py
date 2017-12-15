@@ -1,4 +1,6 @@
 import psycopg2
+import re
+import validater
 from datetime import datetime
 
 class DB:
@@ -11,9 +13,17 @@ class DB:
 
         self.conn = None
         self.cursor = None
-        self.logfile = "logs/db-%s.txt"
+        self.logfile = "logs/db/%s.txt"
 
         self.getConn()
+
+    def hardfilter(self, string, r=re.compile("[a-zA-Z0-9]{1,}")):
+        print(string)
+        res = r.match(string)
+        if res is None: return False
+        if string == res.group(): return True
+        return False
+
 
     def getConn(self):
         self.conn = psycopg2.connect(
@@ -28,7 +38,7 @@ class DB:
         return self.conn
 
     def writeLog(self, _ip, query):
-        open(self.logfile%datetime.now().strftime("%Y-%m-%d"), "a")\
+        open(self.logfile%datetime.now().strftime("%Y-%m-%d"), "a", encoding="UTF-8")\
             .write("%s\t%s\t%s\n"%(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"), _ip, query))
 
     def getCursor(self):
@@ -41,6 +51,7 @@ class DB:
         return self.cursor
 
     def checkIDExist(self, id, _ip):
+        if not self.hardfilter(id): return True
         cur = self.getCursor()
 
         query = 'SELECT "id" FROM "User" WHERE id=\'%s\'' % id
@@ -51,21 +62,27 @@ class DB:
         _data = cur.fetchall()
         return _data
 
-    def checkEmailExist(self, id, _ip):
+    def checkEmailExist(self, email, _ip):
+        err, _ = validater.email(email)
+        if err: return True
+
         cur = self.getCursor()
 
-        query = 'SELECT "email" FROM "User" WHERE email=\'%s\'' % id
+        query = 'SELECT "email" FROM "User" WHERE email=\'%s\'' % email
         self.writeLog(_ip, query)
 
         cur.execute(query)
         _data = cur.fetchall()
         return _data
 
-    def addUser(self, _id, _pw, _name, _bir, _gra, _email, _ip):
+    def addUser(self, _id, _pw, _name, _bir, _gra, _email, _ip, _code):
+        if not self.hardfilter(_id): return "Invalid Query"
+        if validater.email(_email)[0]: return "Invalid Query"
+
         cur = self.getCursor()
         try:
-            cur.execute('INSERT INTO "User" VALUES(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\''')' % (
-                _id, _pw, _name, _bir, _gra, _email, _ip, _ip))
+            cur.execute('INSERT INTO "User" VALUES(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\')' % (
+                _id, _pw, _name, _bir, _gra, _email, _ip, _ip, _code))
             self.conn.commit()
             return False
         except Exception as ex:
@@ -83,15 +100,19 @@ class DB:
         except Exception as ex:
             return str(ex)
 
-
+    # TODO: Regex Check [a-zA-Z0-9]{1,}
     def getAccount(self, _id, _pw, _ip):
+        if not self.hardfilter(_id): return [True, "Invalid Query"]
+
         cur = self.getCursor()
         try:
-            query = 'SELECT "name" FROM "User" WHERE id=\'%s\' and pw=\'%s\''%(_id,_pw)
+            query = 'SELECT "name", "email_veri" FROM "User" WHERE id=\'%s\' and pw=\'%s\''%(_id,_pw)
             self.writeLog(_ip, query)
 
             cur.execute(query)
             result = cur.fetchall()
+            print(result)
+
             return [False, result]
         except Exception as ex:
             return [True, str(ex)]
@@ -164,5 +185,19 @@ class DB:
             cur.execute(query)
             result = cur.fetchall()
             return [False, result[0]]
+        except Exception as ex:
+            return [True, str(ex)]
+
+    # --- Promotion ---
+    def getPromotionVid(self, ip):
+        cur = self.getCursor()
+
+        try:
+            query = "SELECT curr, book, year, page, num, vid FROM video WHERE published=1";
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+            return [False, sorted(result, key=lambda x: x[5])]
         except Exception as ex:
             return [True, str(ex)]
