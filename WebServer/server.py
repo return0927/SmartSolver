@@ -4,6 +4,7 @@ import validater
 import string
 import random
 from urllib.parse import parse_qs
+from datetime import datetime
 
 import db
 import general_settings
@@ -24,9 +25,28 @@ class Tools():
 
 tool = Tools()
 
+def event_logger(string, type='web'):
+    try:
+        open("logs/%s/%s.txt" % (type, datetime.now().strftime("%Y-%m-%d")), "a", encoding="UTF-8") \
+            .write(string+"\n")
+    except Exception as ex:
+        print(" --- 로깅시스템에 문제가 있습니다. ---")
+        print(ex)
+
+@app.before_request
+def req():
+    url = request.url
+    method = request.method
+    ip = request.environ['REMOTE_ADDR']
+    logon = "Info" in session.keys()
+    info = str(session['Info']) if logon else "None"
+
+    event_logger("\t".join([url, method, ip, str(logon), info]))
+
 
 @app.route("/")
 def root():
+    return redirect("/promotion")
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
 
     return gSet.html.root%(tool.getNick(session))
@@ -94,6 +114,7 @@ def register():
 
             # --- Check Validation --- #
             if DB.checkIDExist(_id, ip): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
+            if "admin" in _id.lower() or "webmaster" in _id.lower(): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
             if DB.checkEmailExist(_email, ip): return "<script>alert('이미 등록되어있는 이메일입니다!');history.go(-1);</script>"
             if _grade not in [1, 2, 3, 11, 12, 13, 21, 22, 23]: return "<script>alert('학교/학년을 다시 한 번 확인해주세요.');history.go(-1);</script>"
 
@@ -103,17 +124,61 @@ def register():
             err, data = validater.email(_email)
             if err: return "<script>alert('%s');history.go(-1);</script>"%data
 
-
+            _code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(32))
             # --- IP Info Update --- #
-            result = DB.addUser(_id, _pw, _name, _birthday, _grade, _email, ip)
+            result = DB.addUser(_id, _pw, _name, _birthday, _grade, _email, ip, _code)
             if result:
                 return "오류가 발생하였습니다!<br /><br />%s"%result
 
-            return "<script>alert('가입에 성공하였습니다!');location.href='/login';</script>"
+            #err, data = validater.sendVerf(_email, _code)
+            #print(err, data)
+
+            # return "<script>alert('가입에 성공하였습니다!\\n이메일 인증을 진행한 후 로그인해주세요.');location.href='/login';</script>"
+            return "<script>alert('가입에 성공하였습니다!\\n');location.href='/login';</script>"
         except Exception as ex:
-            return "<script>alert(\"입력한 정보를 다시 한 번 확인해주세요.\"); history.go(-1);</script>"
+            print("Error on Registration data verification : %s")
+            raise ex
+            # return "<script>alert(\"입력한 정보를 다시 한 번 확인해주세요.\"); history.go(-1);</script>"
     else:
         return gSet.html.register
+
+# -- Promotion ---
+@app.route("/promotion", methods=["GET"])
+def promotion():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
+    return gSet.html.promotion%(tool.getNick(session))
+
+
+@app.route("/promotion/vidList", methods=["GET"])
+def promotionVid():
+    ip = request.environ['REMOTE_ADDR']
+
+    try:
+        result, data = DB.getPromotionVid(ip)
+        #print(data)
+
+        ret = []
+        for curr, book, year, page, num, id in data:
+            if page == 0:
+                ret.append([changeCurrName(curr), book, year, num, id])
+            else:
+                ret.append([changeCurrName(curr), book, year, "P%d %d"%(page, num), id])
+
+        return json.dumps({"result":ret})
+    except Exception as ex:
+        print(ex)
+        return "{'result':'%s'}"%str(ex)
+
+
+def changeCurrName(curr):
+    if curr == "기벡": return "기하와벡터"
+    elif curr == "확통": return "확률과통계"
+    elif curr == "수I": return "수학 I"
+    elif curr == "수II": return "수학 II"
+    elif curr == "미I": return "미적분 I"
+    elif curr == "미II": return "미적분 II"
+    else: return ""
 
 
 # --- API Controller ---
@@ -243,9 +308,71 @@ def fonts(filename):
 
 
 # --- Player ---
+@app.route("/video/flowplayer/play", methods=["GET"])
+def fplayer():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
+    ip = request.environ["REMOTE_ADDR"]
+
+    try:
+        vid = request.args.get("vid")
+        id, pw, name = session["Info"]
+        print(id+name+ip)
+        token = encrypt(id+name+ip+str(vid))
+        print(token)
+
+        return gSet.html.flowplayer%(str(vid), token, str(vid))
+
+    except Exception as ex:
+        print(ex)
+        return "<script>alert('플레이중 오류가 생겼습니다!');history.go(-1);</script>"
+
 @app.route("/video/flowplayer/<path:filename>")
 def flowplayer(filename):
     return send_from_directory(gSet.htmlDir + "/players/", filename)
+
+@app.route("/video/flowplayer/img/<path:filename>")
+def flowplayer_IMG(filename):
+    return send_from_directory(gSet.htmlDir + "/players/img/", filename)
+
+
+# --- Player Support ---
+@app.route("/sup/logger", methods=["POST"])
+def logger():
+    ip = request.environ['REMOTE_ADDR']
+
+    try:
+        data = parse_qs(request.get_data().decode())
+        vid = data['videoID'][0]
+        token = data['authKey'][0]
+        id, pw, name = session["Info"]
+
+        if encrypt(id + name + ip + str(vid)) == token:
+            return "{'code':'success'}"
+        else:
+            return "{'code':'fail'}"
+    except Exception as ex:
+        print(ex)
+        return "{'code':'fail'}"
+
+
+@app.route("/sup/checkValidation", methods=["POST"])
+def validation():
+    ip = request.environ['REMOTE_ADDR']
+
+    try:
+        data = parse_qs(request.get_data().decode())
+        vid = data['videoID'][0]
+        token = data['authKey'][0]
+        id, pw, name = session["Info"]
+
+        if encrypt(id + name + ip + str(vid)) == token:
+            return "{'code':'right'}"
+        else:
+            return "{'code':'fail'}"
+    except Exception as ex:
+        print(ex)
+        return "{'code':'fail'}"
 
 
 app.run(gSet.host, gSet.port)
