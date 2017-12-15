@@ -1,0 +1,372 @@
+<!doctype html>
+<html>
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109853919-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-109853919-1');
+    </script>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=9">
+    <title>jPlayer</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+    <!-- player skin -->
+    <link rel="stylesheet" href="functional.css">
+
+    <!-- site specific styling -->
+    <!-- for video tag based installs flowplayer depends on jQuery 1.7.2+ -->
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+
+    <!-- include flowplayer -->
+    <script src="flowplayer.min.js"></script>
+
+</head>
+<script>
+    $(document).ready(function () {
+        $('.fp-embed').remove();
+        $('.flowplayer a').each(function () {
+            $(".flowplayer a[href='http://flowplayer.org']").css({opacity: 0});
+        });
+    });
+
+</script>
+<body onkeydown="javascript:Disable_Control_C();" oncopy="alert('Not Allowed(2)!');return false"
+      oncut="alert('Not Allowed(3)!');return false" ondragstart="alert('Drag Not Allowed(4)!');return false;"
+      style="background-color:#45454D;">
+<!-- _ajax 용 폼 -->
+<form name="mediaForm" id="mediaForm">
+    <input type="hidden" name="flag" value="real">
+    <input type="hidden" name="videoID" value="%s">
+    <input type="hidden" name="authKey" value="%s">
+</form>
+<table border=0 width='100%%' cellspacing='0' cellpadding='0'>
+    <tr>
+        <td width="1000">
+            <table border=0 width="100%%" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="left" height="580" width="1000">
+                        <script>
+                            var playEnded = false;
+                            $(document).ready(function () {
+                                $('.fp-embed').remove();
+                                /*
+                                $('a').each(function() {
+                                   $("a[href='http://flowplayer.org']").remove();
+                                });
+                                */
+                                $('.flowplayer a').each(function () {
+                                    $(".flowplayer a[href='http://flowplayer.org']").css({opacity: 0});
+                                });
+
+                                setInterval("checkLoginKey()", 30000);
+
+                                setInterval("updateLog('last')", 5000);
+                                bookmarkRefresh();
+
+                            });
+
+                            //
+                            function checkLoginKey() {
+
+                                var frm = jQuery("form[name=mediaForm]");
+                                var dataString = frm.serialize();
+                                jQuery.ajax({
+                                    url: "/sup/checkValidation",
+                                    type: 'post',
+                                    dataType: 'html',
+                                    data: dataString,
+                                    timeout: 20000,
+
+                                    error: function () {
+                                        alert("System Error!");
+                                    },
+
+                                    success: function (responseData) {
+
+                                        var rData = eval('(' + responseData + ')');
+                                        if (rData.code == "wrong") {
+                                            //stop(); // 플레이 중지
+                                            //alert("지금 회원님의 아이디로 다른 PC에서 접속되고 있습니다.\nID 도용이 의심되니 로그아웃하시고 비밀번호를 변경하시기 바랍니다!");
+                                            ////window.close();
+                                            ////parent.location.href="/ssAccounts/logoutResponse.php"; //
+
+                                        }
+
+                                    }
+                                });
+
+                            }
+
+                            function updateLog(knd) {
+                                if (knd == "end" || (knd == "last" && playEnded == false)) {
+
+                                    var frm = jQuery("form[name=mediaForm]  ");
+                                    var dataString = frm.serialize();
+                                    jQuery.ajax({
+                                        url: "/sup/logger?kind=" + knd,
+                                        type: 'post',
+                                        dataType: 'html',
+                                        data: dataString,
+                                        timeout: 20000,
+
+                                        error: function () {
+                                            //alert("System Error!");
+                                        },
+
+                                        success: function (responseData) {
+
+                                            //
+                                        }
+                                    });
+
+                                }
+                            }
+
+                            function Disable_Control_C() {
+                                var keystroke = String.fromCharCode(event.keyCode).toLowerCase();
+
+                                if (event.ctrlKey && (keystroke == 'c' || keystroke == 'v')) {
+                                    alert("Now Allowed!");
+                                    event.returnValue = false; // disable Ctrl+C
+                                }
+                            }
+
+                        </script>
+
+                        <script>
+                            flowplayer.conf = {
+                                ratio: 5 / 12,
+                                rtmp: "rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st"
+                            };
+
+                            // bind listeners to all players on the page
+                            flowplayer(function (api, root) {
+
+                                // when a new video is about to be loaded
+                                api.on("load", function () {
+                                    console.info("load", api.engine.engineName);
+
+                                    // when a video is loaded and ready to play
+                                }).on("ready", function () {
+                                    console.info("ready", api.video.duration)
+
+                                });
+
+                                // events handlers by Ork M.S.
+                                api.on("load", function (e, api) {
+                                    //alert("Loaded!");
+                                });
+                                api.on("unload", function (e, api) {
+                                    //alert("Unloaded!");
+                                });
+                                api.on("resume", function (e, api) {	 // play
+                                    document.getElementById("btnPlay").innerHTML = "<img src='img/b_pause.png' alt='Pause' onclick='pause();' style='cursor:pointer; vertical-align:middle;' />";
+                                });
+                                api.on("stop", function (e, api) {
+                                    document.getElementById("btnPlay").innerHTML = "<img src='img/b_play.png' alt='Play' onclick='play();' style='cursor:pointer; vertical-align:middle;' />";
+                                });
+                                api.on("pause", function (e, api) {
+                                    document.getElementById("btnPlay").innerHTML = "<img src='img/b_play.png' alt='Play' onclick='play();' style='cursor:pointer; vertical-align:middle;' />";
+                                });
+                                api.on("finish", function (e, api) {
+                                    updateLog('end');
+                                    playEnded = true;
+                                });
+                                api.on("fullscreen fullscreen-exit", function (e, api) {
+                                    if (/exit/.test(e.type)) {
+                                        window.resizeTo(1360, 756);
+                                        //alert("Fullscreen Exit!");
+                                    } else {
+                                        //alert("Fullscreen!");
+                                    }
+                                });
+
+                            });
+
+
+                            // added by ork
+                            function play() {
+
+                                flowplayer(0).play();
+                            }
+
+                            function stop() {
+
+                                flowplayer(0).stop();
+                            }
+
+                            function pause() {
+
+                                flowplayer(0).pause();
+                            }
+
+                            function speed(i, s) {
+
+                                flowplayer(0).speed(s);
+                                for (var p = 0; p <= 5; p++) {
+                                    if (p == i) {
+                                        document.getElementById("timebar_" + p).src = "img/timebar_" + p + "_on.jpg";
+                                    } else {
+                                        document.getElementById("timebar_" + p).src = "img/timebar_" + p + "_off.jpg";
+                                    }
+                                }
+                            }
+
+                            function fullscreen() {
+                                window.resizeTo(8000, 4000);
+                                flowplayer(0).fullscreen();
+                            }
+
+                            function forward(t) {
+
+                                var thisPosi = flowplayer(0).video.time;
+                                seek(thisPosi + t);
+                            }
+
+                            function backward(t) {
+
+                                var thisPosi = flowplayer(0).video.time;
+                                seek(thisPosi - t);
+                            }
+
+                            function seek(s) {
+                                flowplayer(0).seek(s);
+                            }
+                        </script>
+                        <div class="flowplayer" data-swf="flowplayer.swf" data-ratio="0.5925"
+                             style="background-color:#110F12;">
+                            <video autoplay><!-- auto play <video autoplay> -->
+                                <!--source type="video/webm" src="http://stream.flowplayer.org/bauhaus/624x260.webm"-->
+                                <source type="video/mp4"
+                                        src="http://vid.return0927.xyz:10380/%s.mp4">
+                                <!--source type="video/ogv" src="http://stream.flowplayer.org/bauhaus/624x260.ogv"-->
+                            </video>
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left">
+                        <table border="0" width="1000" bgcolor="#39393F">
+                            <tr>
+                                <td>
+                                    <span id="btnPlay"><img src="img/b_pause.png" alt="Play"
+                                                            onclick="pause();"
+                                                            style="cursor:pointer; vertical-align:middle;"/></span>
+                                    <img id="btnStop" src="img/b_stop.png" alt="Stop" onclick="stop();"
+                                         style="cursor:pointer; vertical-align:middle;"/>
+                                    <img id="btnPrev" src="img/b_prev.png" alt="이전"
+                                         onclick="backward(10);" style="cursor:pointer; vertical-align:middle;"/>
+                                    <img id="btnNext" src="img/b_next.png" alt="다음" onclick="forward(10);"
+                                         ; style="cursor:pointer; vertical-align:middle;"/>
+                                </td>
+                                <td align="left">
+                                    <table border=0 cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td colspan="2" style="text-align:left;">
+                                                <table border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td style="padding:0 0 0 5px;"><img
+                                                                src="img/st_skip.png" alt="화면이동"/></td>
+                                                        <td style="padding:0 0 0 5px;">
+                                                            <img id="btnSeekPrev"
+                                                                 src="img/b_prev_skip.png"
+                                                                 onclick="backward(30);" alt=""
+                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                            <input type="text" value="30" size="2" readonly/>
+                                                            <img id="btnSeekNext"
+                                                                 src="img/b_next_skip.png"
+                                                                 onclick="forward(30);" alt=""
+                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                        </td>
+                                                        <td style="padding:0 0 0 5px;"><img
+                                                                src="img/st_speed.png" alt="Speed"/></td>
+                                                        <td style="padding:0 0 3px 5px;">
+                                                            <!--select name="speed" onchange="speed(this.value);">
+                                                            <option value="0.8">0.8</option>
+                                                            <option value="1.0" selected>1.0</option>
+                                                            <option value="1.2">1.2</option>
+                                                            <option value="1.5">1.5</option>
+                                                            <option value="2.0">2.0</option>
+                                                            </select-->
+                                                            <img id="timebar_0"
+                                                                 src="img/timebar_0_off.jpg" alt="0.6"
+                                                                 onclick="speed(0, '0.6');"
+                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                            <img id="timebar_1"
+                                                                 src="img/timebar_1_off.jpg" alt="0.8"
+                                                                 onclick="speed(1, '0.8');"
+                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                            <img id="timebar_2" src="img/timebar_2_on.jpg"
+                                                                 alt="1.0" onclick="speed(2, '1.0');"
+                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                            <img id="timebar_3"
+                                                                 src="img/timebar_3_off.jpg" alt="1.4"
+                                                                 onclick="speed(3, '1.4');"
+                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                            <img id="timebar_4"
+                                                                 src="img/timebar_4_off.jpg" alt="1.6"
+                                                                 onclick="speed(4, '1.6');"
+                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                            <img id="timebar_5"
+                                                                 src="img/timebar_5_off.jpg" alt="2.0"
+                                                                 onclick="speed(5, '2.0');"
+                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:2px 0 0 5px;">
+                                                <img src="img/st_lecture.png" alt="View next video"
+                                                     style="vertical-align:middle;"/>
+                                            </td>
+                                            <td style="padding:2px 0 0 5px; text-align:left;">
+                                                <script>
+                                                    function changeMid(mid) {
+                                                        if (mid != "") {
+                                                            location.href = "?flag=real&vidID=" + mid;
+                                                        }
+                                                    }
+                                                </script>
+                                                <!--
+                                                <select name="mid" onchange="changeMid(this.value);" id="moveLecture">
+                                                    <option value="">=================강좌이동=================</option>
+                                                </select>
+                                                -->
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td>
+                                    <img id="btnMax" src="img/b_max.gif" alt="전체화면"
+                                         onclick="fullscreen();" style="cursor:pointer;"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+        <td style="padding:2px;" valign="top">
+            <iframe src="about:blank" frameborder="0" width="330"
+                    height="670" scrolling="auto"></iframe>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
+
