@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html class="nojs html css_verticalspacer" lang="ko-KR" xmlns="http://www.w3.org/1999/html">
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109853919-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-109853919-1');
+    </script>
+
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
+    <meta name="generator" content="2018.0.0.379"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>온풀 : 수학을 쉽게</title>
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="css/site_global.css?crc=444006867"/>
+    <link rel="stylesheet" type="text/css" href="css/index.css?crc=3910591484" id="pagesheet"/>
+    <!--
+    <link rel="stylesheet" type="text/css" href="css/index_popup.css"/>
+    -->
+</head>
+<body>
+<div class="clearfix borderbox" id="page">
+
+    <!-- group -->
+    <div class="clearfix grpelem" id="pu366-4">
+
+        <!-- column -->
+        <div class="clearfix colelem" id="u366-4" data-sizePolicy="fixed" data-pintopage="page_fixedLeft">
+            <!-- content -->
+            <p>체험하기</p>
+        </div>
+
+        <div class="clearfix colelem" id="pu367">
+            <!-- group -->
+            <div class="grpelem" id="u367" data-sizePolicy="fixed" data-pintopage="page_fluidx"></div>
+
+            <br style="font-size: 10px;"/>
+
+            <style>
+                thead {
+                    color: darkred;
+                }
+
+                tbody {
+                    font-size: 15px;
+                }
+                tbody tr {
+                     line-height: 20px;
+                }
+                td {
+                    text-align: center;
+                }
+            </style>
+            <table class="grpelem" id="bookTable">
+                <thead>
+                <tr>
+                    <td width="150">과정</td>
+                    <td width="100">교재명</td>
+                    <td width="100">개정년도</td>
+                    <td width="100">문항번호</td>
+                    <td></td>
+                </tr>
+                </thead>
+                <tbody id="vidTable">
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+    <div class="clip_frame clearfix" id="u370">
+        <!-- image -->
+        <img class="position_content" id="img/logo.png" src="img/logo.png" alt=""
+             width="108" height="73"/>
+    </div>
+
+    <div class="clearfix grpelem" id="u363-4" data-sizePolicy="fixed" data-pintopage="page_fixedRight"><!-- content -->
+        <p>안녕하세요. <a onclick="javascript:if(confirm('로그아웃 하시겠습니까?')){location.href = '/logout';}"><font color="#6495ed">%s</font></a>
+            님!</p>
+    </div>
+    <div class="verticalspacer" data-offset-top="62" data-content-above-spacer="510" data-content-below-spacer="437"
+         data-sizePolicy="fixed" data-pintopage="page_fixedLeft"></div>
+</div>
+
+
+<!-- Other scripts -->
+<script type="text/javascript" src="js/index.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    // Decide weather to suppress missing file error or not based on preference setting
+    var suppressMissingFileError = false
+    $(document).ready(function () {
+        var table = $("#vidTable")[0];
+        $.get("/promotion/vidList", function (data) {
+            var videos = JSON.parse(data).result;
+            var i;
+
+            for (i = 0; i < videos.length; i++) {
+                var row = table.insertRow(table.rows.length);
+                var curr = row.insertCell(0), book = row.insertCell(1), year = row.insertCell(2),
+                    qnum = row.insertCell(3), link = row.insertCell(4);
+
+                curr.innerHTML = videos[i][0];
+                book.innerHTML = videos[i][1];
+                year.innerHTML = videos[i][2];
+                qnum.innerHTML = videos[i][3];
+                link.innerHTML = "<a href='/video/flowplayer/play?vid=" + videos[i][4] + "' target='blank'>[시청]</a>";
+            }
+        });
+    });
+</script>
+</body>
+</html>
