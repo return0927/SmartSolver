@@ -46,7 +46,6 @@ def req():
 
 @app.route("/")
 def root():
-    return redirect("/promotion")
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
 
     return gSet.html.root%(tool.getNick(session))
