@@ -23,6 +23,19 @@ class Tools():
         _, _, nick = session['Info']
         return nick
 
+User = {
+    "id": "",
+    "ip": "",
+    "login": False
+}
+
+def makeUserDict(id='', ip='', login=False):
+    _temp = User.copy()
+    _temp['id'] = id
+    _temp['ip'] = ip
+    _temp['login'] = login
+    return _temp
+
 tool = Tools()
 
 def event_logger(string, type='web'):
@@ -40,6 +53,8 @@ def req():
     ip = request.environ['REMOTE_ADDR']
     logon = "Info" in session.keys()
     info = str(session['Info']) if logon else "None"
+
+    if "User" not in session.keys(): session['User'] = makeUserDict(ip=ip)
 
     event_logger("\t".join([url, method, ip, str(logon), info]))
 
@@ -77,6 +92,8 @@ def login():
 
             if DB.submitRecentIP(_id, ip): return "<script>alert('서버에 오류가 발생하였습니다. \nCODE:L_UPD_Ad');history.go(-1);</script>"
 
+            session['User']['id'] = _id
+            session['User']['login'] = True
             return "<script>alert('환영합니다, %s님!');location.href='/';</script>"%name
         else:
             return "<script>alert('아이디 혹은 비밀번호를 확인해주세요.');history.go(-1);</script>"
@@ -84,7 +101,7 @@ def login():
 
 @app.route("/logout")
 def logout():
-    del session["Info"]
+    del session["Info"], session['User']
     return "<script>alert('로그아웃 되었습니다.');location.href='/';</script>"
 
 
@@ -206,6 +223,15 @@ def getTextbookDB():
 
     return "{'result':'Invalid Request'}"
 
+@app.route("/api/gettbook/<path:id>", methods=["GET"])
+def getTbook(id):
+    ip = request.environ['REMOTE_ADDR']
+
+    try:
+        data = DB.run("SELECT year_modified, curriculumn, bookname FROM tbooks WHERE id='{}'".format(id))
+        return " ".join([str(x) for x in data[0]])
+    except Exception as ex:
+        raise ex
 
 @app.route("/api/curriculumn", methods=["GET"])
 def getCurriculumn():
@@ -283,6 +309,23 @@ def getBookNotice():
     except Exception as ex:
         print(ex)
         return "{'result':'%s'}"%str(ex)
+
+
+# --- API Personal Part
+@app.route("/api/pp/my_question", methods=["GET"])
+def my_question():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
+    ip = request.environ['REMOTE_ADDR']
+    user = session['User']
+
+    err, data = DB.getMyQuestion(user, ip)  # timestamp, qnum, status, content, link, tbook_id, number
+    data = [list(x) for x in data]
+    for n in range(len(data)):
+        data[n][0] = data[n][0].strftime("%Y.%m.%d %H:%M:%S")
+        data[n][5] = getTbook(data[n][5])
+
+    return json.dumps({"error": err == True, "data": data})
 
 
 # --- File hosts ---
