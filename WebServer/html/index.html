@@ -27,121 +27,115 @@
     <link rel="stylesheet" type="text/css" href="css/index_popup.css"/>
     -->
 </head>
+
+<div class="user_panel">
+    <p style="margin-top: 1em;">안녕하세요. <a onclick="javascript:if(confirm('로그아웃 하시겠습니까?')){location.href = '/logout';}"><font
+            color="#6495ed">%s</font></a>
+        님!</p>
+</div>
+
 <body>
-<div class="clearfix borderbox" id="page">
+<div class="box" id="page">
 
-    <!-- group -->
-    <div class="clearfix grpelem" id="pu366-4">
-
-        <!-- column -->
-        <div class="clearfix colelem" id="u366-4" data-sizePolicy="fixed" data-pintopage="page_fixedLeft">
-            <!-- content -->
-            <p>질문 제출</p>
+    <div class="area">
+        <div class="title">
+            <p>질문제출</p>
         </div>
-
-        <div class="clearfix colelem" id="pu367">
-            <!-- group -->
-            <div class="grpelem" id="u367" data-sizePolicy="fixed" data-pintopage="page_fluidx"></div>
-
-            <br style="font-size: 10px;"/>
-
-            <div class="grpelem" id="bookTable">
-                <table>
-                    <tbody>
-                    <tr>
-                        <td align="right">교육과정</td>
-                        <td width="20"><!-- Whitespace --></td>
-                        <td align="left">
-                            <select id="curr" onchange="setBooks();">
-                                <option value="수I">수학 I</option>
-                                <option value="수II">수학 II</option>
-                                <option value="미I">미적분 I</option>
-                                <option value="미II">미적분 II</option>
-                                <option value="확통">확률과 통계</option>
-                                <option value="기벡">기하와 벡터</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="right">교재</td>
-                        <td width="20"><!-- Whitespace --></td>
-                        <td align="left">
-                            <select id="book" onchange="setYears();setBookPublisher();setBookNotice();">
-                                <option selected>------</option>
-                            </select>
-                        </td>
-                        <td width="20"></td>
-                        <td id="bookPublisher"><!-- Whitespace --></td>
-                    </tr>
-                    <tr>
-                        <td align="right">개정년도</td>
-                        <td width="20"><!-- Whitespace --></td>
-                        <td align="left">
-                            <select id="year" onchange="">
-                                <option selected>------</option>
-                            </select>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <p>
-                    <font color="#8b008b" id="book_notice" style="font-size: 17px;"></font>
-                </p>
-
-            </div>
-        </div>
-
-        <div class="dim-layer" style="display: none;">
-            <div class="dimBg"></div>
-            <div id="layer2" class="pop-layer">
-                <div class="pop-container">
-                    <div class="pop-conts">
-                        <!--content //-->
-                        <p class="ctxt mb20">Thank you.<br>
-                            Your registration was submitted successfully.<br>
-                            Selected invitees will be notified by e-mail on JANUARY 24th.<br><br>
-                            Hope to see you soon!
-                        </p>
-
-                        <div class="btn-r">
-                            <a href="#" class="btn-layerClose">Close</a>
-                        </div>
-                        <!--// content-->
-                    </div>
+        <hr align="left"/>
+        <form action="/submit" method="POST">
+            <div style="display: flex;">
+                <div id="bookTable">
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td align="right">교육과정</td>
+                            <td width="20"><!-- Whitespace --></td>
+                            <td align="left">
+                                <select id="curr" onchange="setBooks();">
+                                    <option value="수I">수학 I</option>
+                                    <option value="수II">수학 II</option>
+                                    <option value="미I">미적분 I</option>
+                                    <option value="미II">미적분 II</option>
+                                    <option value="확통">확률과 통계</option>
+                                    <option value="기벡">기하와 벡터</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right">교재</td>
+                            <td width="20"><!-- Whitespace --></td>
+                            <td align="left">
+                                <select id="book" onchange="setYears();setBookPublisher();setBookNotice();">
+                                    <option selected>------</option>
+                                </select>
+                            </td>
+                            <td width="20"></td>
+                            <td id="bookPublisher"><!-- Whitespace --></td>
+                        </tr>
+                        <tr>
+                            <td align="right">개정년도</td>
+                            <td width="20"><!-- Whitespace --></td>
+                            <td align="left">
+                                <select id="year" onchange="">
+                                    <option selected>------</option>
+                                </select>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p><font color="#8b008b" id="book_notice" style="font-size: 17px;"></font></p>
                 </div>
+                <div class="">
+                    <table id="formTable">
+                        <tbody>
+                        <tr>
+                            <td align="right" style="right: 10%;">문항</td>
+                            <td width="10"></td>
+                            <td>
+                                <textarea id="number" placeholder="ex. 37쪽 5번 / ex. H308" maxlength="15"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>질문</td>
+                            <td></td>
+                            <td>
+                                <textarea id="question" placeholder="500자 이내" maxlength="500"></textarea>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
-        </div>
-
-
+        </form>
     </div>
-    <div class="clearfix grpelem" id="pu219-4"><!-- column -->
-        <div class="clearfix colelem" id="u219-4" data-sizePolicy="fixed" data-pintopage="page_fixedLeft">
-            <!-- content -->
+
+
+    <div class="area" id="pu219-4"><!-- column -->
+        <div class="title">
             <p>나의 질문</p>
         </div>
+        <hr align="left"/>
         <div class="colelem" id="u220" data-sizePolicy="fixed" data-pintopage="page_fluidx">
-            <!-- simple frame --></div>
-        <div class="grpelem" id="questionTable">
-            <table>
-            </table>
 
         </div>
-
+        <table id="questionTable">
+            <thead>
+                <tr>
+                    <th width="200">시간</th>
+                    <th width="150">교재</th>
+                    <th width="150">문항</th>
+                    <th width="150">상태</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 
-    <div class="clip_frame clearfix" id="u370">
-        <!-- image -->
-        <img class="position_content" id="img/logo.png" src="img/logo.png" alt=""
-             width="108" height="73"/>
+    <div id="logo">
+        <img class="position_content" id="img/logo.png" src="img/logo.png" alt="" width="108" height="73"/>
     </div>
-
-    <div class="clearfix grpelem" id="u363-4" data-sizePolicy="fixed" data-pintopage="page_fixedRight"><!-- content -->
-        <p>안녕하세요. <a onclick="javascript:if(confirm('로그아웃 하시겠습니까?')){location.href = '/logout';}"><font color="#6495ed">%s</font></a>
-            님!</p>
-    </div>
-    <div class="verticalspacer" data-offset-top="62" data-content-above-spacer="510" data-content-below-spacer="437"
-         data-sizePolicy="fixed" data-pintopage="page_fixedLeft"></div>
 </div>
 
 
@@ -154,6 +148,7 @@
     var suppressMissingFileError = false
     $(document).ready(function () {
         setBooks();
+        getMyQuestions();
     });
 </script>
 </body>
