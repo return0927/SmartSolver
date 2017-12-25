@@ -202,6 +202,40 @@ class DB:
         except Exception as ex:
             return [True, str(ex)]
 
+    # --- beta ---
+    def checkBetaCode(self, code, ip):
+        cur = self.getCursor()
+
+        try:
+            query = "SELECT code FROM codes WHERE allowed=1;"
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+            result = [x[0] for x in result]
+
+            if code not in result: return False
+            query = "UPDATE codes SET allowed = 0 WHERE code='{}';".format(code)
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            return True
+        except Exception as ex:
+            return False
+
+    # --- Functional Features ---
+    def submitmyQuestion(self, _requester, _bookid, _content, _number, ip):
+        cur = self.getCursor()
+
+        try:
+            query = "INSERT INTO questions (requester, status, tbook_id, content, number) VALUES ('{}','{}', '{}', '{}', '{}');".format(_requester, "{\"status\":0, \"message\":\"대기중\"}", _bookid, _content, _number)
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            return [False, None]
+        except Exception as ex:
+            return [True, str(ex)]
+
     # --- MyPage ---
     def getMyQuestion(self, User, ip):
         cur = self.getCursor()
