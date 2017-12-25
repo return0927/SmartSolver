@@ -110,13 +110,34 @@ function _makeQuestionTable(data) {
         var timestamp = row.insertCell(0), book = row.insertCell(1), num = row.insertCell(2), status = row.insertCell(3);
 
         timestamp.innerHTML = data[i][0];
-        status.innerHTML = data[i][2] ? "<a href='" + data[i][4] + "' target='blank'>영상확인</a>" : "<p align='center'><div class='circle pending'></div>대기중</p>";
+        // status.innerHTML = data[i][2] ? "<a href='" + data[i][4] + "' target='blank'>영상확인</a>" : "<p align='center'><div class='circle pending'></div>대기중</p>";
+        var stat = JSON.parse(data[i][2]);
+        console.log(stat);
+        if(stat.status === 0) {
+            status.innerHTML = "<p align='center'><div class='circle pending'></div>" + stat.message + "</p>";
+        } else if(stat.status === 1) {
+            status.innerHTML = "<a href='" + data[i][4] + "' target='blank'>영상확인</a>";
+        } else {
+            status.innerHTML = "<p align='center'><div class='circle error'></div>" + stat.message + "</p>";
+        }
+
         num.innerHTML = data[i][6];
         book.classList.add("book");
         book.innerHTML = data[i][5];
 
     }
 }
+
+/*
+    Submit my question
+ */
+function submitQuestion() {
+    var data = {"curr": $("#curr")[0].value, "book": $("#book")[0].value, "year": $("#year")[0].value, "number": $("#number")[0].value, "question": $("#question")[0].value};
+    $.post("/submit", data, function(data){
+        document.write(data);
+    })
+}
+
 
 /*
 	Popup
