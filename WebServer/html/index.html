@@ -3,17 +3,7 @@
 <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109853919-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-
-        gtag('js', new Date());
-
-        gtag('config', 'UA-109853919-1');
-    </script>
+    <script src="js/header.js"></script>
 
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
     <meta name="generator" content="2018.0.0.379"/>
@@ -29,7 +19,8 @@
 </head>
 
 <div class="user_panel">
-    <p style="margin-top: 1em;">안녕하세요. <a onclick="javascript:if(confirm('로그아웃 하시겠습니까?')){location.href = '/logout';}"><font
+    <p style="margin-top: 1em;">안녕하세요. <a
+            onclick="javascript:if(confirm('로그아웃 하시겠습니까?')){location.href = '/logout';}"><font
             color="#6495ed">%s</font></a>
         님!</p>
 </div>
@@ -42,7 +33,7 @@
             <p>질문제출</p>
         </div>
         <hr align="left"/>
-        <form action="/submit" method="POST">
+        <form id="ajaxForm" action="javascript: submitQuestion();">
             <div style="display: flex;">
                 <div id="bookTable">
                     <table>
@@ -89,21 +80,24 @@
                     <table id="formTable">
                         <tbody>
                         <tr>
-                            <td align="right" style="right: 10%;">문항</td>
-                            <td width="10"></td>
+                            <td align="right">문항</td>
+                            <td width="20"><!-- Whitespace --></td>
                             <td>
-                                <textarea id="number" placeholder="ex. 37쪽 5번 / ex. H308" maxlength="15"></textarea>
+                                <textarea id="number" placeholder="ex. 37쪽 5번 / ex. H308" maxlength="15"
+                                          form="ajaxForm"></textarea>
                             </td>
                         </tr>
                         <tr>
                             <td>질문</td>
                             <td></td>
                             <td>
-                                <textarea id="question" placeholder="500자 이내" maxlength="500"></textarea>
+                                <textarea id="question" placeholder="500자 이내" maxlength="500"
+                                          form="ajaxForm"></textarea>
                             </td>
                         </tr>
                         </tbody>
                     </table>
+                    <input type="submit" />
                 </div>
 
             </div>
@@ -121,12 +115,12 @@
         </div>
         <table id="questionTable">
             <thead>
-                <tr>
-                    <th width="200">시간</th>
-                    <th width="150">교재</th>
-                    <th width="150">문항</th>
-                    <th width="150">상태</th>
-                </tr>
+            <tr>
+                <th width="200">시간</th>
+                <th width="150">교재</th>
+                <th width="150">문항</th>
+                <th>상태</th>
+            </tr>
             </thead>
             <tbody>
             </tbody>
