@@ -88,6 +88,36 @@ function _setBookNotice(data) {
 }
 
 
+function getMyQuestions() {
+    $.get("/api/pp/my_question", function(response){
+        var resp = JSON.parse(response);
+        console.log(resp);
+
+        if(!resp.error) {
+            _makeQuestionTable(resp.data);
+        } else {
+            alert("회원님의 질문을 불러오는 중에 오류가 발생하였습니다!");
+        }
+    });
+}
+
+function _makeQuestionTable(data) {
+    var table = $("#questionTable tbody")[0];
+
+    var i;
+    for(i=0; i<data.length; i++) {
+        var row = table.insertRow(table.rows.length);
+        var timestamp = row.insertCell(0), book = row.insertCell(1), num = row.insertCell(2), status = row.insertCell(3);
+
+        timestamp.innerHTML = data[i][0];
+        status.innerHTML = data[i][2] ? "<a href='" + data[i][4] + "' target='blank'>영상확인</a>" : "<p align='center'><div class='circle pending'></div>대기중</p>";
+        num.innerHTML = data[i][6];
+        book.classList.add("book");
+        book.innerHTML = data[i][5];
+
+    }
+}
+
 /*
 	Popup
  */

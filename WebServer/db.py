@@ -201,3 +201,24 @@ class DB:
             return [False, sorted(result, key=lambda x: x[5])]
         except Exception as ex:
             return [True, str(ex)]
+
+    # --- MyPage ---
+    def getMyQuestion(self, User, ip):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT timestamp, qnum, status, content, link, tbook_id, number FROM questions WHERE requester=\'{}\''.format(User['id'])
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+            return [False, sorted(result, key=lambda x: x[1])]
+
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
+    def run(self, query):
+        cur = self.getCursor()
+        cur.execute(query)
+        return cur.fetchall()
