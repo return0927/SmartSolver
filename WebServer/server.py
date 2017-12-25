@@ -125,6 +125,7 @@ def register():
             _grade = int(postData['school'][0])*10 + int(postData['grade'][0])
             _email = postData['email'][0]
             _id = postData['id'][0]
+            _code = postData['code'][0]
             _pw = pw
             del pw, postData
 
@@ -133,6 +134,8 @@ def register():
             if "admin" in _id.lower() or "webmaster" in _id.lower(): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
             if DB.checkEmailExist(_email, ip): return "<script>alert('이미 등록되어있는 이메일입니다!');history.go(-1);</script>"
             if _grade not in [1, 2, 3, 11, 12, 13, 21, 22, 23]: return "<script>alert('학교/학년을 다시 한 번 확인해주세요.');history.go(-1);</script>"
+            if len(_code) != 64: return "<script>alert('올바르지 않은 인증키입니다!');history.go(-1);</script>"
+            if not DB.checkBetaCode(_code, ip): return "<script>alert('올바르지 않은 인증키입니다!');history.go(-1);</script>"
 
             err, data = validater.birthday(_birthday)
             if err: return "<script>alert('%s');history.go(-1);</script>"%data
@@ -197,6 +200,33 @@ def changeCurrName(curr):
     else: return ""
 
 
+
+# --- Function ---
+@app.route("/submit", methods=["POST"])
+def submitQuestion():
+    ip = request.environ["REMOTE_ADDR"]
+
+    data =  parse_qs(request.get_data().decode())
+
+    curr = data['curr'][0]
+    book = data['book'][0]
+    year = data['year'][0]
+    number = data['number'][0]
+    question = data['question'][0]
+
+    try: bookId = getTbookId(curr, book, year)
+    except Exception as ex:
+        print(ex)
+        return "<script>alert('오류가 발생했습니다!');location.reload();</script>"
+
+    err, data = DB.submitmyQuestion(session['Info'][0], bookId, question, number, ip)
+    if err:
+        print(data)
+        return "<script>alert('오류가 발생했습니다!');location.reload();</script>"
+
+    return "<script>alert('등록되었습니다!');location.reload();</script>"
+
+
 # --- API Controller ---
 
 
@@ -232,6 +262,16 @@ def getTbook(id):
         return " ".join([str(x) for x in data[0]])
     except Exception as ex:
         raise ex
+
+def getTbookId(curr, name, year):
+    ip = request.environ['REMOTE_ADDR']
+
+    try:
+        data = DB.run("SELECT id FROM tbooks WHERE curriculumn='{}' and year_modified='{}' and bookname = '{}';".format(curr, year, name))
+        return data[0][0]
+    except Exception as ex:
+        raise ex
+
 
 @app.route("/api/curriculumn", methods=["GET"])
 def getCurriculumn():
