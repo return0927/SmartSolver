@@ -7,7 +7,7 @@ class DB:
     def __init__(self):
         self.host = "localhost"
         self.port = 5432
-        self.user = "ssolve"
+        self.user = "root"
         self.pw = "SmartSolve2017!@#"
         self.db = "ssolve"
 
@@ -26,13 +26,13 @@ class DB:
 
 
     def getConn(self):
-        self.conn = psycopg2.connect(
-            host=self.host,
-            port=self.port,
-            user=self.user,
-            password=self.pw,
-            database=self.db
-        )
+        self.conn = psycopg2.connect("dbname='ssolve' user='root' password='SmartSolve2017!@#'")
+#            host=self.host,
+#            port=self.port,
+#            user=self.user,
+#            password=self.pw,
+#            database=self.db
+#        )
         self.conn.autocommit = True
 
         return self.conn
