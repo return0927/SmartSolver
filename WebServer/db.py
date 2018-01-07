@@ -54,7 +54,7 @@ class DB:
         if not self.hardfilter(id): return True
         cur = self.getCursor()
 
-        query = 'SELECT "id" FROM "User" WHERE id=\'%s\'' % id
+        query = 'SELECT "id" FROM users WHERE id=\'%s\'' % id
         self.writeLog(_ip, query)
 
         cur.execute(query)
@@ -68,7 +68,7 @@ class DB:
 
         cur = self.getCursor()
 
-        query = 'SELECT "email" FROM "User" WHERE email=\'%s\'' % email
+        query = 'SELECT "email" FROM users WHERE email=\'%s\'' % email
         self.writeLog(_ip, query)
 
         cur.execute(query)
@@ -81,8 +81,8 @@ class DB:
 
         cur = self.getCursor()
         try:
-            cur.execute('INSERT INTO "User" VALUES(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\')' % (
-                _id, _pw, _name, _bir, _gra, _email, _ip, _ip, _code))
+            cur.execute('INSERT INTO users VALUES(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\')' % (
+                _id, _pw, _name, _gra, _bir, _email, _code, _ip, _ip))
             self.conn.commit()
             return False
         except Exception as ex:
@@ -91,7 +91,7 @@ class DB:
     def submitRecentIP(self, _id, _ip):
         cur = self.getCursor()
         try:
-            query = 'UPDATE "User" SET recentip = \'%s\' WHERE id = \'%s\';'%(_ip, _id)
+            query = 'UPDATE users SET recent_ip = \'%s\' WHERE id = \'%s\';'%(_ip, _id)
             self.writeLog(_ip, query)
 
             cur.execute(query)
@@ -106,7 +106,7 @@ class DB:
 
         cur = self.getCursor()
         try:
-            query = 'SELECT "name", "email_veri" FROM "User" WHERE id=\'%s\' and pw=\'%s\''%(_id,_pw)
+            query = 'SELECT name, email_verified FROM users WHERE id=\'%s\' and pw=\'%s\''%(_id,_pw)
             self.writeLog(_ip, query)
 
             cur.execute(query)
@@ -122,7 +122,7 @@ class DB:
 
         try:
             if curr:
-                query = 'SELECT %s FROM "tbooks" WHERE curriculumn = \'%s\';' % (selection, curr)
+                query = 'SELECT %s FROM tbooks WHERE curriculumn = \'%s\';' % (selection, curr)
                 self.writeLog(ip, query)
 
                 cur.execute(query)

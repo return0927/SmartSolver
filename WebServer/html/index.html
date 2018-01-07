@@ -10,140 +10,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
     <title>온풀 : 수학을 쉽게</title>
+
     <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="css/site_global.css?crc=444006867"/>
-    <link rel="stylesheet" type="text/css" href="css/index.css?crc=3910591484" id="pagesheet"/>
-    <!--
-    <link rel="stylesheet" type="text/css" href="css/index_popup.css"/>
-    -->
+    <link rel="stylesheet" type="text/css" href="css/index.css"/>
 </head>
 
-<div class="user_panel">
-    <p style="margin-top: 1em;">안녕하세요. <a
-            onclick="javascript:if(confirm('로그아웃 하시겠습니까?')){location.href = '/logout';}"><font
-            color="#6495ed">%s</font></a>
-        님!</p>
-</div>
-
 <body>
-<div class="box" id="page">
+    <!-- Header START -->
+    <!-- <img id="top_logo" src="img/logo.png" /> -->
+    <!-- Header END -->
 
-    <div class="area">
-        <div class="title">
-            <p>질문제출</p>
-        </div>
-        <hr align="left"/>
-        <form id="ajaxForm" action="javascript: submitQuestion();">
-            <div style="display: flex;">
-                <div id="bookTable">
-                    <table>
-                        <tbody>
-                        <tr>
-                            <td align="right">교육과정</td>
-                            <td width="20"><!-- Whitespace --></td>
-                            <td align="left">
-                                <select id="curr" onchange="setBooks();">
-                                    <option value="수I">수학 I</option>
-                                    <option value="수II">수학 II</option>
-                                    <option value="미I">미적분 I</option>
-                                    <option value="미II">미적분 II</option>
-                                    <option value="확통">확률과 통계</option>
-                                    <option value="기벡">기하와 벡터</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="right">교재</td>
-                            <td width="20"><!-- Whitespace --></td>
-                            <td align="left">
-                                <select id="book" onchange="setYears();setBookNotice();">
-                                    <option selected>------</option>
-                                </select>
-                            </td>
-                            <td width="20"></td>
-                            <td id="bookPublisher"><!-- Whitespace --></td>
-                        </tr>
-                        <tr>
-                            <td align="right">개정년도</td>
-                            <td width="20"><!-- Whitespace --></td>
-                            <td align="left">
-                                <select id="year" onchange="">
-                                    <option selected>------</option>
-                                </select>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <p><font color="#8b008b" id="book_notice" style="font-size: 17px;"></font></p>
-                </div>
-                <div class="">
-                    <table id="formTable">
-                        <tbody>
-                        <tr>
-                            <td align="right">문항</td>
-                            <td width="20"><!-- Whitespace --></td>
-                            <td>
-                                <textarea id="number" placeholder="ex. 37쪽 5번 / ex. H308" maxlength="15"
-                                          form="ajaxForm"></textarea>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>질문</td>
-                            <td></td>
-                            <td>
-                                <textarea id="question" placeholder="500자 이내" maxlength="500"
-                                          form="ajaxForm"></textarea>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <input type="submit" />
-                </div>
-
-            </div>
-        </form>
+    <!-- Questions START -->
+    <div class="questions">
+        <h2>나의 질문</h2>
     </div>
+    <!-- Questions END -->
 
+    <!-- Panel START -->
+    <div class="panel">
+        <div id="submit_question">
+            <h2>질문등록</h2>
 
-    <div class="area" id="pu219-4"><!-- column -->
-        <div class="title">
-            <p>나의 질문</p>
+            <table>
+                <tr>
+                    <td>과목</td>
+                    <td width="5"><!-- WhieSpace --></td>
+                    <td>
+                        <select id="subject">
+                            <option disabled>2009개정 교육과정</option>
+                            <option value="1">수학I</option>
+                            <option value="2">수학II</option>
+                            <option value="3">미적분I</option>
+                            <option value="4">미적분II</option>
+                            <option value="5">확률과통계</option>
+                            <option value="6">기하와벡터</option>
+                            <option disabled>2015개정 교육과정</option>
+                            <option value="7">수학</option>
+                            <option value="8">수학(상)</option>
+                            <option value="9">수학(하)</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>교재</td>
+                    <td width="5"><!-- WhieSpace --></td>
+                    <td>과목</td>
+                </tr>
+                <tr>
+                    <td>개정년도</td>
+                    <td width="5"><!-- WhieSpace --></td>
+                    <td>과목</td>
+                </tr>
+                <tr>
+                    <td>페이지(단원)</td>
+                    <td width="5"><!-- WhieSpace --></td>
+                    <td>과목</td>
+                </tr>
+                <tr>
+                    <td>문항번호</td>
+                    <td width="5"><!-- WhieSpace --></td>
+                    <td>과목</td>
+                </tr>
+            </table>
+            <input type="submit" placeholder="제출" />
         </div>
-        <hr align="left"/>
-        <div class="colelem" id="u220" data-sizePolicy="fixed" data-pintopage="page_fluidx">
 
+        <div id="user_info">
+            <h2>회원정보</h2>
         </div>
-        <table id="questionTable">
-            <thead>
-            <tr>
-                <th width="200">시간</th>
-                <th width="150">교재</th>
-                <th width="150">문항</th>
-                <th>상태</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+
+        <div id="notice">
+            <h2>공지사항</h2>
+        </div>
     </div>
+    <!-- Panel END -->
 
-    <div id="logo">
-        <img class="position_content" id="img/logo.png" src="img/logo.png" alt="" width="108" height="73"/>
-    </div>
-</div>
+</body>
 
 
-<!-- Other scripts -->
 <script type="text/javascript" src="js/index.js"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-<script type="text/javascript">
-    // Decide weather to suppress missing file error or not based on preference setting
-    var suppressMissingFileError = false
-    $(document).ready(function () {
-        setBooks();
-        getMyQuestions();
-    });
-</script>
-</body>
+
 </html>
