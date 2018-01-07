@@ -1,150 +1,67 @@
-.css_verticalspacer .verticalspacer {
-    height: calc(100vh - 947px);
-}
-
-.html {
-    background-color: #FEFFF4;
-}
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
 
 body {
-    position: relative;
-    min-width: 300px;
-    padding-top: 72px;
+    height: 97%;
+    width: 97%;
 
-    width: 100%;
-    height: 100%;
-}
+    overflow: hidden;
 
-@font-face {
-    font-family: '__NanumBarunGothic_5';
-    src: url('../fonts/nanumbarungothicultralight.eot');
-    src: local('☺'), url('../fonts/nanumbarungothicultralight.woff') format('woff');
-    font-weight: 200;
-    font-style: normal;
-}
-
-p {
-    line-height: 1;
-}
-
-#logo {
-    position: fixed;
-    top: 0.5em;
-    left: 50%;
-}
-
-.title {
-    font-size: 250%;
-    font-weight: 300;
-    margin: auto;
-    line-height: inherit;
-    margin-bottom: 0.5em;
-}
-
-hr {
-    height: 0.6px;
-    width: 60%;
-    background: #808080;
+    background-color: #fefff4;
+    font-family: "Nanum Gothic", sans-serif;
 }
 
 
-div.box {
-    position: relative;
-    line-height: 1;
+#top_logo {
+    display: block;
+    height: 50px;
+
+    margin-top: 2px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-div.area {
-    position: relative;
-    margin-top: 3em;
-    margin-left: 4%;
-}
+div.questions {
+    border: 1px solid #808080;
 
-.user_panel {
     position: absolute;
-    right: 3%;
-    float: right;
-    font-size: 130%;
+    width: 65%;
+    height: 90%;
 }
 
-#bookTable table tbody {
-    font-size: 120%;
-    line-height: 1.5;
+div.questions > * {
+    margin-top: 15px;
+    margin-left: 15px;
 }
 
-#bookTable table tbody, .ta {
-    display: inline-block;
-}
-
-#formTable {
-    font-size: 120%;
-    line-height: 1.5;
-}
-
-#formTable tbody, .ta {
-    display: inline-block;
-}
-
-#formTable textarea#question {
-    position: relative;
-    height: 20%;
-}
-
-#formTable textarea {
-    border: 1px solid #000000;
-    width: 200%;
-}
-
-#formTable #question {
-    resize: vertical;
-    margin-top: 0;
-    margin-bottom: 0;
-    height: 100px;
-}
-
-div input {
-    background: #FEFFF4;
-    border: 1px solid #000000;
-    margin-top: 5%;
-    height: 2.5em;
-    width: 23%;
-}
-
-#questionTable th {
-    text-align: center;
-    color: darkred;
-}
-
-#questionTable tbody {
-    font-size: 15px;
-}
-
-#questionTable tbody tr {
-     line-height: 20px;
-}
-
-#questionTable td {
-    text-align: center;
-}
-
-
-#book_notice {
-    position: fixed;
-    margin-top: 1%;
-}
-
-.circle {
+div.panel div {
+    border: 1px solid #808080;
     position: absolute;
-    border-radius: 50%;
-    height: 20px;
-    width: 20px;
+    margin-left: 66%;
+
+    width: 32%;
+    height: 30%;
 }
 
-.pending {
-    border: 1px solid #bcbc00;
-    background: #FFFF00;
+div.panel div > * {
+    margin: 15px;
 }
 
-.error {
-    border: 1px solid #6d0000;
-    background: #ff0000;
+div#submit_question > table {
+}
+
+div#submit_question input {
+    right: 0;
+}
+
+div#submit_question table tr > td:nth-child(1) {
+    text-align: right;
+}
+
+div#user_info {
+    top: 32%;
+}
+
+div#notice {
+    top: 63%;
+    height: 28%;
 }
