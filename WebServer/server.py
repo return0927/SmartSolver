@@ -5,7 +5,7 @@ import string
 import random
 from urllib.parse import parse_qs
 from datetime import datetime
-from OpenSSL import SSL
+#from OpenSSL import SSL
 
 import db
 import general_settings
@@ -18,9 +18,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = gSet.hostKey
 encrypt = lambda x: hashlib.sha256(x.encode()).hexdigest().upper()
 
-context = SSL.Context(SSL.TLSv1_2_METHOD)
+"""context = SSL.Context(SSL.TLSv1_2_METHOD)
 context.use_certificate_file("ssl.crt")
-context.use_privatekey_file("ssl.key")
+context.use_privatekey_file("ssl.key")"""
 
 class Tools():
     def getNick(self, session):
@@ -32,6 +32,7 @@ User = {
     "ip": "",
     "login": False
 }
+
 
 def makeUserDict(id='', ip='', login=False):
     _temp = User.copy()
@@ -165,48 +166,9 @@ def register():
     else:
         return gSet.html.register
 
-# -- Promotion ---
-@app.route("/promotion", methods=["GET"])
-def promotion():
-    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
-
-    return gSet.html.promotion%(tool.getNick(session))
-
-
-@app.route("/promotion/vidList", methods=["GET"])
-def promotionVid():
-    ip = request.environ['REMOTE_ADDR']
-
-    try:
-        result, data = DB.getPromotionVid(ip)
-        #print(data)
-
-        ret = []
-        for curr, book, year, page, num, id in data:
-            if page == 0:
-                ret.append([changeCurrName(curr), book, year, num, id])
-            else:
-                ret.append([changeCurrName(curr), book, year, "P%d %d"%(page, num), id])
-
-        return json.dumps({"result":ret})
-    except Exception as ex:
-        print(ex)
-        return "{'result':'%s'}"%str(ex)
-
-
-def changeCurrName(curr):
-    if curr == "기벡": return "기하와벡터"
-    elif curr == "확통": return "확률과통계"
-    elif curr == "수I": return "수학 I"
-    elif curr == "수II": return "수학 II"
-    elif curr == "미I": return "미적분 I"
-    elif curr == "미II": return "미적분 II"
-    else: return ""
-
-
 
 # --- Function ---
-@app.route("/submit", methods=["POST"])
+""""@app.route("/submit", methods=["POST"])
 def submitQuestion():
     ip = request.environ["REMOTE_ADDR"]
 
@@ -229,148 +191,76 @@ def submitQuestion():
         return "<script>alert('오류가 발생했습니다!');location.reload();</script>"
 
     return "<script>alert('등록되었습니다!');location.reload();</script>"
+"""
 
+@app.route("/submit", methods=["POST"])
+def submitQuestion():
+    subject = request.form.get("subject")
+    bookseries = request.form.get("bookseries")
+    year = request.form.get("year")
+    page = request.form.get("page")
+    q_no = request.form.get("q_no")
+
+    if not year.is_numeric(): return json.dumps({"code":"ERR"})
+    if not q_no.is_numeric(): return json.dumps({"code":"ERR"})
+    if "-" in subject + bookseries + year + page + q_no: return json.dumps({"code":"ERR"})
+
+    err, data = DB.submitmyQuestion(session['User']['id'], subject, bookseries, year, page ,q_no, request.environ["REMOTE_ADDR"])
+    if err: return json.dumps({"code":"ERR"})
+    else: return json.dumps({"code":"SUC", "data": data})
 
 # --- API Controller ---
+@app.route("/api/get_bookseries", methods=["GET"])
+def get_bookseries():
+    err, data = DB.getBookSeries(request.environ["REMOTE_ADDR"])
+    if err: return json.dumps({"code":"ERR"})
+    else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data]})
+
+@app.route("/api/get_year", methods=["POST"])
+def get_year():
+    subject = request.form.get("subject")
+    book = request.form.get("bookseries")
+
+    err, data = DB.getYear(subject, book, request.environ["REMOTE_ADDR"])
+    if err: return json.dumps({"code":"ERR"})
+    else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data]})
 
 
-"""
-교학사교과서, 금성교과서, 동아교과서, 미래엔교과서, 비상교과서, 신사고교과서, 지학사교과서, 천재(이)교과서
-라이트쎈, 쎈, 일품, RPM, 블랙라벨, 기본정석, 실력정석, 마플수능기출, 자이스토리(고3)
-"""
+
+@app.route("/api/me/my_point", methods=["GET"])
+def get_my_point():
+    user = session["User"]["id"]
+
+    err, data = DB.get_point(user, request.environ["REMOTE_ADDR"])
+    if err: return json.dumps({"code":"ERR"})
+    else: return json.dumps({"code":"SUC", "data": data})
 
 
-@app.route("/api/textbooks", methods=["GET"])
-def getTextbookDB():
-    ip = request.environ['REMOTE_ADDR']
+@app.route("/api/me/questions", methods=["GET"])
+def get_my_questions():
+    err, data = DB.getMyQuestion(session['User'], request.environ['REMOTE_ADDR'])
+    if err: return json.dumps({"code":"ERR"})
+    else:
+        ret = []
+        for qid, date, status, message in data:
+            err, [bookid, page, number] = DB.getProblemInfo(qid)
+            if err: return json.dumps({"code":"ERR"})
 
-    keys = request.args.get("key")
-    curr = request.args.get("curr")
+            err, [currid, bookname, year] = DB.getBookInfo(bookid)
+            if err: return json.dumps({"code":"ERR"})
 
-    if keys:
-        try:
-            result, data = DB.getTextBooks(ip, keys, curr if curr else None)
-            if result: return "{'result':'%s'}"%data
-            return json.dumps({"result":data})
-        except Exception as ex:
-            return "{'result':'%s'}"%str(ex)
+            err, curr = DB.getSub(currid)
+            if err: return json.dumps({"code":"ERR"})
 
-    return "{'result':'Invalid Request'}"
-
-@app.route("/api/gettbook/<path:id>", methods=["GET"])
-def getTbook(id):
-    ip = request.environ['REMOTE_ADDR']
-
-    try:
-        data = DB.run("SELECT year_modified, curriculumn, bookname FROM tbooks WHERE id='{}'".format(id))
-        return " ".join([str(x) for x in data[0]])
-    except Exception as ex:
-        raise ex
-
-def getTbookId(curr, name, year):
-    ip = request.environ['REMOTE_ADDR']
-
-    try:
-        data = DB.run("SELECT id FROM tbooks WHERE curriculumn='{}' and year_modified='{}' and bookname = '{}';".format(curr, year, name))
-        return data[0][0]
-    except Exception as ex:
-        raise ex
+            ret.append([date, curr, "{}({})".format(bookname, year), page, number, status])
+        return json.dumps({"code":"SUC", "data": ret})
 
 
-@app.route("/api/curriculumn", methods=["GET"])
-def getCurriculumn():
-    ip = request.environ['REMOTE_ADDR']
-
-    try:
-        result, data = DB.getCurriculumn(ip)
-        data = [x[0] for x in data]
-
-        if result: return "{'result':'%s'}"%data
-        return json.dumps({"result":data})
-    except Exception as ex:
-        print(ex)
-        return "{'result':'%s'}"%str(ex)
-
-
-@app.route("/api/bookModifiedYear", methods=["GET"])
-def getBookModifiedYear():
-    ip = request.environ['REMOTE_ADDR']
-
-    curr = request.args.get("curr")
-    book = request.args.get("book")
-
-    if not (curr and book):
-        return "{'result':'Invalid Request'}"
-
-    try:
-        result, data = DB.getBookModifiedYear(curr, book, ip)
-        data = data[0]
-
-        if result: return "{'result':'%s'}"%data
-        return json.dumps({"result":data})
-    except Exception as ex:
-        print(ex)
-        return "{'result':'%s'}"%str(ex)
-
-
-@app.route("/api/bookPublisher", methods=["GET"])
-def getBookPublisher():
-    ip = request.environ['REMOTE_ADDR']
-
-    curr = request.args.get("curr")
-    book = request.args.get("book")
-
-    if not (curr and book):
-        return "{'result':'Invalid Request'}"
-
-    try:
-        result, data = DB.getBookPublisher(curr, book, ip)
-        data = data[0]
-
-        if result: return "{'result':'%s'}"%data
-        return json.dumps({"result":data})
-    except Exception as ex:
-        print(ex)
-        return "{'result':'%s'}"%str(ex)
-
-
-@app.route("/api/bookNotice", methods=["GET"])
-def getBookNotice():
-    ip = request.environ['REMOTE_ADDR']
-
-    curr = request.args.get("curr")
-    book = request.args.get("book")
-
-    if not (curr and book):
-        return "{'result':'Invalid Request'}"
-
-    try:
-        result, data = DB.getBookNotice(curr, book, ip)
-        data = data[0]
-
-        if result: return "{'result':'%s'}"%data
-        return json.dumps({"result":data})
-    except Exception as ex:
-        print(ex)
-        return "{'result':'%s'}"%str(ex)
-
-
-# --- API Personal Part
-@app.route("/api/pp/my_question", methods=["GET"])
-def my_question():
-    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
-
-    ip = request.environ['REMOTE_ADDR']
-    user = session['User']
-
-    err, data = DB.getMyQuestion(user, ip)  # timestamp, qnum, status, content, link, tbook_id, number
-    data = [list(x) for x in data]
-    for n in range(len(data)):
-        data[n][0] = data[n][0].strftime("%Y.%m.%d %H:%M:%S")
-        data[n][5] = getTbook(data[n][5])
-
-    return json.dumps({"error": err == True, "data": data})
-
+@app.route("/api/me/questions_today", methods=["GET"])
+def get_my_today_questions():
+    err, data = DB.getMyQuestion(session['User'], request.environ["REMOTE_ADDR"], timestr='current_date')
+    if err: return json.dumps({"code":"ERR"})
+    else: return json.dumps({"code":"SUC", "data": data})
 
 # --- File hosts ---
 @app.route("/css/<path:filename>")

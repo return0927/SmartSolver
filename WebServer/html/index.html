@@ -13,6 +13,7 @@
 
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="css/index.css"/>
+
 </head>
 
 <body>
@@ -23,6 +24,21 @@
     <!-- Questions START -->
     <div class="questions">
         <h2>나의 질문</h2>
+        <table id="questions">
+            <thead>
+            <tr>
+                <td width="100">질문일자</td>
+                <td width="70">과목</td>
+                <td width="200">교재</td>
+                <td width="70">페이지</td>
+                <td width="70">번호</td>
+                <td width="150">상태</td>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
     </div>
     <!-- Questions END -->
 
@@ -36,7 +52,7 @@
                     <td>과목</td>
                     <td width="5"><!-- WhieSpace --></td>
                     <td>
-                        <select id="subject">
+                        <select id="subject" onchange="getBooks(this);">
                             <option disabled>2009개정 교육과정</option>
                             <option value="1">수학I</option>
                             <option value="2">수학II</option>
@@ -54,42 +70,72 @@
                 <tr>
                     <td>교재</td>
                     <td width="5"><!-- WhieSpace --></td>
-                    <td>과목</td>
+                    <td>
+                        <select id="book_series" onchange="getYears(this);">
+                        </select>
+                    </td>
                 </tr>
                 <tr>
-                    <td>개정년도</td>
+                    <td>출판년도</td>
                     <td width="5"><!-- WhieSpace --></td>
-                    <td>과목</td>
+                    <td>
+                        <select id="year">
+                        </select>
+                    </td>
                 </tr>
                 <tr>
                     <td>페이지(단원)</td>
                     <td width="5"><!-- WhieSpace --></td>
-                    <td>과목</td>
+                    <td>
+                        <input type="text" id="page" />
+                    </td>
                 </tr>
                 <tr>
                     <td>문항번호</td>
                     <td width="5"><!-- WhieSpace --></td>
-                    <td>과목</td>
+                    <td>
+                        <input type="text" id="q_no"/>
+                    </td>
                 </tr>
             </table>
-            <input type="submit" placeholder="제출" />
+            <input type="submit" placeholder="제출" onclick="javascript: submit();"/>
         </div>
 
         <div id="user_info">
             <h2>회원정보</h2>
+            <table>
+                <tr>
+                    <td>남은포인트</td>
+                    <td id="now_point"></td>
+                </tr>
+                <tr>
+                    <td>총 질문 수</td>
+                    <td id="total_questions">7개</td>
+                </tr>
+                <tr>
+                    <td>오늘 질문 수</td>
+                    <td id="today_questions">1</td>
+                </tr>
+                <tr>
+                    <td>최대 질문 수</td>
+                    <td id="max_questions">5개/일</td>
+                </tr>
+            </table>
+            <p class="center">자세한 내용은 <a href="javascript: alert('준비중입니다.');">마이페이지</a>에서 확인하실 수 있습니다.</p>
         </div>
 
         <div id="notice">
             <h2>공지사항</h2>
+            <p>현재는 베타테스트 기간입니다. 베타테스트 문의는 <a href="https://discord.gg/7YxYAv8" target="_blank">여기</a>로 해주시기 바랍니다.</p>
         </div>
     </div>
     <!-- Panel END -->
 
 </body>
 
-
-<script type="text/javascript" src="js/index.js"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="js/index.js"></script>
+
 
 </html>
