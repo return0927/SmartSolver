@@ -27,16 +27,15 @@
         <table id="questions">
             <thead>
             <tr>
-                <td width="100">질문일자</td>
-                <td width="70">과목</td>
-                <td width="200">교재</td>
-                <td width="70">페이지</td>
-                <td width="70">번호</td>
-                <td width="150">상태</td>
+                <td style="min-width: 100px;">질문일자</td>
+                <td style="min-width: 70px;">과목</td>
+                <td style="min-width: 200px;">교재</td>
+                <td style="min-width: 70px;">페이지</td>
+                <td style="min-width: 70px;">번호</td>
+                <td style="min-width: 150px;">상태</td>
             </tr>
             </thead>
             <tbody>
-
             </tbody>
         </table>
     </div>
@@ -71,7 +70,7 @@
                     <td>교재</td>
                     <td width="5"><!-- WhieSpace --></td>
                     <td>
-                        <select id="book_series" onchange="getYears(this);">
+                        <select id="book_series" onload="getYears(this);" onchange="getYears(this);">
                         </select>
                     </td>
                 </tr>
@@ -106,19 +105,19 @@
             <table>
                 <tr>
                     <td>남은포인트</td>
-                    <td id="now_point"></td>
+                    <td id="now_point">Loading..</td>
                 </tr>
                 <tr>
                     <td>총 질문 수</td>
-                    <td id="total_questions">7개</td>
+                    <td id="total_questions">Loading..</td>
                 </tr>
                 <tr>
                     <td>오늘 질문 수</td>
-                    <td id="today_questions">1</td>
+                    <td id="today_questions">Loading..</td>
                 </tr>
                 <tr>
                     <td>최대 질문 수</td>
-                    <td id="max_questions">5개/일</td>
+                    <td id="max_questions">Loading..</td>
                 </tr>
             </table>
             <p class="center">자세한 내용은 <a href="javascript: alert('준비중입니다.');">마이페이지</a>에서 확인하실 수 있습니다.</p>
@@ -133,8 +132,7 @@
 
 </body>
 
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"
-        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/index.js"></script>
 
 

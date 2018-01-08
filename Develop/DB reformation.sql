@@ -80,7 +80,7 @@ CREATE TABLE solution_video (-- 해설동영상 DB
 CREATE TABLE question (-- 질문 DB
   question_id BIGSERIAL PRIMARY KEY,
   problem_id  BIGINT REFERENCES problem (problem_id),
-  student_id  INT REFERENCES ssolve.public."User"(id), -- int 면 충분하겠지..? 그 이상 필요하게 되면 이미 대박임. ^__^
+  student_id  INT REFERENCES users(id), -- int 면 충분하겠지..? 그 이상 필요하게 되면 이미 대박임. ^__^
   q_date      DATE, -- question date
   p_date      DATE, -- processed date(해설영상 올리고 학생에게 message 보내는 등의 처리를 완료한 시점)
   status      INT, -- int 로 할지 varchar[N] 으로 할지 미정
