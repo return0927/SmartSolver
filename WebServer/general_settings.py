@@ -11,3 +11,5 @@ class Settings:
 
         self.rootDir = __import__("os").getcwd()
         self.htmlDir = self.rootDir+"/html/"
+
+        self.admins = ["bc1916", "sunsky"]

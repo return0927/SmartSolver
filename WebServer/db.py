@@ -237,11 +237,11 @@ class DB:
             print(ex)
             return [True, str(ex)]
 
-    def getProblemInfo(self, qid):
+    def getProblemInfo(self, pid):
         cur = self.getCursor()
 
         try:
-            query = 'SELECT book_id, page, number FROM problem WHERE problem_id=\'{}\';'.format(qid)
+            query = 'SELECT book_id, page, number FROM problem WHERE problem_id=\'{}\';'.format(pid)
             self.writeLog("LOCAL", query)
             cur.execute(query)
             result = cur.fetchall()
@@ -253,6 +253,21 @@ class DB:
             return [True, str(ex)]
 
     # --- Functional Features ---
+    def getVideo(self, pid):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT url FROM solution_video WHERE problem_id=\'{}\';'.format(pid)
+            self.writeLog("LOCAL", query)
+            cur.execute(query)
+            result = cur.fetchall()
+            if len(result): return [False, result[0][0]]
+            else: return [False, False]
+        except Exception as ex:
+            raise ex
+            print(ex)
+            return [True, str(ex)]
+
     def submitmyQuestion(self, _requester, subj, bookseries, year, page, no, ip):
         cur = self.getCursor()
 
@@ -262,18 +277,31 @@ class DB:
             err, pid = self.getProblemId(book_id=bookid, page=page, number=no)
             if err: raise Exception(pid)
             if pid:
-                query = 'INSERT INTO question (problem_id, student_id) VALUES ({}, \'{}\');'.format(pid, _requester)
+                print("Already Uploaded Question-Problem")
+                query = 'INSERT INTO question (problem_id, student_id) VALUES ({}, \'{}\') RETURNING question_id;'.format(pid, _requester)
                 self.writeLog(ip, query)
                 cur.execute(query)
             else:
+                print("Adding New Question-Problem")
                 query = 'INSERT INTO problem (book_id, page, number) VALUES ({}, \'{}\', {}) RETURNING problem_id;'.format(bookid, page, no)
                 self.writeLog(ip, query)
                 cur.execute(query)
                 pid = cur.fetchall()[0][0]
 
-                query = 'INSERT INTO question (problem_id, student_id) VALUES ({}, \'{}\');'.format(pid, _requester)
+                query = 'INSERT INTO question (problem_id, student_id) VALUES ({}, \'{}\') RETURNING question_id;'.format(pid, _requester)
                 self.writeLog(ip, query)
                 cur.execute(query)
+
+            qid = cur.fetchall()[0][0]
+            err, data = self.getVideo(pid)
+            if err: pass
+            else:
+                if data is False: pass
+                else:
+                    query = 'UPDATE question SET status = 1, message = \'자동답변\', p_time = current_date, p_time_ = now() WHERE question_id=\'{}\';'.format(qid)
+                    self.writeLog("AUTOMATION", query)
+                    cur.execute(query)
+
             return [False, "질문이 등록되었습니다."]
         except Exception as ex:
             raise ex
@@ -311,6 +339,57 @@ class DB:
         except Exception as ex:
             print(ex)
             return [True, str(ex)]
+
+    def getMyDayRateLimit(self, User, ip):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT rate_limit FROM users WHERE id=\'{}\';'.format(User['id'])
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+            return [False, result[0]]
+
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
+    # --- Admin Panel ---
+    def getAllQuestions(self, limit=20):
+        cur = self.getCursor()
+
+        try:
+            print(limit)
+            query = 'SELECT question_id, problem_id, student_id,TO_CHAR(q_time, \'YYYY-MM-DD\'), q_time_, status, message FROM question ORDER BY question_id DESC LIMIT {};'.format(limit)
+            self.writeLog("ADMIN", query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+
+            return [False, result]
+
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
+    def getAllVideos(self, limit=20):
+        cur = self.getCursor()
+
+        try:
+            print(limit)
+            query = 'SELECT problem_id, url, tutor, hit FROM solution_video ORDER BY problem_id;-- LIMIT={};'.format(limit)
+            self.writeLog("ADMIN", query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+
+            return [False, result]
+
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
 
     def run(self, query):
         cur = self.getCursor()

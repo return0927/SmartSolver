@@ -5,7 +5,7 @@ import string
 import random
 from urllib.parse import parse_qs
 from datetime import datetime
-#from OpenSSL import SSL
+from OpenSSL import SSL
 
 import db
 import general_settings
@@ -18,9 +18,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = gSet.hostKey
 encrypt = lambda x: hashlib.sha256(x.encode()).hexdigest().upper()
 
-"""context = SSL.Context(SSL.TLSv1_2_METHOD)
+context = SSL.Context(SSL.SSLv23_METHOD)
 context.use_certificate_file("ssl.crt")
-context.use_privatekey_file("ssl.key")"""
+context.use_privatekey_file("ssl.key")
 
 class Tools():
     def getNick(self, session):
@@ -50,6 +50,26 @@ def event_logger(string, type='web'):
     except Exception as ex:
         print(" --- 로깅시스템에 문제가 있습니다. ---")
         print(ex)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template_string(
+        gSet.html.error,
+        code="404 Not Found",
+        message_one="요청하신 페이지를 찾을 수 없습니다.",
+        message_two="주소를 다시 확인하시고 다시 요청하시기 바랍니다."
+    )
+
+@app.errorhandler(500)
+def internal_error(e):
+    return render_template_string(
+        gSet.html.error,
+        code="500 Internal Server Error",
+        message_one="서버의 내부적 문제로 페이지를 표시할 수 없습니다.",
+        message_two="현재 상태가 지속되면 "+Markup("<a href='https://discord.gg/7YxYAv8' target='_blank'>여기</a>")+"로 문의주시기 바랍니다.".strip('"')
+    )
+
 
 @app.before_request
 def req():
@@ -167,6 +187,65 @@ def register():
         return gSet.html.register
 
 
+# --- Admin Panel ---
+@app.route("/panel", methods=["GET"])
+def admin_panel():
+    if not session['User']['id'] in gSet.admins: return page_not_found(None)
+    return send_from_directory('html/', 'panel.html')
+
+
+@app.route("/panel/api/questions", methods=["GET"])
+def get_all_questions():
+    if not session['User']['id'] in gSet.admins: return page_not_found(None)
+
+    count = request.args.get("c")
+    print(count)
+    if count is None: count = 20
+    err, data = DB.getAllQuestions(limit=count)
+    if err: return json.dumps({"code":"ERR"})
+
+    ret = []
+    for pid, qid, sid, date, t, status, message in data:
+        err, [bookid, page, number] = DB.getProblemInfo(qid)
+        if err: return json.dumps({"code": "ERR"})
+
+        err, [currid, bookname, year] = DB.getBookInfo(bookid)
+        if err: return json.dumps({"code": "ERR"})
+
+        err, curr = DB.getSub(currid)
+        if err: return json.dumps({"code": "ERR"})
+
+        # 처리번호(qid)	등록자(sid)	등록일시(date+time)	과목(curr)	교재(bookname+year)	페이지(page)	번호(number)	상태(status) 메세지(message)
+        ret.append([pid, qid, sid, date+t.strftime(" %H:%M:%S"), curr, "{}({})".format(bookname, year), page, number, status, message])
+
+    return json.dumps({"code":"SUC", "data": ret})
+
+@app.route("/panel/api/videos", methods=["GET"])
+def get_all_videos():
+    if not session['User']['id'] in gSet.admins: return page_not_found(None)
+
+    count = request.args.get("c")
+    print(count)
+    if count is None: count = 20
+    err, data = DB.getAllVideos(limit=count)
+    if err: return json.dumps({"code":"ERR"})
+
+    ret = []
+    for pid, url, tutor, hit in data:
+        err, [bookid, page, number] = DB.getProblemInfo(pid)
+        if err: return json.dumps({"code": "ERR"})
+
+        err, [currid, bookname, year] = DB.getBookInfo(bookid)
+        if err: return json.dumps({"code": "ERR"})
+
+        err, curr = DB.getSub(currid)
+        if err: return json.dumps({"code": "ERR"})
+
+        # 질문번호(pid) 영상주소(url)   과목(curr)   책정보(bookname+year)  페이지(page)   번호(number)  강사(tutor)   조회수(hit)
+        ret.append([pid, url, curr, "{}({})".format(bookname, year), page, number, tutor, hit])
+
+    return json.dumps({"code":"SUC", "data": ret})
+
 # --- Function ---
 """"@app.route("/submit", methods=["POST"])
 def submitQuestion():
@@ -242,9 +321,15 @@ def get_my_questions():
     if err: return json.dumps({"code":"ERR"})
     else:
         ret = []
-        for qid, date, status, message in data:
-            err, [bookid, page, number] = DB.getProblemInfo(qid)
+        for pid, date, status, message in data:
+            err, [bookid, page, number] = DB.getProblemInfo(pid)
             if err: return json.dumps({"code":"ERR"})
+
+            err, data = DB.getVideo(pid)
+            if err: url = 'javascript: alert("오류로 인해 영상을 불러오지 못했습니다.");'
+            else:
+                if data is False: url = ''
+                else: url = data
 
             err, [currid, bookname, year] = DB.getBookInfo(bookid)
             if err: return json.dumps({"code":"ERR"})
@@ -252,7 +337,7 @@ def get_my_questions():
             err, curr = DB.getSub(currid)
             if err: return json.dumps({"code":"ERR"})
 
-            ret.append([date, curr, "{}({})".format(bookname, year), page, number, status, message])
+            ret.append([date, curr, "{}({})".format(bookname, year), page, number, status, message, url])
         return json.dumps({"code":"SUC", "data": ret})
 
 
@@ -262,6 +347,15 @@ def get_my_today_questions():
 
     if err: return json.dumps({"code":"ERR"})
     else: return json.dumps({"code":"SUC", "data": data})
+
+
+@app.route("/api/me/day_rate_limit", methods=["GET"])
+def get_my_date_rate():
+    err, data = DB.getMyDayRateLimit(session['User'], request.environ["REMOTE_ADDR"])
+
+    if err: return json.dumps({"code":"ERR"})
+    else: return json.dumps({"code":"SUC", "data": data[0]})
+
 
 # --- File hosts ---
 @app.route("/css/<path:filename>")
@@ -352,4 +446,4 @@ def validation():
         return "{'code':'fail'}"
 
 
-app.run(gSet.host, gSet.port) #, ssl_context = context)
+app.run(gSet.host, gSet.port, debug=True)#, 443, ssl_context = ('ssl.crt', 'ssl.key'), debug=True, threaded=True)

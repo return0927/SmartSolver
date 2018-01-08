@@ -8,6 +8,7 @@ function onReady() {
     getQuestions();
     getTodayQuestions();
     getPoint();
+    getDayLimit();
     getBooks();
 }
 
@@ -122,10 +123,10 @@ function getQuestions(){
                    status.innerHTML = "<div class='status pending'>● "+data.data[n][6]+"</div>";
                else if(stat === 1) {
                    //status.innerHTML = "<p><div class='circle success'></div><a href='"+data.data[n][7]+"'>영상확인</a>"+data.data[n][6]+"</p>";
-                   status.innerHTML = "<div class='status succcess'>● <a href='"+data.data[n][7]+"'>영상확인</a>"+data.data[n][6]+"</div>";
+                   status.innerHTML = "<div class='status success'>● <a target='_blank' href='"+data.data[n][7]+"'>영상확인</a> | "+data.data[n][6]+"</div>";
                } else if(stat === 2) {
                    //status.innerHTML = "<p><div class='circle error'></div>"+data.data[n][6]+"</p>";
-                   status.innerHTML = "<div class='status error'>● "+data.data[n][6]+"</p>";
+                   status.innerHTML = "<div class='status error'>● "+data.data[n][6]+"</div>";
                }
 
            }
@@ -141,6 +142,18 @@ function getTodayQuestions(){
            console.log("Error on Get Today Questions.");
        } else {
            Doc.getElementById("today_questions").innerHTML = data.data.length +"개";
+       }
+    });
+}
+
+function getDayLimit() {
+    $.get("/api/me/day_rate_limit", function(response){
+        var data = JSON.parse(response);
+
+       if (data.code === "ERR") {
+           console.log("Error on Get Day Limit.");
+       } else {
+           Doc.getElementById("max_questions").innerHTML = data.data +"개/일";
        }
     });
 }
