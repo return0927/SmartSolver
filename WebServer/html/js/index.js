@@ -1,183 +1,148 @@
 var Doc = window.document;
 
-window.toggle = function (elem) {
-    var hidden_menu = Doc.querySelector('.hide_menu');
-    var opened = hidden_menu.style.opacity ? Boolean(parseInt(hidden_menu.style.opacity)) : false;
+window.onload = onReady();
 
-    hidden_menu.style.opacity = opened ? 0 : 1;
-};
+function onReady() {
+    console.log("Script enabled");
 
-function setBooks() {
-    var data = $("select#curr")[0].value;
-    $.get("/api/textbooks?key=bookname&curr=" + data, function (response) {
-        _setBooks(JSON.parse(response).result);
-    });
+    getQuestions();
+    getTodayQuestions();
+    getPoint();
+    getBooks();
 }
 
-function _setBooks(arr) {
-    var book = $("select#book")[0], i;
-    book.length = 0;
+function getBooks(self) {
+    $.get("/api/get_bookseries", function (response) {
+        var data = JSON.parse(response);
 
-    for (i = 0; i < arr.length; i++) {
-        var data = arr[i];
-
-        var elem = document.createElement("option");
-        elem.value = data;
-        elem.innerHTML = data;
-        book.add(elem, null);
-    }
-
-    /* Iterable YearInfo */
-    setYears();
-
-    return true;
-}
-
-
-function setYears() {
-    var curr = $("select#curr")[0].value;
-    var book = $("select#book")[0].value;
-    $.get("/api/bookModifiedYear?&curr=" + curr + "&book=" + book, function (response) {
-        _setYears(JSON.parse(response).result);
-    });
-}
-
-function _setYears(arr) {
-    var book = $("select#year")[0], i;
-    book.length = 0;
-
-    for (i = 0; i < arr.length; i++) {
-        var data = arr[i];
-
-        var elem = document.createElement("option");
-        elem.value = data.toString();
-        elem.innerHTML = data.toString();
-        book.add(elem, null);
-    }
-    return true;
-}
-
-
-function setBookPublisher() {
-    var curr = $("select#curr")[0].value;
-    var book = $("select#book")[0].value;
-    $.get("/api/bookPublisher?curr=" + curr + "&book=" + book, function (response) {
-        _setBookPublisher(JSON.parse(response).result);
-    });
-}
-
-function _setBookPublisher(data) {
-    console.log(data);
-    var pub = $("#bookPublisher")[0];
-    pub.innerHTML = "출판사: <font color='#8b0000'>" + data + "</font>";
-
-    return true;
-}
-
-
-function setBookNotice() {
-    var curr = $("select#curr")[0].value;
-    var book = $("select#book")[0].value;
-    $.get("/api/bookNotice?curr=" + curr + "&book=" + book, function (response) {
-        _setBookNotice(JSON.parse(response).result);
-    });
-}
-
-function _setBookNotice(data) {
-    $("#book_notice")[0].innerHTML = data;
-}
-
-
-function getMyQuestions() {
-    $.get("/api/pp/my_question", function(response){
-        var resp = JSON.parse(response);
-        console.log(resp);
-
-        if(!resp.error) {
-            _makeQuestionTable(resp.data);
+        if (data.code === "ERR") {
+            console.log("Error on Getting BookSeries.");
         } else {
-            alert("회원님의 질문을 불러오는 중에 오류가 발생하였습니다!");
+            var select = Doc.getElementById("book_series");
+            select.length = 0;
+
+            for (const index in data.data) {
+                var elem = Doc.createElement("option");
+                elem.value = data.data[index];
+                elem.innerHTML = data.data[index];
+                select.add(elem, null);
+            }
+        }
+    });
+    setInterval(getYears(null), 5000);
+}
+
+function getYears(self) {
+    var subject = Doc.getElementById("subject").value;
+    var bookseries = Doc.getElementById("book_series").value;
+
+    console.log(subject, bookseries);
+
+    $.post("/api/get_year", {"subject": subject, "bookseries": bookseries}, function (response) {
+        var data = JSON.parse(response);
+
+        if (data.code === "ERR") {
+            console.log("Error on Getting Years.");
+        } else {
+            var select = Doc.getElementById("year");
+            select.length = 0;
+
+            for (const index in data.data) {
+                var elem = Doc.createElement("option");
+                elem.value = data.data[index];
+                elem.innerHTML = data.data[index];
+                select.add(elem, null);
+            }
         }
     });
 }
 
-function _makeQuestionTable(data) {
-    var table = $("#questionTable tbody")[0];
+function getPoint() {
+    $.get("/api/me/my_point", function(response){
+       var data = JSON.parse(response);
 
-    var i;
-    for(i=0; i<data.length; i++) {
-        var row = table.insertRow(table.rows.length);
-        var timestamp = row.insertCell(0), book = row.insertCell(1), num = row.insertCell(2), status = row.insertCell(3);
-
-        timestamp.innerHTML = data[i][0];
-        // status.innerHTML = data[i][2] ? "<a href='" + data[i][4] + "' target='blank'>영상확인</a>" : "<p align='center'><div class='circle pending'></div>대기중</p>";
-        var stat = JSON.parse(data[i][2]);
-        console.log(stat);
-        if(stat.status === 0) {
-            status.innerHTML = "<p align='center'><div class='circle pending'></div>" + stat.message + "</p>";
-        } else if(stat.status === 1) {
-            status.innerHTML = "<a href='" + data[i][4] + "' target='blank'>영상확인</a>";
-        } else {
-            status.innerHTML = "<p align='center'><div class='circle error'></div>" + stat.message + "</p>";
-        }
-
-        num.innerHTML = data[i][6];
-        book.classList.add("book");
-        book.innerHTML = data[i][5];
-
-    }
+       if (data.code === "ERR") {
+           console.log("Error on get My Point.");
+       } else {
+           Doc.getElementById("now_point").innerHTML = data.data[0]+"p";
+       }
+    });
 }
 
-/*
-    Submit my question
- */
-function submitQuestion() {
-    var data = {"curr": $("#curr")[0].value, "book": $("#book")[0].value, "year": $("#year")[0].value, "number": $("#number")[0].value, "question": $("#question")[0].value};
-    $.post("/submit", data, function(data){
-        document.write(data);
-    })
+function submit() {
+    var subject = Doc.getElementById("subject").value;
+    var bookseries = Doc.getElementById("book_series").value;
+    var year = Doc.getElementById("year").value;
+    var page = Doc.getElementById("page").value;
+    var q_no = Doc.getElementById("q_no").value;
+
+    $.post("/submit", {"subject": subject, "bookseries": bookseries, "year": year, "page": page, "q_no": q_no}, function(response){
+        var data = JSON.parse(response);
+
+       if (data.code === "ERR") {
+           console.log("Error on Submit Question.");
+           alert("질문을 등록하는 중에 오류가 발생하였습니다.");
+           location.reload();
+       } else {
+           alert(data.data);
+           location.reload();
+       }
+    });
 }
 
+function getQuestions(){
+    $.get("/api/me/questions", function(response){
+        var data = JSON.parse(response);
 
-/*
-	Popup
- */
+       if (data.code === "ERR") {
+           console.log("Error on Get Questions.");
+       } else {
+           Doc.getElementById("total_questions").innerHTML = data.data.length +"개";
+           var table = Doc.getElementById("questions").getElementsByTagName("tbody")[0];
+           console.log(data.data);
+           for(const n in data.data) {
+               /*var row = $("<tr>");
 
-$('.btn-example').click(function () {
-    var $href = $(this).attr('href');
-    layer_popup($href);
-});
+               row.append($("<td>"+data.data[n][0]+"</td>"))
+                   .append($("<td>"+data.data[n][1]+"</td>"))
+                   .append($("<td>"+data.data[n][2]+"</td>"))
+                   .append($("<td>"+data.data[n][3]+"</td>"))
+                   .append($("<td>"+data.data[n][4]+"</td>"))
+                   .append($("<td>"+data.data[n][5]+"</td>"));
 
-function layer_popup(el) {
+               console.log(row);
+               console.log(table);
+               table.append(row);*/
 
-    var $el = $(el);        //레이어의 id를 $el 변수에 저장
-    var isDim = $el.prev().hasClass('dimBg');   //dimmed 레이어를 감지하기 위한 boolean 변수
+               var row = table.insertRow(table.rows.length);
+               var date = row.insertCell(0);
+               var curr = row.insertCell(1);
+               var book = row.insertCell(2);
+               var page = row.insertCell(3);
+               var number = row.insertCell(4);
+               var status = row.insertCell(5);
+               
+               date.innerHTML = data.data[n][0];
+               curr.innerHTML = data.data[n][1];
+               book.innerHTML = data.data[n][2];
+               page.innerHTML = data.data[n][3];
+               number.innerHTML = data.data[n][4];
+               status.innerHTML = data.data[n][5];
 
-    isDim ? $('.dim-layer').fadeIn() : $el.fadeIn();
 
-    var $elWidth = ~~($el.outerWidth()),
-        $elHeight = ~~($el.outerHeight()),
-        docWidth = $(document).width(),
-        docHeight = $(document).height();
-
-    // 화면의 중앙에 레이어를 띄운다.
-    if ($elHeight < docHeight || $elWidth < docWidth) {
-        $el.css({
-            marginTop: -$elHeight / 2,
-            marginLeft: -$elWidth / 2
-        })
-    } else {
-        $el.css({top: 0, left: 0});
-    }
-
-    $el.find('a.btn-layerClose').click(function () {
-        isDim ? $('.dim-layer').fadeOut() : $el.fadeOut(); // 닫기 버튼을 클릭하면 레이어가 닫힌다.
-        return false;
+           }
+       }
     });
+}
 
-    $('.layer .dimBg').click(function () {
-        $('.dim-layer').fadeOut();
-        return false;
+function getTodayQuestions(){
+    $.get("/api/me/questions_today", function(response){
+        var data = JSON.parse(response);
+
+       if (data.code === "ERR") {
+           console.log("Error on Get Today Questions.");
+       } else {
+           Doc.getElementById("today_questions").innerHTML = data.data.length +"개";
+       }
     });
-
 }

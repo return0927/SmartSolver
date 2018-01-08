@@ -117,89 +117,88 @@ class DB:
         except Exception as ex:
             return [True, str(ex)]
 
-    def getTextBooks(self, ip, selection="*", curr=None):
+    def getBookSeries(self, ip, selection="*"):
         cur = self.getCursor()
 
         try:
-            if curr:
-                query = 'SELECT %s FROM tbooks WHERE curriculumn = \'%s\';' % (selection, curr)
-                self.writeLog(ip, query)
+            query = 'SELECT name FROM bookseries WHERE serviced=TRUE ;'
+            self.writeLog(ip, query)
 
-                cur.execute(query)
-            else:
-                query = 'SELECT %s FROM "tbook";' % (selection)
-                self.writeLog(ip, query)
+            cur.execute(query)
 
-                cur.execute(query)
             result = cur.fetchall()
             return [False, sorted(result)]
         except Exception as ex:
             return [True, str(ex)]
 
-    def getCurriculumn(self, ip):
+    def getSubjId(self, subj, ip):
         cur = self.getCursor()
 
         try:
-            query = 'SELECT DISTINCT curriculumn FROM "tbooks";'
+            query = 'SELECT id FROM curriculum WHERE name=\'{}\';'.format(subj)
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            result = cur.fetchall()[0]
+            return [False, result]
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
+    def getSub(self, subjid):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT name FROM curriculum WHERE id=\'{}\';'.format(subjid)
+            self.writeLog("LOCAL", query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+            return [False, result[0][0]]
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
+    def getYear(self, subj, book, ip):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT year FROM book WHERE bookname=\'{1}\' AND curr_id=\'{0}\';'.format(subj, book)
             self.writeLog(ip, query)
 
             cur.execute(query)
             result = cur.fetchall()
             return [False, result]
         except Exception as ex:
+            print(ex)
             return [True, str(ex)]
 
-    def getBookModifiedYear(self, curr, book, ip):
+    def getBook(self, subj, book, year):
         cur = self.getCursor()
 
         try:
-            query = 'SELECT year_modified FROM "tbooks" WHERE curriculumn=\'%s\' and bookname = \'%s\';'%(curr,book)
-            self.writeLog(ip, query)
+            query = 'SELECT book_id FROM book WHERE bookname=\'{1}\' AND curr_id=\'{0}\' AND year=\'{2}\';'.format(subj, book, year)
+            self.writeLog("LOCAL", query)
 
             cur.execute(query)
             result = cur.fetchall()
-            return [False, result]
+            return [False, result[0][0]]
         except Exception as ex:
+            print(ex)
             return [True, str(ex)]
 
-    def getBookPublisher(self, curr, book, ip):
+    def getBookInfo(self, bid):
         cur = self.getCursor()
 
         try:
-            query = 'SELECT publisher FROM "tbooks" WHERE curriculumn=\'%s\' and bookname = \'%s\';'%(curr,book)
-            self.writeLog(ip, query)
-
-            cur.execute(query)
-            result = cur.fetchall()
-            return [False, result[0]]
-        except Exception as ex:
-            return [True, str(ex)]
-
-    def getBookNotice(self, curr, book, ip):
-        cur = self.getCursor()
-
-        try:
-            query = 'SELECT notice FROM "tbooks" WHERE curriculumn=\'%s\' and bookname = \'%s\';'%(curr,book)
-            self.writeLog(ip, query)
+            query = 'SELECT curr_id, bookname, year FROM book WHERE book_id=\'{}\';'.format(bid)
+            self.writeLog("LOCAL", query)
 
             cur.execute(query)
             result = cur.fetchall()
             return [False, result[0]]
         except Exception as ex:
-            return [True, str(ex)]
-
-    # --- Promotion ---
-    def getPromotionVid(self, ip):
-        cur = self.getCursor()
-
-        try:
-            query = "SELECT curr, book, year, page, num, vid FROM video WHERE published=1";
-            self.writeLog(ip, query)
-
-            cur.execute(query)
-            result = cur.fetchall()
-            return [False, sorted(result, key=lambda x: x[5])]
-        except Exception as ex:
+            print(ex)
             return [True, str(ex)]
 
     # --- beta ---
@@ -223,30 +222,90 @@ class DB:
         except Exception as ex:
             return False
 
-    # --- Functional Features ---
-    def submitmyQuestion(self, _requester, _bookid, _content, _number, ip):
+    def getProblemId(self, book_id, page, number):
         cur = self.getCursor()
 
         try:
-            query = "INSERT INTO questions (requester, status, tbook_id, content, number) VALUES ('{}','{}', '{}', '{}', '{}');".format(_requester, "{\"status\":0, \"message\":\"대기중\"}", _bookid, _content, _number)
-            self.writeLog(ip, query)
-
+            query = 'SELECT problem_id FROM problem WHERE book_id=\'{}\' AND page=\'{}\' AND number=\'{}\';'.format(book_id, page, number)
+            self.writeLog("LOCAL", query)
             cur.execute(query)
-            return [False, None]
+            result = cur.fetchall()
+            if len(result): return [False, result[0][0]]
+            else: return [False, False]
         except Exception as ex:
+            raise ex
+            print(ex)
+            return [True, str(ex)]
+
+    def getProblemInfo(self, qid):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT book_id, page, number FROM problem WHERE problem_id=\'{}\';'.format(qid)
+            self.writeLog("LOCAL", query)
+            cur.execute(query)
+            result = cur.fetchall()
+            if len(result): return [False, result[0]]
+            else: return [False, False]
+        except Exception as ex:
+            raise ex
+            print(ex)
+            return [True, str(ex)]
+
+    # --- Functional Features ---
+    def submitmyQuestion(self, _requester, subj, bookseries, year, page, no, ip):
+        cur = self.getCursor()
+
+        try:
+            err, bookid = self.getBook(subj, bookseries, year)
+            if err: raise Exception(bookid)
+            err, pid = self.getProblemId(book_id=bookid, page=page, number=no)
+            if err: raise Exception(pid)
+            if pid:
+                query = 'INSERT INTO question (problem_id, student_id) VALUES ({}, \'{}\');'.format(pid, _requester)
+                self.writeLog(ip, query)
+                cur.execute(query)
+            else:
+                query = 'INSERT INTO problem (book_id, page, number) VALUES ({}, \'{}\', {}) RETURNING problem_id;'.format(bookid, page, no)
+                self.writeLog(ip, query)
+                cur.execute(query)
+                pid = cur.fetchall()[0][0]
+
+                query = 'INSERT INTO question (problem_id, student_id) VALUES ({}, \'{}\');'.format(pid, _requester)
+                self.writeLog(ip, query)
+                cur.execute(query)
+            return [False, "질문이 등록되었습니다."]
+        except Exception as ex:
+            raise ex
             return [True, str(ex)]
 
     # --- MyPage ---
-    def getMyQuestion(self, User, ip):
+    def getMyQuestion(self, User, ip, timestr="to_date('19700101','YYYYMMDD')"):
         cur = self.getCursor()
 
         try:
-            query = 'SELECT timestamp, qnum, status, content, link, tbook_id, number FROM questions WHERE requester=\'{}\''.format(User['id'])
+            query = 'SELECT problem_id, TO_CHAR(q_time, \'YYYY-MM-DD\'), status, message FROM question WHERE student_id=\'{}\' AND q_time >= {};'.format(User['id'], timestr)
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            result = sorted(cur.fetchall(), key=lambda x: x[0])
+
+            return [False, result]
+
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
+    def get_point(self, user, ip):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT point FROM users WHERE id=\'{}\';'.format(user)
             self.writeLog(ip, query)
 
             cur.execute(query)
             result = cur.fetchall()
-            return [False, sorted(result, key=lambda x: x[1])]
+            return [False, result[0]]
 
         except Exception as ex:
             print(ex)
