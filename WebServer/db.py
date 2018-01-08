@@ -284,11 +284,12 @@ class DB:
         cur = self.getCursor()
 
         try:
-            query = 'SELECT problem_id, TO_CHAR(q_time, \'YYYY-MM-DD\'), status, message FROM question WHERE student_id=\'{}\' AND q_time >= {};'.format(User['id'], timestr)
+            query = 'SELECT problem_id, TO_CHAR(q_time, \'YYYY-MM-DD\'), status, message FROM question WHERE student_id=\'{}\' AND q_time >= {} ORDER BY question_id;'.format(User['id'], timestr)
             self.writeLog(ip, query)
 
             cur.execute(query)
-            result = sorted(cur.fetchall(), key=lambda x: x[0])
+            result = cur.fetchall()
+            result.reverse()
 
             return [False, result]
 

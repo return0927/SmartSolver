@@ -252,13 +252,15 @@ def get_my_questions():
             err, curr = DB.getSub(currid)
             if err: return json.dumps({"code":"ERR"})
 
-            ret.append([date, curr, "{}({})".format(bookname, year), page, number, status])
+            ret.append([date, curr, "{}({})".format(bookname, year), page, number, status, message])
         return json.dumps({"code":"SUC", "data": ret})
 
 
 @app.route("/api/me/questions_today", methods=["GET"])
 def get_my_today_questions():
     err, data = DB.getMyQuestion(session['User'], request.environ["REMOTE_ADDR"], timestr='current_date')
+    print(data)
+
     if err: return json.dumps({"code":"ERR"})
     else: return json.dumps({"code":"SUC", "data": data})
 
