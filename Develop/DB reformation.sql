@@ -66,6 +66,8 @@ CREATE TABLE problem (-- 문제 DB
   page       INT, -- 교재에 따라서는 page 가 아닌 chapter 등을 나타낸다.(book table 의 chapter_indication 참조)
   number     INT
 );
+-- problem table 의 자료는 서비스 전에 미리 다 만들어두는게 아님.(그 많은걸 미리 만들어놓을 수가 없음.)
+-- 서비스중에 question 이 들어오거나 solution_video 가 등록될 때 problem table 을 참조하고, table 에 없을 경우에는 추가한다.
 
 CREATE TABLE solution_video (-- 해설동영상 DB
   problem_id BIGINT REFERENCES problem (problem_id) PRIMARY KEY,  -- 한 문제당 하나의 해설영상만 만들어진다고 가정한 것임.
