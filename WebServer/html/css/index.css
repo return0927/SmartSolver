@@ -46,24 +46,41 @@ div.questions > * {
 
 div.questions {
     width: 65%;
-    height: 90%;
+    height: 96%;
+
+    min-width: 830px;
+    min-height: 680px;
 }
 
 #questions {
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
 }
 
 #questions tr td {
     text-align: center;
 }
 
-div.panel div {
-    border: 1px solid #808080;
+div.panel {
     position: absolute;
     margin-left: 66%;
+    height: 100%;
+    width: 30%;
 
-    max-width: 300px;
+    min-height: 723px;
+}
 
-    width: 32%;
+
+div.panel > div {
+    border: 1px solid #808080;
+    position: relative;
+    /* margin-left: 66%; */
+
+    min-width: 300px;
+    margin-bottom: 3%;
+
+    width: 97%;
     height: 30%;
 }
 
@@ -71,12 +88,23 @@ div.panel div > * {
     margin: 15px;
 }
 
+div#submit_question {
+    min-height: 200px;
+}
+
+div#submit_question > table {
+    margin-bottom: 0;
+    margin-right: 0;
+}
+
 div#submit_question > table select {
     width: 100px;
 }
 
-div#submit_question input {
+div#submit_question > input {
+    position: absolute;
     right: 0;
+    bottom: 5px;
 }
 
 div#submit_question table input {
@@ -88,7 +116,7 @@ div#submit_question table tr > td:nth-child(1) {
 }
 
 div#user_info {
-    top: 32%;
+    min-height: 220px;
 }
 
 div#user_info table tr > td:nth-child(1) {
@@ -101,7 +129,21 @@ div#user_info table tr > td:nth-child(2) {
 }
 
 div#notice {
-    top: 63%;
-    height: 28%;
+    min-height: 160px;
 }
 
+.status {
+    overflow: auto;
+}
+
+.success {
+    color: #009050;
+}
+
+.pending {
+    color: #FFC000;
+}
+
+.error {
+    color: #C00000;
+}
