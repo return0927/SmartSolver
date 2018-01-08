@@ -201,8 +201,8 @@ def submitQuestion():
     page = request.form.get("page")
     q_no = request.form.get("q_no")
 
-    if not year.is_numeric(): return json.dumps({"code":"ERR"})
-    if not q_no.is_numeric(): return json.dumps({"code":"ERR"})
+    if not year.isnumeric(): return json.dumps({"code":"ERR"})
+    if not q_no.isnumeric(): return json.dumps({"code":"ERR"})
     if "-" in subject + bookseries + year + page + q_no: return json.dumps({"code":"ERR"})
 
     err, data = DB.submitmyQuestion(session['User']['id'], subject, bookseries, year, page ,q_no, request.environ["REMOTE_ADDR"])
