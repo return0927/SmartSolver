@@ -99,21 +99,9 @@ function getQuestions(){
        } else {
            Doc.getElementById("total_questions").innerHTML = data.data.length +"개";
            var table = Doc.getElementById("questions").getElementsByTagName("tbody")[0];
+           // table.remove();
            console.log(data.data);
            for(const n in data.data) {
-               /*var row = $("<tr>");
-
-               row.append($("<td>"+data.data[n][0]+"</td>"))
-                   .append($("<td>"+data.data[n][1]+"</td>"))
-                   .append($("<td>"+data.data[n][2]+"</td>"))
-                   .append($("<td>"+data.data[n][3]+"</td>"))
-                   .append($("<td>"+data.data[n][4]+"</td>"))
-                   .append($("<td>"+data.data[n][5]+"</td>"));
-
-               console.log(row);
-               console.log(table);
-               table.append(row);*/
-
                var row = table.insertRow(table.rows.length);
                var date = row.insertCell(0);
                var curr = row.insertCell(1);
@@ -127,8 +115,18 @@ function getQuestions(){
                book.innerHTML = data.data[n][2];
                page.innerHTML = data.data[n][3];
                number.innerHTML = data.data[n][4];
-               status.innerHTML = data.data[n][5];
 
+               var stat = data.data[n][5];
+               if(stat === 0)
+                   //status.innerHTML = "<p><div class='circle pending'></div>"+data.data[n][6]+"</p>";
+                   status.innerHTML = "<div class='status pending'>● "+data.data[n][6]+"</div>";
+               else if(stat === 1) {
+                   //status.innerHTML = "<p><div class='circle success'></div><a href='"+data.data[n][7]+"'>영상확인</a>"+data.data[n][6]+"</p>";
+                   status.innerHTML = "<div class='status succcess'>● <a href='"+data.data[n][7]+"'>영상확인</a>"+data.data[n][6]+"</div>";
+               } else if(stat === 2) {
+                   //status.innerHTML = "<p><div class='circle error'></div>"+data.data[n][6]+"</p>";
+                   status.innerHTML = "<div class='status error'>● "+data.data[n][6]+"</p>";
+               }
 
            }
        }
