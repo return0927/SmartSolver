@@ -31,9 +31,21 @@ div.questions table  {
     text-align: center;
 }
 
+div.wrapper {
+}
+
+div.problems {
+    float: left;
+}
+
+div.problems table {
+    text-align: center;
+}
+
 
 div.videos {
-    width: 96%;
+    float: left;
+    margin-left: 50px;
 }
 
 div.videos table {

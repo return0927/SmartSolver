@@ -34,35 +34,61 @@
                 <td style="min-width: 100px;">등록일시</td>
                 <td style="min-width: 70px;">과목</td>
                 <td style="min-width: 200px;">교재</td>
-                <td style="min-width: 70px;">페이지</td>
-                <td style="min-width: 70px;">번호</td>
+                <td style="min-width: 70px;">페이지(챕터)</td>
+                <td style="min-width: 70px;">문항번호</td>
                 <td style="">상태</td>
                 <td style="min-width: 150px;">메세지</td>
+                <td></td>
+                <td></td>
             </tr>
             </thead>
             <tbody>
             </tbody>
         </table>
     </div>
-    <div class="videos">
-        <h2>서버 영상</h2>
-        <table id="videos">
-            <thead>
-            <tr> <!-- 질문번호(pid) 영상주소(url)   책정보(bookname+year)  페이지(page)   번호(number)  강사(tutor)   조회수(hit) -->
-                <td>질문번호</td>
-                <td>영상주소</td>
-                <td>과목</td>
-                <td>교재</td>
-                <td>페이지(챕터)</td>
-                <td>문항번호</td>
-                <td>강사</td>
-                <td>조회수</td>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    <div class="wrapper">
+            <div class="problems">
+            <h2>전체 문제</h2>
+            <a target="_blank" href="panel/api/make">새 문제 만들기</a>
+            <table id="problems">
+                <thead>
+                <tr>
+                    <td>문제번호</td>
+                    <td>과목</td>
+                    <td>교재</td>
+                    <td>페이지(챕터)</td>
+                    <td>문항번호</td>
+                    <td></td>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="videos">
+            <h2>서버 영상</h2>
+            <a target="_blank" href="panel/api/upload">새 영상 업로드</a>
+            <table id="videos">
+                <thead>
+                <tr> <!-- 질문번호(pid) 영상주소(url)   책정보(bookname+year)  페이지(page)   번호(number)  강사(tutor)   조회수(hit) -->
+                    <td>질문번호</td>
+                    <td>영상주소</td>
+                    <td>과목</td>
+                    <td>교재</td>
+                    <td>페이지(챕터)</td>
+                    <td>문항번호</td>
+                    <td>강사</td>
+                    <td>조회수</td>
+                    <td></td>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
+
+
     <!-- Questions END -->
 
     <!-- Panel START -->
