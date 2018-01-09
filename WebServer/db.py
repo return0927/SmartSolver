@@ -325,6 +325,22 @@ class DB:
             print(ex)
             return [True, str(ex)]
 
+    def getMyQuestionTodayCount(self, User, ip, timestr="current_date"):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT count(problem_id) FROM question WHERE student_id=\'{}\' AND q_time >= {}'.format(User['id'], timestr)
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            result = cur.fetchall()[0][0]
+
+            return [False, result]
+
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
     def get_point(self, user, ip):
         cur = self.getCursor()
 
@@ -349,7 +365,7 @@ class DB:
 
             cur.execute(query)
             result = cur.fetchall()
-            return [False, result[0]]
+            return [False, result[0][0]]
 
         except Exception as ex:
             print(ex)

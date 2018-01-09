@@ -24,7 +24,6 @@ a {
 }
 
 div.questions {
-    width: 96%;
 }
 
 div.questions table  {
@@ -45,7 +44,7 @@ div.problems table {
 
 div.videos {
     float: left;
-    margin-left: 50px;
+    margin-left: 100px;
 }
 
 div.videos table {

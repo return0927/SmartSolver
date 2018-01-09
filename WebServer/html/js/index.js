@@ -83,6 +83,7 @@ function submit() {
        if (data.code === "ERR") {
            console.log("Error on Submit Question.");
            alert("질문을 등록하는 중에 오류가 발생하였습니다.");
+           alert(data.data);
            location.reload();
        } else {
            alert(data.data);

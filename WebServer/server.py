@@ -471,6 +471,19 @@ def submitQuestion():
 
 @app.route("/submit", methods=["POST"])
 def submitQuestion():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
+    err, limit = DB.getMyDayRateLimit(session['User'], "AUTOMATION:"+request.environ["REMOTE_ADDR"])
+    if err: return json.dumps({"code": "ERR", "data": limit})
+
+    err, count = DB.getMyQuestionTodayCount(session['User'], 'AUTOMATION:'+request.environ["REMOTE_ADDR"])
+    if err: return json.dumps({"code": "ERR", "data": count})
+
+    print("Day Limitation",count, limit)
+
+    if count >= limit:
+        return json.dumps({"code": "ERR", "data": "하루한도 초과 ({}개)".format(limit)})
+
     subject = request.form.get("subject")
     bookseries = request.form.get("bookseries")
     year = request.form.get("year")
@@ -482,18 +495,24 @@ def submitQuestion():
     if "-" in subject + bookseries + year + page + q_no: return json.dumps({"code":"ERR"})
 
     err, data = DB.submitmyQuestion(session['User']['id'], subject, bookseries, year, page ,q_no, request.environ["REMOTE_ADDR"])
-    if err: return json.dumps({"code":"ERR"})
+    if err: return json.dumps({"code":"ERR", "data": data})
     else: return json.dumps({"code":"SUC", "data": data})
+
 
 # --- API Controller ---
 @app.route("/api/get_bookseries", methods=["GET"])
 def get_bookseries():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     err, data = DB.getBookSeries(request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR"})
     else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data]})
 
+
 @app.route("/api/get_year", methods=["POST"])
 def get_year():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     subject = request.form.get("subject")
     book = request.form.get("bookseries")
 
@@ -502,9 +521,10 @@ def get_year():
     else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data]})
 
 
-
 @app.route("/api/me/my_point", methods=["GET"])
 def get_my_point():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     user = session["User"]["id"]
 
     err, data = DB.get_point(user, request.environ["REMOTE_ADDR"])
@@ -514,6 +534,8 @@ def get_my_point():
 
 @app.route("/api/me/questions", methods=["GET"])
 def get_my_questions():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     err, data = DB.getMyQuestion(session['User'], request.environ['REMOTE_ADDR'])
     if err: return json.dumps({"code":"ERR"})
     else:
@@ -540,6 +562,8 @@ def get_my_questions():
 
 @app.route("/api/me/questions_today", methods=["GET"])
 def get_my_today_questions():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     err, data = DB.getMyQuestion(session['User'], request.environ["REMOTE_ADDR"], timestr='current_date')
 
     if err: return json.dumps({"code":"ERR"})
@@ -548,10 +572,12 @@ def get_my_today_questions():
 
 @app.route("/api/me/day_rate_limit", methods=["GET"])
 def get_my_date_rate():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     err, data = DB.getMyDayRateLimit(session['User'], request.environ["REMOTE_ADDR"])
 
     if err: return json.dumps({"code":"ERR"})
-    else: return json.dumps({"code":"SUC", "data": data[0]})
+    else: return json.dumps({"code":"SUC", "data": data})
 
 
 # --- File hosts ---
