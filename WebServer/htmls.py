@@ -9,5 +9,9 @@ class Html:
         self.promotion = self.Loader("html/promotion.html")
         self.flowplayer = self.Loader("html/players/index.html")
 
+        self.panel = self.Loader("html/panel.html")
+
+        self.error = self.Loader("html/error.html")
+
     def Loader(self, path):
         return codecs.open(path, "r", encoding="UTF-8").read()

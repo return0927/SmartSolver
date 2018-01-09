@@ -1,0 +1,59 @@
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
+html, body {
+    margin: 1%;
+
+    height: 100%;
+    width: 98%;
+
+}
+
+body {background-color: #fefff4;
+    font-family: "Nanum Gothic", sans-serif;
+
+    word-break: keep-all;
+}
+
+a {
+    text-decoration: none !important;
+    color: purple;
+}
+
+.center {
+    text-align: center;
+}
+
+div.questions {
+    width: 96%;
+}
+
+div.questions table  {
+    text-align: center;
+}
+
+
+div.videos {
+    width: 96%;
+}
+
+div.videos table {
+    text-align: center;
+}
+
+
+
+.status {
+    overflow: auto;
+}
+
+.success {
+    color: #009050;
+}
+
+.pending {
+    color: #FFC000;
+}
+
+.error {
+    color: #C00000;
+}

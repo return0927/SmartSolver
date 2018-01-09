@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html class="nojs html css_verticalspacer" lang="ko-KR" xmlns="http://www.w3.org/1999/html">
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109853919-1"></script>
+    <script src="js/header.js"></script>
+
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
+    <meta name="generator" content="2018.0.0.379"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>온풀 : 수학을 쉽게</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="css/panel.css"/>
+
+</head>
+
+<body>
+    <!-- Header START -->
+    <!-- <img id="top_logo" src="img/logo.png" /> -->
+    <!-- Header END -->
+
+    <!-- Questions START -->
+    <div class="questions">
+        <h2>전체 질문</h2>
+        <p>한 번에 표시 개수: <input id="count" onchange="getQuestions();" type="number" style="width: 60px;" value="20"/></p>
+        <table id="questions">
+            <thead>
+            <tr>
+                <td>질문번호</td>
+                <td>문제번호</td>
+                <td style="min-width: 70px;">등록자</td>
+                <td style="min-width: 100px;">등록일시</td>
+                <td style="min-width: 70px;">과목</td>
+                <td style="min-width: 200px;">교재</td>
+                <td style="min-width: 70px;">페이지</td>
+                <td style="min-width: 70px;">번호</td>
+                <td style="">상태</td>
+                <td style="min-width: 150px;">메세지</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div class="videos">
+        <h2>서버 영상</h2>
+        <table id="videos">
+            <thead>
+            <tr> <!-- 질문번호(pid) 영상주소(url)   책정보(bookname+year)  페이지(page)   번호(number)  강사(tutor)   조회수(hit) -->
+                <td>질문번호</td>
+                <td>영상주소</td>
+                <td>과목</td>
+                <td>교재</td>
+                <td>페이지(챕터)</td>
+                <td>문항번호</td>
+                <td>강사</td>
+                <td>조회수</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <!-- Questions END -->
+
+    <!-- Panel START -->
+    <!-- Panel END -->
+
+</body>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/panel.js"></script>
+<script type="text/javascript">
+    $(document).resize()
+</script>
+
+</html>
