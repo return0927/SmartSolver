@@ -3,6 +3,7 @@ import json
 import validater
 import string
 import random
+import threading
 from urllib.parse import parse_qs
 from datetime import datetime
 from OpenSSL import SSL
@@ -85,6 +86,8 @@ def req():
     if "User" not in session.keys(): session['User'] = makeUserDict(ip=ip)
 
     event_logger("\t".join([url, method, ip, str(logon), info]))
+
+    #print(threading.get_ident())
 
 
 @app.route("/")
@@ -669,4 +672,4 @@ def validation():
         return "{'code':'fail'}"
 
 
-app.run(gSet.host, gSet.port, debug=True)#, 443, ssl_context = ('ssl.crt', 'ssl.key'), debug=True, threaded=True)
+app.run(gSet.host, gSet.port, debug=True, threaded=True)#, 443, ssl_context = ('ssl.crt', 'ssl.key'), debug=True, threaded=True)

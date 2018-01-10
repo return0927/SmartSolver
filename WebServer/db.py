@@ -1,7 +1,11 @@
 import psycopg2
 import re
+import random, string
 import validater
+import threading
 from datetime import datetime
+
+rand = lambda len: ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(len)).upper()
 
 class DB:
     def __init__(self):
@@ -14,6 +18,9 @@ class DB:
         self.conn = None
         self.cursor = None
         self.logfile = "logs/db/%s.txt"
+
+        self.connDict = {}
+        self.curDict = {}
 
         self.getConn()
 
@@ -42,13 +49,15 @@ class DB:
             .write("%s\t%s\t%s\n"%(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"), _ip, query))
 
     def getCursor(self):
-        if self.conn is None:
-            self.getConn()
+        thread_id = threading.get_ident().__int__()
 
-        if self.cursor is None:
-            self.cursor = self.conn.cursor()
+        if not thread_id in self.connDict.keys():
+            self.connDict[thread_id] = self.getConn()
 
-        return self.cursor
+        if thread_id not in self.curDict.keys():
+            self.curDict[thread_id] = self.connDict[thread_id].cursor()
+
+        return self.curDict[thread_id]
 
     def checkIDExist(self, id, _ip):
         if not self.hardfilter(id): return True
