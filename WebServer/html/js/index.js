@@ -21,8 +21,9 @@ function getBooks(self) {
         } else {
             var select = Doc.getElementById("book_series");
             select.length = 0;
+            var index;
 
-            for (const index in data.data) {
+            for (index=0; index<data.data.length; index++) {
                 var elem = Doc.createElement("option");
                 elem.value = data.data[index];
                 elem.innerHTML = data.data[index];
@@ -47,8 +48,9 @@ function getYears(self) {
         } else {
             var select = Doc.getElementById("year");
             select.length = 0;
+            var index;
 
-            for (const index in data.data) {
+            for (index=0; index<data.data.length; index++) {
                 var elem = Doc.createElement("option");
                 elem.value = data.data[index];
                 elem.innerHTML = data.data[index];
@@ -103,7 +105,9 @@ function getQuestions(){
            var table = Doc.getElementById("questions").getElementsByTagName("tbody")[0];
            // table.remove();
            console.log(data.data);
-           for(const n in data.data) {
+            var n;
+
+            for (n=0; n<data.data.length; n++) {
                var row = table.insertRow(table.rows.length);
                var date = row.insertCell(0);
                var curr = row.insertCell(1);
