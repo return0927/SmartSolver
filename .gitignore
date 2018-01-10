@@ -106,3 +106,7 @@ ENV/
 
 # Important Information File
 general_settings.py
+WebServer/logs/db/*.txt
+WebServer/logs/web/*.txt
+WebServer/ssl.crt
+WebServer/ssl.key
