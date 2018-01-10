@@ -33,6 +33,9 @@ User = {
     "login": False
 }
 
+ALLOWED_EXTENSIONS = {"mp4"}
+UPLOAD_FOLDER = "/var/www/vid.onpool.kr/public_html"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def makeUserDict(id='', ip='', login=False):
     _temp = User.copy()
@@ -244,7 +247,201 @@ def get_all_videos():
         # 질문번호(pid) 영상주소(url)   과목(curr)   책정보(bookname+year)  페이지(page)   번호(number)  강사(tutor)   조회수(hit)
         ret.append([pid, url, curr, "{}({})".format(bookname, year), page, number, tutor, hit])
 
+    return json.dumps({"code": "SUC", "data": ret})
+
+@app.route("/panel/api/problems", methods=["GET"])
+def get_all_problems():
+    if not session['User']['id'] in gSet.admins: return page_not_found(None)
+
+    count = request.args.get("c")
+    print(count)
+    if count is None: count = 20
+    err, data = DB.getAllProblems(limit=count)
+    if err: return json.dumps({"code":"ERR"})
+
+    ret = []
+    for pid, bid, page, number in data:
+        err, [currid, bookname, year] = DB.getBookInfo(bid)
+        if err: return json.dumps({"code": "ERR"})
+
+        err, curr = DB.getSub(currid)
+        if err: return json.dumps({"code": "ERR"})
+
+        ret.append([pid, curr, "{}({})".format(bookname, year), page, number])
+
     return json.dumps({"code":"SUC", "data": ret})
+
+@app.route("/panel/api/make", methods=["GET", "POST"])
+def make_problem():
+    if not session['User']['id'] in gSet.admins: return page_not_found(None)
+
+    if request.method == "POST":
+        try:
+            curr = request.form.get("curr")
+            bookname = request.form.get("bookname")
+            year = request.form.get("year")
+            page = request.form.get("page")
+            number = request.form.get("number")
+
+            err, data = DB.makeProblem(curr, bookname, year, page, number)
+            if err: return """
+            <script>
+                prompt("문제를 만드는 중 오류가 생겼습니다.", "{}";
+                location.history(-1);
+            </script>
+            """.format(data.replcae("\n"," "))
+
+            return """
+            <script>
+                prompt("성공적으로 문제를 만들었습니다! 아래의 문제번호를 확인해주세요.", "{}");
+                window.close();
+            </script>
+            """.format(data)
+        except Exception as ex:
+            return json.dumps({"code":"ERR", "data":str(ex)})
+    elif request.method == "GET":
+        return """
+    <!doctype html>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/panel_make.js"></script>
+    <title>Upload new File</title>
+    <h1>새 질문 만들기</h1>
+    <form action="" method=post>
+        ProblemID: <input type=text value="자동입력" disabled /><br />
+        과목번호: <select id="subject" name="curr" onchange="getBook(this);">
+                <option disabled>2009개정 교육과정</option>
+                <option value="1">수학I</option>
+                <option value="2">수학II</option>
+                <option value="3">미적분I</option>
+                <option value="4">미적분II</option>
+                <option value="5">확률과통계</option>
+                <option value="6">기하와벡터</option>
+                <option disabled>2015개정 교육과정</option>
+                <option value="7">수학</option>
+                <option value="8">수학(상)</option>
+                <option value="9">수학(하)</option>
+            </select><br />
+        교재: <select id="book_series" onload="getYears(this);" onchange="getYears(this);" name="bookname">
+            </select><br />
+        출판연도: <select id="year" name="year">
+                </select><br />
+        페이지(챕터): <input type="text" name="page" /><br />
+        문항번호: <input type="text" name="number" /><br />
+        <input type=submit value=Upload />
+    </form>
+    """
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+
+@app.route("/panel/api/upload", methods=["GET","POST"])
+def upload_video():
+    if not session['User']['id'] in gSet.admins: return page_not_found(None)
+
+    if request.method == "POST":
+        id = session['User']['id']
+
+        file = request.files['file']
+        print(file)
+        vid = request.form.get("vid")
+        pid = request.form.get("pid")
+        print(vid)
+
+        if not vid.isnumeric(): return json.dumps({"code":"ERR"})
+
+        if file and allowed_file(file.filename):
+            m = hashlib.sha256()
+            m.update( str((int(vid)+38)**2).encode() )
+            filename = m.hexdigest() + ".mp4"
+            print(vid, filename)
+            d = file.save(app.config['UPLOAD_FOLDER']+"/"+filename)
+            print(d)
+            print("success")
+
+            err, data = DB.insertVideo(id, filename[:-4], pid)
+            if err: return """
+                        <script>
+                            prompt('업로드에 실패하였습니다.','{}');
+                            window.close();
+                        </script>
+                        """.format(data.replace("\n"," "))
+            err, data = DB.updateStatus(pid)
+            if err: return """
+                        <script>
+                            prompt('업로드는 성공하였으나, 자동처리에 문제가 있습니다..','{}');
+                            window.close();
+                        </script>
+                        """.format(filename[:4]+"|"+data.replace("\n"," "))
+
+            return """
+            <script>
+                prompt('성공적으로 업로드되었습니다! 아래의 영상번호 해쉬를 기록해주세요.','{}');
+                window.close();
+            </script>
+            """.format(filename[:-4])
+
+        return json.dumps({"code":"ERR"})
+
+    elif request.method == "GET":
+        return """
+    <!doctype html>
+    <title>새 영상 업로드</title>
+    <h1>Upload new File</h1>
+    <form action="" method=post enctype=multipart/form-data>
+        FILE: <input type=file name=file><br />
+        ProblemID: <input type=text name=pid> <br />
+        VideoID: <input type=text name=vid> (해쉬값이 아닌 정수로 입력해주세요.)<br />
+        <input type=submit value=Upload>
+    </form>
+    """
+
+
+@app.route("/panel/api/editMessage", methods=["POST"])
+def panel_edit_message():
+    qid = request.form.get("qid")
+    msg = request.form.get("msg")
+
+    err, data = DB.updateQuestionMessage(qid, msg)
+    if err: return json.dumps({"code":"ERR", "data": data})
+    return json.dumps({"code":"SUC"})
+
+
+@app.route("/panel/api/delQuestion", methods=["POST"])
+def panel_del_question():
+    qid = request.form.get("qid")
+
+    err, data = DB.deleteQuestion(qid)
+    if err: return json.dumps({"code":"ERR", "data": data})
+    return json.dumps({"code":"SUC"})
+
+
+@app.route("/panel/api/markQuestion", methods=["POST"])
+def panel_mark_question():
+    qid = request.form.get("qid")
+
+    err, data = DB.markQuestion(qid)
+    if err: return json.dumps({"code":"ERR", "data": data})
+    return json.dumps({"code":"SUC"})
+
+
+@app.route("/panel/api/delProblem", methods=["POST"])
+def panel_del_problem():
+    pid = request.form.get("pid")
+
+    err, data = DB.deleteProblem(pid)
+    if err: return json.dumps({"code":"ERR", "data": data})
+    return json.dumps({"code":"SUC"})
+
+
+@app.route("/panel/api/delVideo", methods=["POST"])
+def panel_del_video():
+    pid = request.form.get("pid")
+
+    err, data = DB.deleteVideo(pid)
+    if err: return json.dumps({"code":"ERR", "data": data})
+    return json.dumps({"code":"SUC"})
 
 # --- Function ---
 """"@app.route("/submit", methods=["POST"])
@@ -274,6 +471,19 @@ def submitQuestion():
 
 @app.route("/submit", methods=["POST"])
 def submitQuestion():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
+    err, limit = DB.getMyDayRateLimit(session['User'], "AUTOMATION:"+request.environ["REMOTE_ADDR"])
+    if err: return json.dumps({"code": "ERR", "data": limit})
+
+    err, count = DB.getMyQuestionTodayCount(session['User'], 'AUTOMATION:'+request.environ["REMOTE_ADDR"])
+    if err: return json.dumps({"code": "ERR", "data": count})
+
+    print("Day Limitation",count, limit)
+
+    if count >= limit:
+        return json.dumps({"code": "ERR", "data": "하루한도 초과 ({}개)".format(limit)})
+
     subject = request.form.get("subject")
     bookseries = request.form.get("bookseries")
     year = request.form.get("year")
@@ -285,18 +495,24 @@ def submitQuestion():
     if "-" in subject + bookseries + year + page + q_no: return json.dumps({"code":"ERR"})
 
     err, data = DB.submitmyQuestion(session['User']['id'], subject, bookseries, year, page ,q_no, request.environ["REMOTE_ADDR"])
-    if err: return json.dumps({"code":"ERR"})
+    if err: return json.dumps({"code":"ERR", "data": data})
     else: return json.dumps({"code":"SUC", "data": data})
+
 
 # --- API Controller ---
 @app.route("/api/get_bookseries", methods=["GET"])
 def get_bookseries():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     err, data = DB.getBookSeries(request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR"})
     else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data]})
 
+
 @app.route("/api/get_year", methods=["POST"])
 def get_year():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     subject = request.form.get("subject")
     book = request.form.get("bookseries")
 
@@ -305,9 +521,10 @@ def get_year():
     else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data]})
 
 
-
 @app.route("/api/me/my_point", methods=["GET"])
 def get_my_point():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     user = session["User"]["id"]
 
     err, data = DB.get_point(user, request.environ["REMOTE_ADDR"])
@@ -317,6 +534,8 @@ def get_my_point():
 
 @app.route("/api/me/questions", methods=["GET"])
 def get_my_questions():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     err, data = DB.getMyQuestion(session['User'], request.environ['REMOTE_ADDR'])
     if err: return json.dumps({"code":"ERR"})
     else:
@@ -343,6 +562,8 @@ def get_my_questions():
 
 @app.route("/api/me/questions_today", methods=["GET"])
 def get_my_today_questions():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     err, data = DB.getMyQuestion(session['User'], request.environ["REMOTE_ADDR"], timestr='current_date')
 
     if err: return json.dumps({"code":"ERR"})
@@ -351,10 +572,12 @@ def get_my_today_questions():
 
 @app.route("/api/me/day_rate_limit", methods=["GET"])
 def get_my_date_rate():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
     err, data = DB.getMyDayRateLimit(session['User'], request.environ["REMOTE_ADDR"])
 
     if err: return json.dumps({"code":"ERR"})
-    else: return json.dumps({"code":"SUC", "data": data[0]})
+    else: return json.dumps({"code":"SUC", "data": data})
 
 
 # --- File hosts ---

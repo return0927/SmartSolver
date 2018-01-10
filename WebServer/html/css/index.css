@@ -135,6 +135,7 @@ div#user_info table tr > td:nth-child(2) {
 }
 
 div#notice {
+    word-break: initial;
     min-height: 160px;
 }
 

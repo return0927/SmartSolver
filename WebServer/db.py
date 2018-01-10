@@ -325,6 +325,22 @@ class DB:
             print(ex)
             return [True, str(ex)]
 
+    def getMyQuestionTodayCount(self, User, ip, timestr="current_date"):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT count(problem_id) FROM question WHERE student_id=\'{}\' AND q_time >= {}'.format(User['id'], timestr)
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            result = cur.fetchall()[0][0]
+
+            return [False, result]
+
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
     def get_point(self, user, ip):
         cur = self.getCursor()
 
@@ -349,7 +365,7 @@ class DB:
 
             cur.execute(query)
             result = cur.fetchall()
-            return [False, result[0]]
+            return [False, result[0][0]]
 
         except Exception as ex:
             print(ex)
@@ -390,6 +406,129 @@ class DB:
             print(ex)
             return [True, str(ex)]
 
+    def getAllProblems(self, limit=20):
+        cur = self.getCursor()
+
+        try:
+            print(limit)
+            query = 'SELECT problem_id, book_id, page, number FROM problem ORDER BY problem_id;-- LIMIT={};'.format(limit)
+            self.writeLog("ADMIN", query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+
+            return [False, result]
+
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
+    def insertVideo(self, id, vid, pid):
+        cur = self.getCursor()
+
+        try:
+            query = 'INSERT INTO solution_video VALUES (\'{}\',\'/video/flowplayer/play?vid={}\',\'{}\',0);'.format(pid, vid, id)
+            self.writeLog("ADMIN", query)
+
+            cur.execute(query)
+
+            return [False, None]
+
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
+    def updateStatus(self, pid):
+        cur = self.getCursor()
+
+        try:
+            query = 'UPDATE question SET status=1, message=\'지연답변\', p_time = current_date, p_time_ = now() WHERE problem_id={}'.format(pid)
+            self.writeLog("ADMIN", query)
+
+            cur.execute(query)
+
+            return [False, None]
+
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
+    def makeProblem(self, subj, bookseries, year, page, no):
+        cur = self.getCursor()
+
+        try:
+            err, bookid = self.getBook(subj, bookseries, year)
+            if err: raise Exception("Error on Making Problem with bookid err: {}".format(bookid))
+            print("Adding New Question-Problem")
+            query = 'INSERT INTO problem (book_id, page, number) VALUES ({}, \'{}\', {}) RETURNING problem_id;'.format(
+                bookid, page, no)
+            self.writeLog("ADMIN", query)
+            cur.execute(query)
+            pid = cur.fetchall()[0][0]
+
+            return [False, pid]
+        except Exception as ex:
+            return [True, str(ex)]
+
+    def updateQuestionMessage(self, qid, msg):
+        cur = self.getCursor()
+
+        try:
+            query = 'UPDATE question SET message = \'{}\' WHERE question_id = \'{}\';'.format(msg, qid)
+            self.writeLog("ADMIN", query)
+            cur.execute(query)
+
+            return [False, None]
+        except Exception as ex:
+            return [True, str(ex)]
+
+    def markQuestion(self, qid):
+        cur = self.getCursor()
+
+        try:
+            query = 'UPDATE question SET status=2 WHERE question_id = \'{}\';'.format(qid)
+            self.writeLog("ADMIN", query)
+            cur.execute(query)
+
+            return [False, None]
+        except Exception as ex:
+            return [True, str(ex)]
+
+    def deleteQuestion(self, qid):
+        cur = self.getCursor()
+
+        try:
+            query = 'DELETE FROM question WHERE question_id=\'{}\';'.format(qid)
+            self.writeLog("ADMIN", query)
+            cur.execute(query)
+
+            return [False, None]
+        except Exception as ex:
+            return [True, str(ex)]
+
+    def deleteProblem(self, pid):
+        cur = self.getCursor()
+
+        try:
+            query = 'DELETE FROM problem WHERE problem_id=\'{}\';'.format(pid)
+            self.writeLog("ADMIN", query)
+            cur.execute(query)
+
+            return [False, None]
+        except Exception as ex:
+            return [True, str(ex)]
+
+    def deleteVideo(self, pid):
+        cur = self.getCursor()
+
+        try:
+            query = 'DELETE FROM solution_video WHERE problem_id=\'{}\';'.format(pid)
+            self.writeLog("ADMIN", query)
+            cur.execute(query)
+
+            return [False, None]
+        except Exception as ex:
+            return [True, str(ex)]
 
     def run(self, query):
         cur = self.getCursor()
