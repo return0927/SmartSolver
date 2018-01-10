@@ -85,7 +85,7 @@ def req():
 
     if "User" not in session.keys(): session['User'] = makeUserDict(ip=ip)
 
-    event_logger("\t".join([url, method, ip, str(logon), info]))
+    event_logger("\t".join([datetime.now().strftime("%Y-%m-%d_%H:%M:%S"), url, method, ip, str(logon), info]))
 
     #print(threading.get_ident())
 
