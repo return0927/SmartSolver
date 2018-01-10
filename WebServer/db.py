@@ -159,7 +159,7 @@ class DB:
 
         try:
             query = 'SELECT name FROM curriculum WHERE id=\'{}\';'.format(subjid)
-            self.writeLog("LOCAL", query)
+            #self.writeLog("LOCAL", query)
 
             cur.execute(query)
             result = cur.fetchall()
@@ -187,7 +187,7 @@ class DB:
 
         try:
             query = 'SELECT book_id FROM book WHERE bookname=\'{1}\' AND curr_id=\'{0}\' AND year=\'{2}\';'.format(subj, book, year)
-            self.writeLog("LOCAL", query)
+            #self.writeLog("LOCAL", query)
 
             cur.execute(query)
             result = cur.fetchall()
@@ -201,7 +201,7 @@ class DB:
 
         try:
             query = 'SELECT curr_id, bookname, year FROM book WHERE book_id=\'{}\';'.format(bid)
-            self.writeLog("LOCAL", query)
+            #self.writeLog("LOCAL", query)
 
             cur.execute(query)
             result = cur.fetchall()
@@ -236,7 +236,7 @@ class DB:
 
         try:
             query = 'SELECT problem_id FROM problem WHERE book_id=\'{}\' AND page=\'{}\' AND number=\'{}\';'.format(book_id, page, number)
-            self.writeLog("LOCAL", query)
+            #self.writeLog("LOCAL", query)
             cur.execute(query)
             result = cur.fetchall()
             if len(result): return [False, result[0][0]]
@@ -251,7 +251,7 @@ class DB:
 
         try:
             query = 'SELECT book_id, page, number FROM problem WHERE problem_id=\'{}\';'.format(pid)
-            self.writeLog("LOCAL", query)
+            #self.writeLog("LOCAL", query)
             cur.execute(query)
             result = cur.fetchall()
             if len(result): return [False, result[0]]
@@ -267,7 +267,7 @@ class DB:
 
         try:
             query = 'SELECT url FROM solution_video WHERE problem_id=\'{}\';'.format(pid)
-            self.writeLog("LOCAL", query)
+            #self.writeLog("LOCAL", query)
             cur.execute(query)
             result = cur.fetchall()
             if len(result): return [False, result[0][0]]
@@ -369,7 +369,7 @@ class DB:
         cur = self.getCursor()
 
         try:
-            query = 'SELECT rate_limit FROM users WHERE id=\'{}\';'.format(User['id'])
+            query = 'SELECT daily_limit FROM users WHERE id=\'{}\';'.format(User['id'])
             self.writeLog(ip, query)
 
             cur.execute(query)
