@@ -328,20 +328,25 @@ class DB:
             query = 'INSERT INTO question (problem_id, student_id) VALUES ({}, \'{}\') RETURNING question_id;'.format(pid, _requester)
             self.writeLog(ip, query)
             cur.execute(query)
-            self._send_webhook("질문등록",
-                               "Problem: {}\n교재번호: {}\n페이지(챕터): {}\n문항번호: {}\n신청자: {}\n\n새로운 질문이 접수되었습니다."
-                               .format(pid, bookid, page, no, _requester),
-                               _requester, "DB.submitmyQuestion", ip
-                               )
 
             qid = cur.fetchall()[0][0]
             err, data = self.getVideo(pid)
+
+            self._send_webhook("질문등록",
+                               "Problem: {}\nQuestionID:{}\n교재번호: {}\n페이지(챕터): {}\n문항번호: {}\n신청자: {}\n\n새로운 질문이 접수되었습니다."
+                               .format(pid, qid, bookid, page, no, _requester),
+                               _requester, "DB.submitmyQuestion", ip
+                               )
             if err: pass
             else:
                 if data is False: pass
                 else:
                     query = 'UPDATE question SET status = 1, message = \'자동답변\', p_time = current_date, p_time_ = now() WHERE question_id=\'{}\';'.format(qid)
                     self.writeLog("AUTOMATION", query)
+                    cur.execute(query)
+
+                    query = 'UPDATE users SET point = point - 100 WHERE id=\'{}\';'.format(_requester)
+                    self.writeLog(ip, query)
                     cur.execute(query)
 
                     self._send_webhook("자동답변", "ProblemID: {}\nQuestionID: {}\n\n에 대한 해설영상이 자동으로 등록되었습니다.".format(pid, qid), _requester, "DB.submitmyQuestion", ip, colour=10539945)
