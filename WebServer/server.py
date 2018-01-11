@@ -107,7 +107,8 @@ def login():
     isPost = request.method == "POST"
 
     if not isPost:
-        return gSet.html.login
+        return send_from_directory("html","login.html")
+        #return gSet.html.login
 
     else:
         postData = parse_qs(request.get_data().decode())
@@ -228,7 +229,8 @@ def register():
             raise ex
             # return "<script>alert(\"입력한 정보를 다시 한 번 확인해주세요.\"); history.go(-1);</script>"
     else:
-        return gSet.html.register
+        return send_from_directory("html", "register.html")
+        #return gSet.html.register
 
 
 # --- Admin Panel ---
@@ -478,7 +480,7 @@ def panel_del_problem():
 
 @app.route("/panel/api/delVideo", methods=["POST"])
 def panel_del_video():
-    pid = request.form.get("pid")
+    pid = request.form.get("vid")
 
     err, data = DB.deleteVideo(pid, session['User']['id'], request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR", "data": data})
