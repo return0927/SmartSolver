@@ -60,6 +60,22 @@ function getYears(self) {
     });
 }
 
+function getMessage() {
+    var subject = Doc.getElementById("subject").value;
+    var bookseries = Doc.getElementById("book_series").value;
+    var year = Doc.getElementById("year").value;
+
+    $.get("/api/get_message", , function(response){
+       var data = JSON.parse(response);
+
+       if (data.code === "ERR") {
+           console.log("Error on get My Point.");
+       } else {
+           Doc.getElementById("now_point").innerHTML = data.data[0]+"p";
+       }
+    });
+}
+
 function getPoint() {
     $.get("/api/me/my_point", function(response){
        var data = JSON.parse(response);
