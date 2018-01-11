@@ -2,8 +2,9 @@ import htmls
 
 class Settings:
     def __init__(self):
-        self.host = "0.0.0.0"
-        self.port = 80
+        #Web
+        self.webhost = "0.0.0.0"
+        self.webport = 80
 
         self.html = htmls.Html()
 
@@ -13,3 +14,13 @@ class Settings:
         self.htmlDir = self.rootDir+"/html/"
 
         self.admins = ["bc1916", "sunsky"]
+
+        # UX
+        self.question_cost = 100
+
+        # DB
+        self.host = "localhost"
+        self.port = 5432
+        self.user = "root"
+        self.pw = "SmartSolve2017!@#"
+        self.db = "ssolve"
