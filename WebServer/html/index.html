@@ -22,7 +22,7 @@
 
     <!-- Questions START -->
     <div class="questions">
-        <h2>나의 질문</h2>
+        <div class="box-head">나의 질문</div>
         <table id="questions">
             <thead>
             <tr>
@@ -43,7 +43,7 @@
     <!-- Panel START -->
     <div class="panel">
         <div id="submit_question">
-            <h2>질문등록</h2>
+            <div class="box-head">질문등록</div>
 
             <table>
                 <tr>
@@ -101,10 +101,13 @@
         </div>
 
         <div id="user_info">
-            <h2>회원정보</h2>
+            <div class="box-head">회원정보</div>
 <!--		<a style="position: absolute; right:0; top:0;" href='/logout'>로그아웃</a> -->
-		    <button class="btn btn-sm btn-danger" onclick='location.href="/logout";'>로그아웃</button>
-            <table>
+            <div class="userinfo-head">
+              <div>OOO님 안녕하세요!</div>
+              <a href="/logout" style="text-align:right;width:100%;">로그아웃</a>
+            </div>
+            <table class="table">
                 <tr>
                     <td>남은포인트</td>
                     <td id="now_point">Loading..</td>
@@ -122,14 +125,14 @@
                     <td id="max_questions">Loading..</td>
                 </tr>
             </table>
-            <p class="center">자세한 내용은 <a href="javascript: alert('준비중입니다.');">마이페이지</a>에서 확인하실 수 있습니다.</p>
+            <center>자세한 내용은 <a href="javascript: alert('준비중입니다.');">마이페이지</a>에서 확인하실 수 있습니다.</center>
         </div>
 
         <div id="notice">
-            <h2>공지사항</h2>
+            <div class="box-head">공지사항</div>
 <!--            <p>현재는 베타테스트 기간입니다. 베타테스트 문의는 <a href="https://discord.gg/7YxYAv8" target="_blank">여기</a>로 해주시기 바랍니다.</p> -->
             <p style="">&nbsp;현재는 베타테스트 기간입니다. 베타테스트 제보/건의/문의 는 <a href="https://sites.google.com/sunskyedu.net/mathonpool" target="_blank">이곳의 게시판에서</a> 해주세요. <a href="https://discord.gg/7YxYAv8" target="_blank">디스코드 대화채널</a>도 열려있습니다.</p>
-            <h2>업데이트</h2>
+            <h3>업데이트</h3>
 
             <ul>
                 <h4><strong>[ 2018.01.12 ]</strong><br></h4>
