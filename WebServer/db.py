@@ -6,6 +6,7 @@ import random, string
 import validater
 import threading
 import general_settings
+import email_verification
 from datetime import datetime
 
 rand = lambda len: ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(len)).upper()
@@ -28,6 +29,9 @@ class DB:
         self.curDict = {}
 
         self.getConn()
+
+    def send_email(self, email, title, message):
+        threading.Thread(target=email_verification._send_notify, args=(email, title, message, )).start()
 
     def _send_webhook(self, title, content, user, url, ip, colour=3447003):
         data = {
@@ -517,10 +521,17 @@ class DB:
         cur = self.getCursor()
 
         try:
-            query = 'UPDATE question SET status=1, message=\'지연답변\', p_time = current_date, p_time_ = now() WHERE problem_id={}'.format(pid)
+            query = 'UPDATE question SET status=1, message=\'지연답변\', p_time = current_date, p_time_ = now() WHERE problem_id={} RETURNING (SELECT email FROM users WHERE id=question.student_id);;'.format(pid)
             self.writeLog("ADMIN", query)
 
             cur.execute(query)
+            emails = [ x[0] for x in cur.fetchall()]
+
+            for email in emails:
+                self.send_email(email, "회원님의 질문에 대한 영상이 준비되었습니다.", """
+                <p>회원님의 질문에 대한 해설영상이 방금 업로드되었습니다.</p>
+                <br />
+                <a target='_blank' href='http://onpool.kr/'>온풀 방문하기</a>""")
 
             return [False, None]
 

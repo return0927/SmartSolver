@@ -94,6 +94,7 @@ def req():
 @app.route("/")
 def root():
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+    if not session['User']['login']: return "<meta http-equiv='refresh' content='0; url=/login' />"
 
     return send_from_directory("html", "index.html")
 
@@ -157,11 +158,19 @@ def verify_email():
 
     return gSet.html.verify
 
+@app.route("/go")
+def go():
+    return "<script>location.href='/login';</script>"
+
 
 @app.route("/logout")
 def logout():
-    del session["Info"], session['User']
-    return "<script>alert('로그아웃 되었습니다.');location.href='/';</script>"
+    try:
+        del session["Info"]
+        del session['User']
+        return "<script>alert('로그아웃 되었습니다.');location.reload();</script>"
+    except:
+        return "<script>location.href='/go';</script>"
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -211,11 +220,8 @@ def register():
             #err, data = validater.sendVerf(_email, _code)
             #print(err, data)
 
-            err, data = email_verification.send(_code, _email)
-            if err:
-                return "<script>alert('가입은 성공하였으나 이메일 전송에 실패했습니다. 관리자에게 문의해주세요.');location.href='/login';</script>"
-            else:
-                return "<script>alert('가입에 성공하였습니다!\\n이메일 인증을 진행한 후 로그인해주세요.');location.href='/login';</script>"
+            threading.Thread(target=email_verification.send, args=(_email, _code,)).start()
+            return "<script>alert('가입에 성공하였습니다!\\n이메일 인증을 진행한 후 로그인해주세요.');location.href='/login';</script>"
             # return "<script>alert('가입에 성공하였습니다!\\n');location.href='/login';</script>"
         except Exception as ex:
             print("Error on Registration data verification : %s")
