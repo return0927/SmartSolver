@@ -162,7 +162,7 @@ def register():
 
             # --- Check Validation --- #
             if DB.checkIDExist(_id, ip): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
-            if "admin" in _id.lower() or "webmaster" in _id.lower(): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
+            if any(word in _id.lower() for word in ['admin', 'webmaster', 'onpool', 'sunsky']): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
             if DB.checkEmailExist(_email, ip): return "<script>alert('이미 등록되어있는 이메일입니다!');history.go(-1);</script>"
             if _grade not in [1, 2, 3, 11, 12, 13, 21, 22, 23]: return "<script>alert('학교/학년을 다시 한 번 확인해주세요.');history.go(-1);</script>"
             #if len(_code) != 64: return "<script>alert('올바르지 않은 인증키입니다!');history.go(-1);</script>"
