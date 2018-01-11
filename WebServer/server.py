@@ -363,7 +363,7 @@ def upload_video():
             print(d)
             print("success")
 
-            err, data = DB.insertVideo(id, filename[:-4], pid)
+            err, data = DB.insertVideo(id, filename[:-4], pid, session['User']['id'], request.environ['REMOTE_ADDR'])
             if err: return """
                         <script>
                             prompt('업로드에 실패하였습니다.','{}');
@@ -406,7 +406,7 @@ def panel_edit_message():
     qid = request.form.get("qid")
     msg = request.form.get("msg")
 
-    err, data = DB.updateQuestionMessage(qid, msg)
+    err, data = DB.updateQuestionMessage(qid, msg, session['User']['id'], request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR", "data": data})
     return json.dumps({"code":"SUC"})
 
@@ -415,7 +415,7 @@ def panel_edit_message():
 def panel_del_question():
     qid = request.form.get("qid")
 
-    err, data = DB.deleteQuestion(qid)
+    err, data = DB.deleteQuestion(qid, session['User']['id'], request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR", "data": data})
     return json.dumps({"code":"SUC"})
 
@@ -424,7 +424,7 @@ def panel_del_question():
 def panel_mark_question():
     qid = request.form.get("qid")
 
-    err, data = DB.markQuestion(qid)
+    err, data = DB.markQuestion(qid, session['User']['id'], request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR", "data": data})
     return json.dumps({"code":"SUC"})
 
@@ -433,7 +433,7 @@ def panel_mark_question():
 def panel_del_problem():
     pid = request.form.get("pid")
 
-    err, data = DB.deleteProblem(pid)
+    err, data = DB.deleteProblem(pid, session['User']['id'], request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR", "data": data})
     return json.dumps({"code":"SUC"})
 
@@ -442,7 +442,7 @@ def panel_del_problem():
 def panel_del_video():
     pid = request.form.get("pid")
 
-    err, data = DB.deleteVideo(pid)
+    err, data = DB.deleteVideo(pid, session['User']['id'], request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR", "data": data})
     return json.dumps({"code":"SUC"})
 
