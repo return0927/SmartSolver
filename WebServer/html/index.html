@@ -43,7 +43,10 @@
     <!-- Panel START -->
     <div class="panel">
         <div id="submit_question">
-            <div class="box-head">질문등록</div>
+            <div class="box-head">
+              <span>질문등록</span>
+              <div style="text-align:right;"><button onclick="javascript: submit();" class="btn btn-sm btn-primary" style="vertical-align:top;">질문 등록하기</button></div>
+            </div>
 
             <table>
                 <tr>
@@ -97,7 +100,6 @@
                 </tr>
             </table>
             <p id="message"><!--WhiteSpace --></p>
-            <button onclick="javascript: submit();" class="btn btn-sm btn-primary">제출</button>
         </div>
 
         <div id="user_info">

@@ -32,6 +32,13 @@ a {
 .box-head {
   font-size: 1.6rem;
   font-weight: 600;
+  display: flex;
+  margin-bottom: 0.1rem;
+}
+.box-head * {
+  -webkit-flex: 3;
+  -ms-flex: 3;
+  flex: 3;
 }
 
 .questions {
@@ -70,11 +77,26 @@ a {
   border: 1px solid #808080;
   min-width: 300px;
   margin-bottom: 3%;
-  -webkit-flex: 1;
-  -ms-flex: 1;
-  flex: 1;
   padding: 0.6rem;
   margin: 0.5rem 1rem 0.5rem 0;
+}
+
+#submit_question{
+  -webkit-flex: 3;
+  -ms-flex: 3;
+  flex: 3;
+}
+
+#user_info{
+  -webkit-flex: 2;
+  -ms-flex: 2;
+  flex: 2;
+}
+
+#notice{
+  -webkit-flex: 2;
+  -ms-flex: 2;
+  flex: 2;
 }
 
 .panel ul {
