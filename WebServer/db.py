@@ -254,6 +254,20 @@ class DB:
             print(ex)
             return [True, str(ex)]
 
+    def getBookMessage(self, book):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT message FROM bookseries WHERE name=\'{}\';'.format(book)
+            #self.writeLog("LOCAL", query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+            return [False, result[0][0]]
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
     def getBookInfo(self, bid):
         cur = self.getCursor()
 
@@ -335,16 +349,35 @@ class DB:
             print(ex)
             return [True, str(ex)]
 
+    def checkDuplicated(self, pid, requester):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT status FROM question WHERE student_id=\'{}\' and problem_id=\'{}\';'.format(requester, pid)
+            cur.execute(query)
+            result = cur.fetchall()
+            return [False, len(result)]
+        except Exception as ex:
+            raise ex
+            print(ex)
+            return [True, str(ex)]
+
     def submitmyQuestion(self, _requester, subj, bookseries, year, page, no, ip):
         cur = self.getCursor()
 
         try:
+            duplicated = False
             err, bookid = self.getBook(subj, bookseries, year)
             if err: raise Exception(bookid)
             err, pid = self.getProblemId(book_id=bookid, page=page, number=no)
             if err: raise Exception(pid)
+
             if pid:
                 print("Already Uploaded Question-Problem")
+                err, ret = self.checkDuplicated(pid, _requester)
+                if err: pass
+                elif ret:
+                        duplicated = True
             else:
                 print("Adding New Question-Problem")
                 query = 'INSERT INTO problem (book_id, page, number) VALUES ({}, \'{}\', {}) RETURNING problem_id;'.format(bookid, page, no)
@@ -372,13 +405,15 @@ class DB:
                     self.writeLog("AUTOMATION", query)
                     cur.execute(query)
 
-                    query = 'UPDATE users SET point = point - {} WHERE id=\'{}\';'.format(self.gSet.question_cost, _requester)
-                    self.writeLog(ip, query)
-                    cur.execute(query)
+                    if not duplicated:
+                        query = 'UPDATE users SET point = point - {} WHERE id=\'{}\';'.format(self.gSet.question_cost, _requester)
+                        self.writeLog(ip, query)
+                        cur.execute(query)
 
                     self._send_webhook("자동답변", "ProblemID: {}\nQuestionID: {}\n\n에 대한 해설영상이 자동으로 등록되었습니다.".format(pid, qid), _requester, "DB.submitmyQuestion", ip, colour=10539945)
 
-            return [False, "질문이 등록되었습니다."]
+            if duplicated: return [False, "중복질문으로 인해 포인트 차감없이 질문이 등록되었습니다."]
+            else: return [False, "질문이 등록되었습니다."]
         except Exception as ex:
             raise ex
             return [True, str(ex)]

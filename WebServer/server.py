@@ -552,7 +552,7 @@ def get_bookseries():
 
     err, data = DB.getBookSeries(request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR"})
-    else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data]})
+    else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data ]})
 
 
 @app.route("/api/get_year", methods=["POST"])
@@ -564,7 +564,10 @@ def get_year():
 
     err, data = DB.getYear(subject, book, request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR"})
-    else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data]})
+    else:
+        err, msg = DB.getBookMessage(book)
+        if err: return json.dumps({"code":"ERR"})
+        else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data], "msg":msg})
 
 
 @app.route("/api/me/my_point", methods=["GET"])
