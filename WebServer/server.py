@@ -487,6 +487,11 @@ def submitQuestion():
     if count >= limit:
         return json.dumps({"code": "ERR", "data": "하루한도 초과 ({}개)".format(limit)})
 
+    now_point = get_my_point(simple=True, user=session['User']['id'])[0]
+    print(now_point, gSet.question_cost)
+    if now_point < gSet.question_cost:
+        return json.dumps({"code":"ERR", "data": "포인트가 부족합니다! (개당 {}포인트)".format(gSet.question_cost)})
+
     subject = request.form.get("subject")
     bookseries = request.form.get("bookseries")
     year = request.form.get("year")
@@ -525,7 +530,15 @@ def get_year():
 
 
 @app.route("/api/me/my_point", methods=["GET"])
-def get_my_point():
+def get_my_point(simple=False, local=True, user=''):
+    if local:
+        err, data = DB.get_point(user, request.environ["REMOTE_ADDR"])
+        if simple:
+            if err:
+                return None
+            else:
+                return data
+
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
 
     user = session["User"]["id"]
@@ -672,4 +685,4 @@ def validation():
         return "{'code':'fail'}"
 
 
-app.run(gSet.host, gSet.port, debug=True, threaded=True)#, 443, ssl_context = ('ssl.crt', 'ssl.key'), debug=True, threaded=True)
+app.run(gSet.webhost, gSet.webport, debug=True, threaded=True)#, 443, ssl_context = ('ssl.crt', 'ssl.key'), debug=True, threaded=True)

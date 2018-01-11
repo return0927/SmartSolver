@@ -5,17 +5,20 @@ import requests
 import random, string
 import validater
 import threading
+import general_settings
 from datetime import datetime
 
 rand = lambda len: ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(len)).upper()
 
 class DB:
     def __init__(self):
-        self.host = "localhost"
-        self.port = 5432
-        self.user = "root"
-        self.pw = "SmartSolve2017!@#"
-        self.db = "ssolve"
+        self.gSet = general_settings.Settings()
+
+        self.host = self.gSet.host
+        self.port = self.gSet.port
+        self.user = self.gSet.user
+        self.pw = self.gSet.pw
+        self.db = self.gSet.db
 
         self.conn = None
         self.cursor = None
@@ -345,7 +348,7 @@ class DB:
                     self.writeLog("AUTOMATION", query)
                     cur.execute(query)
 
-                    query = 'UPDATE users SET point = point - 100 WHERE id=\'{}\';'.format(_requester)
+                    query = 'UPDATE users SET point = point - {} WHERE id=\'{}\';'.format(self.gSet.question_cost, _requester)
                     self.writeLog(ip, query)
                     cur.execute(query)
 
