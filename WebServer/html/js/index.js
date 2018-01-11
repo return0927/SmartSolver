@@ -82,14 +82,20 @@ function submit() {
     $.post("/submit", {"subject": subject, "bookseries": bookseries, "year": year, "page": page, "q_no": q_no}, function(response){
         var data = JSON.parse(response);
 
-       if (data.code === "ERR") {
+       if (data.code === "ERR") { // 오류
            console.log("Error on Submit Question.");
            alert("질문을 등록하는 중에 오류가 발생하였습니다.");
            alert(data.data);
            location.reload();
-       } else {
-           alert(data.data);
-           location.reload();
+       } else { // 성공
+           alert(data.data); // 결과값 리턴메세지 표시
+
+           page = ''; // 제출 성공 후 제출창 리폼
+           q_no = '';
+
+           getQuestions(); // 질문리스트 새로고침
+           getTodayQuestions(); // 오늘 질문 새로고침
+           getPoint(); // 현재 포인트 새로고침
        }
     });
 }
@@ -103,6 +109,7 @@ function getQuestions(){
        } else {
            Doc.getElementById("total_questions").innerHTML = data.data.length +"개";
            var table = Doc.getElementById("questions").getElementsByTagName("tbody")[0];
+           table.innerHTML = '';
            // table.remove();
            console.log(data.data);
             var n;
