@@ -10,6 +10,7 @@ from OpenSSL import SSL
 
 import db
 import general_settings
+import email_verification
 from flask import *
 
 gSet = general_settings.Settings()
@@ -94,7 +95,7 @@ def req():
 def root():
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
 
-    return gSet.html.root#%(tool.getNick(session))
+    return send_from_directory("html", "index.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -119,6 +120,10 @@ def login():
     else:
         if len(info):
             name = info[0][0]
+            email_verf = info[0][1]
+
+            if email_verf != "VERIFIED": return "<script>alert('이메일 인증을 하신 후에 사용하실 수 있습니다.');location.href='/verify';</script>"
+
             session["Info"] = _id, _pw, name
 
             if DB.submitRecentIP(_id, ip): return "<script>alert('서버에 오류가 발생하였습니다. \nCODE:L_UPD_Ad');history.go(-1);</script>"
@@ -128,6 +133,29 @@ def login():
             return "<script>alert('환영합니다, %s님!');location.href='/';</script>"%name
         else:
             return "<script>alert('아이디 혹은 비밀번호를 확인해주세요.');history.go(-1);</script>"
+
+
+@app.route("/verify", methods=["GET"])
+def verify_email():
+    code = None
+    try: code = request.args.get("code")
+    except: pass
+
+    if code is None:
+        return gSet.html.verify
+    elif len(code) != 32:
+        return gSet.html.verify
+    elif len(code) == 32:
+        err, data = DB.verifyCode(code, request.environ['REMOTE_ADDR'])
+        print(err, data)
+        if err: return "<script>alert('코드 인증 중 오류가 발생하였습니다.');location.history(-1);</script>"
+        else:
+            if data is False:
+                return "<script>alert('인증코드를 입력해주세요.');</script>"
+            else:
+                return "<script>alert('성공적으로 인증이 완료되었습니다.');location.href='/';</script>"
+
+    return gSet.html.verify
 
 
 @app.route("/logout")
@@ -183,8 +211,12 @@ def register():
             #err, data = validater.sendVerf(_email, _code)
             #print(err, data)
 
-            # return "<script>alert('가입에 성공하였습니다!\\n이메일 인증을 진행한 후 로그인해주세요.');location.href='/login';</script>"
-            return "<script>alert('가입에 성공하였습니다!\\n');location.href='/login';</script>"
+            err, data = email_verification.send(_code, _email)
+            if err:
+                return "<script>alert('가입은 성공하였으나 이메일 전송에 실패했습니다. 관리자에게 문의해주세요.');location.href='/login';</script>"
+            else:
+                return "<script>alert('가입에 성공하였습니다!\\n이메일 인증을 진행한 후 로그인해주세요.');location.href='/login';</script>"
+            # return "<script>alert('가입에 성공하였습니다!\\n');location.href='/login';</script>"
         except Exception as ex:
             print("Error on Registration data verification : %s")
             raise ex
@@ -685,4 +717,4 @@ def validation():
         return "{'code':'fail'}"
 
 
-app.run(gSet.webhost, gSet.webport, debug=True, threaded=True)#, 443, ssl_context = ('ssl.crt', 'ssl.key'), debug=True, threaded=True)
+app.run(gSet.webhost, gSet.webport, debug=False, threaded=True)#, 443, ssl_context = ('ssl.crt', 'ssl.key'), debug=True, threaded=True)

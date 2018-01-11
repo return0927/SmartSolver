@@ -36,7 +36,7 @@ class DB:
             "tts": False,
             "content": "",
             "author": {
-                "name": "한숨이절로TV",
+                "name": "",
                 "icon_url": "",
             },
             "embeds": [
@@ -130,6 +130,26 @@ class DB:
             return False
         except Exception as ex:
             return str(ex)
+
+    def verifyCode(self, code, ip):
+        cur = self.getCursor()
+        try:
+            query = 'SELECT \'T\' FROM users WHERE email_verified=\'{}\';'.format(code)
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            ret = len(cur.fetchall())
+
+            if ret:
+                query = 'UPDATE users SET email_verified = \'VERIFIED\' WHERE email_verified=\'{}\';'.format(code)
+                self.writeLog(ip, query)
+
+                cur.execute(query)
+                return [False, True]
+            else:
+                return [False, False]
+        except Exception as ex:
+            return [True, str(ex)]
 
     def submitRecentIP(self, _id, _ip):
         cur = self.getCursor()
@@ -485,7 +505,7 @@ class DB:
             cur.execute(query)
 
             self._send_webhook("영상 등록", "ProblemID: {}\nVideo Hash: {}\nUploader:{}\n\n새로운 영상이 업로드되었습니다.".format(pid, vid, id),
-                               "{}".format(nick), "DB.submitmyQuestion", ip, colour=3092790)
+                               "{}".format(nick), "DB.insertVideo", ip, colour=3092790)
 
             return [False, None]
 
@@ -534,7 +554,7 @@ class DB:
             cur.execute(query)
 
             self._send_webhook("질문 문구수정", "QuestionID: {}\nNewMessage:{}\n\n관리자에 의해 질문의 상태메세지가 수정되었습니다.".format(qid, msg),
-                               "{}".format(nick), "DB.submitmyQuestion", ip, colour=3092790)
+                               "{}".format(nick), "DB.updateQuestionMessage", ip, colour=3092790)
 
             return [False, None]
         except Exception as ex:
@@ -549,7 +569,7 @@ class DB:
             cur.execute(query)
 
             self._send_webhook("질문수정", "QuestionID: {}\n\n관리자에 의해 질문이 오류로 표기되었습니다.".format(qid),
-                               "{}".format(nick), "DB.submitmyQuestion", ip, colour=3092790)
+                               "{}".format(nick), "DB.markQuestion", ip, colour=3092790)
 
             return [False, None]
         except Exception as ex:
@@ -564,7 +584,7 @@ class DB:
             cur.execute(query)
 
             self._send_webhook("질문삭제", "QuestionID: {}\n\n관리자에 의해 질문이 삭제되었습니다.".format(qid),
-                               "{}".format(nick), "DB.submitmyQuestion", ip, colour=13369344)
+                               "{}".format(nick), "DB.deleteQuestion", ip, colour=13369344)
 
             return [False, None]
         except Exception as ex:
@@ -579,7 +599,7 @@ class DB:
             cur.execute(query)
 
             self._send_webhook("문항삭제", "QuestionID: {}\n\n관리자에 의해 질문이 삭제되었습니다.".format(pid),
-                               "{}".format(nick), "DB.submitmyQuestion", ip, colour=13369344)
+                               "{}".format(nick), "DB.deleteProblem", ip, colour=13369344)
 
             return [False, None]
         except Exception as ex:
@@ -594,7 +614,7 @@ class DB:
             cur.execute(query)
 
             self._send_webhook("영상삭제", "ProblemID: {}\n\n관리자에 의해 영상이 삭제되었습니다.".format(pid),
-                               "{}".format(nick), "DB.submitmyQuestion", ip, colour=13369344)
+                               "{}".format(nick), "DB.deleteVideo", ip, colour=13369344)
 
             return [False, None]
         except Exception as ex:
