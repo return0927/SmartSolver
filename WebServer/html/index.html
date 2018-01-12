@@ -1,19 +1,18 @@
 <!DOCTYPE html>
-<html class="nojs html css_verticalspacer" lang="ko-KR" xmlns="http://www.w3.org/1999/html">
+<html lang="ko">
 <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109853919-1"></script>
     <script src="js/header.js"></script>
 
-    <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
-    <meta name="generator" content="2018.0.0.379"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>온풀 : 수학을 쉽게</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="css/index.css?v=2"/>
-
+    <link rel="stylesheet" type="text/css" href="css/index.css?v=4"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css">
 </head>
 
 <body>
@@ -23,7 +22,7 @@
 
     <!-- Questions START -->
     <div class="questions">
-        <h2>나의 질문</h2>
+        <div class="box-head">나의 질문</div>
         <table id="questions">
             <thead>
             <tr>
@@ -44,14 +43,17 @@
     <!-- Panel START -->
     <div class="panel">
         <div id="submit_question">
-            <h2>질문등록</h2>
+            <div class="box-head">
+              <span>질문등록</span>
+              <div style="text-align:right;"><button onclick="javascript: submit();" class="btn btn-sm btn-primary" style="vertical-align:top;">질문 등록하기</button></div>
+            </div>
 
             <table>
                 <tr>
                     <td>과목</td>
                     <td width="5"><!-- WhieSpace --></td>
                     <td>
-                        <select id="subject" onchange="getBooks(this);">
+                        <select class="form-control" id="subject" onchange="getBooks(this);">
                             <option disabled>2009개정 교육과정</option>
                             <option value="1">수학I</option>
                             <option value="2">수학II</option>
@@ -70,7 +72,7 @@
                     <td>교재</td>
                     <td width="5"><!-- WhieSpace --></td>
                     <td>
-                        <select id="book_series" onload="getYears(this);" onchange="getYears(this);">
+                        <select class="form-control" id="book_series" onload="getYears(this);" onchange="getYears(this);">
                         </select>
                     </td>
                 </tr>
@@ -78,7 +80,7 @@
                     <td>출판년도</td>
                     <td width="5"><!-- WhieSpace --></td>
                     <td>
-                        <select id="year">
+                        <select class="form-control" id="year">
                         </select>
                     </td>
                 </tr>
@@ -86,25 +88,28 @@
                     <td>페이지(단원)</td>
                     <td width="5"><!-- WhieSpace --></td>
                     <td>
-                        <input type="text" id="page" />
+                        <input class="form-control" id="page" />
                     </td>
                 </tr>
                 <tr>
                     <td>문항번호</td>
                     <td width="5"><!-- WhieSpace --></td>
                     <td>
-                        <input type="text" id="q_no"/>
+                        <input class="form-control" id="q_no"/>
                     </td>
                 </tr>
             </table>
-            <input type="submit" placeholder="제출" onclick="javascript: submit();"/>
+            <p id="message"><!--WhiteSpace --></p>
         </div>
 
         <div id="user_info">
-            <h2>회원정보</h2>
+            <div class="box-head">회원정보</div>
 <!--		<a style="position: absolute; right:0; top:0;" href='/logout'>로그아웃</a> -->
-		    <input style="position:absolute;right:0;top:0;" onclick='location.href="/logout";' value="로그아웃" type="button" />
-            <table>
+            <div class="userinfo-head">
+              <div>OOO님 안녕하세요!</div>
+              <a href="/logout" style="text-align:right;width:100%;">로그아웃</a>
+            </div>
+            <table class="table">
                 <tr>
                     <td>남은포인트</td>
                     <td id="now_point">Loading..</td>
@@ -122,18 +127,19 @@
                     <td id="max_questions">Loading..</td>
                 </tr>
             </table>
-            <p class="center">자세한 내용은 <a href="javascript: alert('준비중입니다.');">마이페이지</a>에서 확인하실 수 있습니다.</p>
+            <center>자세한 내용은 <a href="javascript: alert('준비중입니다.');">마이페이지</a>에서 확인하실 수 있습니다.</center>
         </div>
 
         <div id="notice">
-            <h2>공지사항</h2>
+            <div class="box-head">공지사항</div>
 <!--            <p>현재는 베타테스트 기간입니다. 베타테스트 문의는 <a href="https://discord.gg/7YxYAv8" target="_blank">여기</a>로 해주시기 바랍니다.</p> -->
             <p style="">&nbsp;현재는 베타테스트 기간입니다. 베타테스트 제보/건의/문의 는 <a href="https://sites.google.com/sunskyedu.net/mathonpool" target="_blank">이곳의 게시판에서</a> 해주세요. <a href="https://discord.gg/7YxYAv8" target="_blank">디스코드 대화채널</a>도 열려있습니다.</p>
-            <h2>업데이트</h2>
+            <h3>업데이트</h3>
 
             <ul>
-                <h4><strong>[ 2018.01.10 13:42 ]</strong><br></h4>
-                <li>Internet Explorer에서 스크립트가 작동하지 않은 버그를 패치하였습니다.</li>
+                <h4><strong>[ 2018.01.12 ]</strong><br></h4>
+                <li>이메일 인증이 활성화되었습니다.</li>
+                <li>지연답변 시 영상이 등록되면 이메일로 알림을 보내드립니다.</li>
             </ul>
             <style>
                 h4 {
@@ -141,14 +147,22 @@
                 }
             </style>
             <ul>
-                <h4><strong>[ 2018.01.10 05:02 ]</strong><br></h4>
+                <h4><strong>[ 2018.01.11 ]</strong><br></h4>
+                <li>질문을 등록한 뒤에 선택한 교재정보가 사라지지 않도록 하였습니다.</li>
+            </ul>
+            <ul>
+                <h4><strong>[ 2018.01.10 ]</strong><br></h4>
+                <li>Internet Explorer에서 스크립트가 작동하지 않은 버그를 패치하였습니다.</li>
+            </ul>
+            <ul>
+                <h4><strong>[ 2018.01.10 ]</strong><br></h4>
                 <li>베타테스트를 위한 안정화 작업을 완료했습니다.<br>
                 <li>질문 개수 일일제한이 생겼습니다. (기본 5개/일)</li>
                 <li>효율적인 관리를 위한 관리패널과 연동작업을 진행하였습니다.</li>
             </ul>
 
             <ul>
-                <h4><strong>[ 2018.01.09 07:36 ]</strong><br></h4>
+                <h4><strong>[ 2018.01.09 ]</strong><br></h4>
                 <li><strong>온풀 베타서비스가 시작되었습니다.</strong></li>
                 <li>베타테스트를 위한 기능이 거의 완성되었습니다.</li>
                 <li>이제 질문을 올리면 자동으로 영상을 연결해줍니다.</li>
@@ -160,10 +174,8 @@
 
 </body>
 
-<script type="text/javascript" src="js/jquery.min.js"></script>
-<script type="text/javascript" src="js/index.js"></script>
-<script type="text/javascript">
-    $(document).resize()
-</script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
+<script src="js/index.js?v=4"></script>
 </html>

@@ -10,6 +10,7 @@ from OpenSSL import SSL
 
 import db
 import general_settings
+import email_verification
 from flask import *
 
 gSet = general_settings.Settings()
@@ -85,7 +86,7 @@ def req():
 
     if "User" not in session.keys(): session['User'] = makeUserDict(ip=ip)
 
-    event_logger("\t".join([url, method, ip, str(logon), info]))
+    event_logger("\t".join([datetime.now().strftime("%Y-%m-%d_%H:%M:%S"), url, method, ip, str(logon), info]))
 
     #print(threading.get_ident())
 
@@ -93,8 +94,9 @@ def req():
 @app.route("/")
 def root():
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+    if not session['User']['login']: return "<meta http-equiv='refresh' content='0; url=/login' />"
 
-    return gSet.html.root#%(tool.getNick(session))
+    return send_from_directory("html", "index.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -105,7 +107,8 @@ def login():
     isPost = request.method == "POST"
 
     if not isPost:
-        return gSet.html.login
+        return send_from_directory("html","login.html")
+        #return gSet.html.login
 
     else:
         postData = parse_qs(request.get_data().decode())
@@ -119,6 +122,10 @@ def login():
     else:
         if len(info):
             name = info[0][0]
+            email_verf = info[0][1]
+
+            if email_verf != "VERIFIED": return "<script>alert('이메일 인증을 하신 후에 사용하실 수 있습니다.');location.href='/verify';</script>"
+
             session["Info"] = _id, _pw, name
 
             if DB.submitRecentIP(_id, ip): return "<script>alert('서버에 오류가 발생하였습니다. \nCODE:L_UPD_Ad');history.go(-1);</script>"
@@ -130,10 +137,41 @@ def login():
             return "<script>alert('아이디 혹은 비밀번호를 확인해주세요.');history.go(-1);</script>"
 
 
+@app.route("/verify", methods=["GET"])
+def verify_email():
+    code = None
+    try: code = request.args.get("code")
+    except: pass
+
+    if code is None:
+        return gSet.html.verify
+    elif len(code) != 32:
+        return gSet.html.verify
+    elif len(code) == 32:
+        err, data = DB.verifyCode(code, request.environ['REMOTE_ADDR'])
+        print(err, data)
+        if err: return "<script>alert('코드 인증 중 오류가 발생하였습니다.');location.history(-1);</script>"
+        else:
+            if data is False:
+                return "<script>alert('인증코드를 입력해주세요.');</script>"
+            else:
+                return "<script>alert('성공적으로 인증이 완료되었습니다.');location.href='/';</script>"
+
+    return gSet.html.verify
+
+@app.route("/go")
+def go():
+    return "<script>location.href='/login';</script>"
+
+
 @app.route("/logout")
 def logout():
-    del session["Info"], session['User']
-    return "<script>alert('로그아웃 되었습니다.');location.href='/';</script>"
+    try:
+        del session["Info"]
+        del session['User']
+        return "<script>alert('로그아웃 되었습니다.');location.reload();</script>"
+    except:
+        return "<script>location.href='/go';</script>"
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -162,7 +200,7 @@ def register():
 
             # --- Check Validation --- #
             if DB.checkIDExist(_id, ip): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
-            if "admin" in _id.lower() or "webmaster" in _id.lower(): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
+            if any(word in _id.lower() for word in ['admin', 'webmaster', 'onpool', 'sunsky']): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
             if DB.checkEmailExist(_email, ip): return "<script>alert('이미 등록되어있는 이메일입니다!');history.go(-1);</script>"
             if _grade not in [1, 2, 3, 11, 12, 13, 21, 22, 23]: return "<script>alert('학교/학년을 다시 한 번 확인해주세요.');history.go(-1);</script>"
             #if len(_code) != 64: return "<script>alert('올바르지 않은 인증키입니다!');history.go(-1);</script>"
@@ -183,14 +221,16 @@ def register():
             #err, data = validater.sendVerf(_email, _code)
             #print(err, data)
 
-            # return "<script>alert('가입에 성공하였습니다!\\n이메일 인증을 진행한 후 로그인해주세요.');location.href='/login';</script>"
-            return "<script>alert('가입에 성공하였습니다!\\n');location.href='/login';</script>"
+            threading.Thread(target=email_verification.send, args=(_email, _code,)).start()
+            return "<script>alert('가입에 성공하였습니다!\\n이메일 인증을 진행한 후 로그인해주세요.');location.href='/login';</script>"
+            # return "<script>alert('가입에 성공하였습니다!\\n');location.href='/login';</script>"
         except Exception as ex:
             print("Error on Registration data verification : %s")
             raise ex
             # return "<script>alert(\"입력한 정보를 다시 한 번 확인해주세요.\"); history.go(-1);</script>"
     else:
-        return gSet.html.register
+        return send_from_directory("html", "register.html")
+        #return gSet.html.register
 
 
 # --- Admin Panel ---
@@ -363,7 +403,7 @@ def upload_video():
             print(d)
             print("success")
 
-            err, data = DB.insertVideo(id, filename[:-4], pid)
+            err, data = DB.insertVideo(id, filename[:-4], pid, session['User']['id'], request.environ['REMOTE_ADDR'])
             if err: return """
                         <script>
                             prompt('업로드에 실패하였습니다.','{}');
@@ -406,7 +446,7 @@ def panel_edit_message():
     qid = request.form.get("qid")
     msg = request.form.get("msg")
 
-    err, data = DB.updateQuestionMessage(qid, msg)
+    err, data = DB.updateQuestionMessage(qid, msg, session['User']['id'], request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR", "data": data})
     return json.dumps({"code":"SUC"})
 
@@ -415,7 +455,7 @@ def panel_edit_message():
 def panel_del_question():
     qid = request.form.get("qid")
 
-    err, data = DB.deleteQuestion(qid)
+    err, data = DB.deleteQuestion(qid, session['User']['id'], request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR", "data": data})
     return json.dumps({"code":"SUC"})
 
@@ -424,7 +464,7 @@ def panel_del_question():
 def panel_mark_question():
     qid = request.form.get("qid")
 
-    err, data = DB.markQuestion(qid)
+    err, data = DB.markQuestion(qid, session['User']['id'], request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR", "data": data})
     return json.dumps({"code":"SUC"})
 
@@ -433,16 +473,16 @@ def panel_mark_question():
 def panel_del_problem():
     pid = request.form.get("pid")
 
-    err, data = DB.deleteProblem(pid)
+    err, data = DB.deleteProblem(pid, session['User']['id'], request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR", "data": data})
     return json.dumps({"code":"SUC"})
 
 
 @app.route("/panel/api/delVideo", methods=["POST"])
 def panel_del_video():
-    pid = request.form.get("pid")
+    pid = request.form.get("vid")
 
-    err, data = DB.deleteVideo(pid)
+    err, data = DB.deleteVideo(pid, session['User']['id'], request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR", "data": data})
     return json.dumps({"code":"SUC"})
 
@@ -487,6 +527,11 @@ def submitQuestion():
     if count >= limit:
         return json.dumps({"code": "ERR", "data": "하루한도 초과 ({}개)".format(limit)})
 
+    now_point = get_my_point(simple=True, user=session['User']['id'])[0]
+    print(now_point, gSet.question_cost)
+    if now_point < gSet.question_cost:
+        return json.dumps({"code":"ERR", "data": "포인트가 부족합니다! (개당 {}포인트)".format(gSet.question_cost)})
+
     subject = request.form.get("subject")
     bookseries = request.form.get("bookseries")
     year = request.form.get("year")
@@ -509,7 +554,7 @@ def get_bookseries():
 
     err, data = DB.getBookSeries(request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR"})
-    else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data]})
+    else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data ]})
 
 
 @app.route("/api/get_year", methods=["POST"])
@@ -521,11 +566,22 @@ def get_year():
 
     err, data = DB.getYear(subject, book, request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR"})
-    else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data]})
+    else:
+        err, msg = DB.getBookMessage(book)
+        if err: return json.dumps({"code":"ERR"})
+        else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data], "msg":msg})
 
 
 @app.route("/api/me/my_point", methods=["GET"])
-def get_my_point():
+def get_my_point(simple=False, local=True, user=''):
+    if local:
+        err, data = DB.get_point(user, request.environ["REMOTE_ADDR"])
+        if simple:
+            if err:
+                return None
+            else:
+                return data
+
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
 
     user = session["User"]["id"]
@@ -672,4 +728,4 @@ def validation():
         return "{'code':'fail'}"
 
 
-app.run(gSet.host, gSet.port, debug=True, threaded=True)#, 443, ssl_context = ('ssl.crt', 'ssl.key'), debug=True, threaded=True)
+app.run(gSet.webhost, gSet.webport, debug=False, threaded=True)#, 443, ssl_context = ('ssl.crt', 'ssl.key'), debug=True, threaded=True)

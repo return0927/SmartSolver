@@ -18,7 +18,9 @@ function getQuestions(){
            var table = Doc.getElementById("questions").getElementsByTagName("tbody")[0];
            table.innerHTML = '';
            console.log(data.data);
-           for(const n in data.data) {
+           var n;
+
+           for(n=0; n<data.data.length; n++) {
                var row = table.insertRow(table.rows.length);
                // 처리번호(qid)	문제번호(pid) 등록자(sid)	등록일시(date+time)	과목(curr)	교재(bookname+year)	페이지(page)	번호(number)	상태(status) 메세지(message)
                var pid = row.insertCell(0);
@@ -77,7 +79,9 @@ function getProblems(){
            var table = Doc.getElementById("problems").getElementsByTagName("tbody")[0];
            table.innerHTML = '';
            console.log(data.data);
-           for(const n in data.data) {
+           var n;
+
+           for(n=0; n<data.data.length; n++) {
                var row = table.insertRow(table.rows.length);
 
                var pid = row.insertCell(0);
@@ -111,7 +115,9 @@ function getVideos(){
            var table = Doc.getElementById("videos").getElementsByTagName("tbody")[0];
            table.innerHTML = '';
            console.log(data.data);
-           for(const n in data.data) {
+           var n;
+
+           for(n=0; n<data.data.length; n++) {
                var row = table.insertRow(table.rows.length);
                // 질문번호(pid) 영상주소(url)   과목(curr)   책정보(bookname+year)  페이지(page)   번호(number)  강사(tutor)   조회수(hit)
                var pid = row.insertCell(0);

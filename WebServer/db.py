@@ -1,19 +1,25 @@
 import psycopg2
 import re
+import json
+import requests
 import random, string
 import validater
 import threading
+import general_settings
+import email_verification
 from datetime import datetime
 
 rand = lambda len: ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(len)).upper()
 
 class DB:
     def __init__(self):
-        self.host = "localhost"
-        self.port = 5432
-        self.user = "root"
-        self.pw = "SmartSolve2017!@#"
-        self.db = "ssolve"
+        self.gSet = general_settings.Settings()
+
+        self.host = self.gSet.host
+        self.port = self.gSet.port
+        self.user = self.gSet.user
+        self.pw = self.gSet.pw
+        self.db = self.gSet.db
 
         self.conn = None
         self.cursor = None
@@ -23,6 +29,38 @@ class DB:
         self.curDict = {}
 
         self.getConn()
+
+    def send_email(self, email, title, message):
+        threading.Thread(target=email_verification._send_notify, args=(email, title, message, )).start()
+
+    def _send_webhook(self, title, content, user, url, ip, colour=3447003):
+        data = {
+            "username": "온풀 웹서비스",
+            "avatar_url": "",
+            "tts": False,
+            "content": "",
+            "author": {
+                "name": "",
+                "icon_url": "",
+            },
+            "embeds": [
+                {
+                    "color": colour,
+                    "title": "{}".format(title),
+                    "description": "{}".format(content),
+                    "url": "http://onpool.kr",
+                    "fields": [
+                        {"name": "/ {} /".format(user), "value": "URL: {}\nIP: {}\nTIME:{}".format(url, ip, datetime.now().strftime("%Y-%m-%d_%H:%M:%S")), "inline": False},
+                    ],
+                    "footer": {
+                        'text': "ⓒ 이은학 (이은학#9299) \\ Github @R3turn0927 \\ KakaoTalk @bc1916"
+                    }
+                }
+            ]
+        }
+
+        return requests.post("https://discordapp.com/api/webhooks/400916071290372106/_BGMidyEj35vyLBzBQ2k-ILjBrVCVJDtpHBA940EznQDjO-eIqlTxhNEpNVkBGgoSILH", data=json.dumps(data), headers={"Content-type":"multipart/form-data"}).text
+
 
     def hardfilter(self, string, r=re.compile("[a-zA-Z0-9]{1,}")):
         print(string)
@@ -97,6 +135,26 @@ class DB:
         except Exception as ex:
             return str(ex)
 
+    def verifyCode(self, code, ip):
+        cur = self.getCursor()
+        try:
+            query = 'SELECT \'T\' FROM users WHERE email_verified=\'{}\';'.format(code)
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            ret = len(cur.fetchall())
+
+            if ret:
+                query = 'UPDATE users SET email_verified = \'VERIFIED\' WHERE email_verified=\'{}\';'.format(code)
+                self.writeLog(ip, query)
+
+                cur.execute(query)
+                return [False, True]
+            else:
+                return [False, False]
+        except Exception as ex:
+            return [True, str(ex)]
+
     def submitRecentIP(self, _id, _ip):
         cur = self.getCursor()
         try:
@@ -159,7 +217,7 @@ class DB:
 
         try:
             query = 'SELECT name FROM curriculum WHERE id=\'{}\';'.format(subjid)
-            self.writeLog("LOCAL", query)
+            #self.writeLog("LOCAL", query)
 
             cur.execute(query)
             result = cur.fetchall()
@@ -187,7 +245,21 @@ class DB:
 
         try:
             query = 'SELECT book_id FROM book WHERE bookname=\'{1}\' AND curr_id=\'{0}\' AND year=\'{2}\';'.format(subj, book, year)
-            self.writeLog("LOCAL", query)
+            #self.writeLog("LOCAL", query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+            return [False, result[0][0]]
+        except Exception as ex:
+            print(ex)
+            return [True, str(ex)]
+
+    def getBookMessage(self, book):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT message FROM bookseries WHERE name=\'{}\';'.format(book)
+            #self.writeLog("LOCAL", query)
 
             cur.execute(query)
             result = cur.fetchall()
@@ -201,7 +273,7 @@ class DB:
 
         try:
             query = 'SELECT curr_id, bookname, year FROM book WHERE book_id=\'{}\';'.format(bid)
-            self.writeLog("LOCAL", query)
+            #self.writeLog("LOCAL", query)
 
             cur.execute(query)
             result = cur.fetchall()
@@ -236,7 +308,7 @@ class DB:
 
         try:
             query = 'SELECT problem_id FROM problem WHERE book_id=\'{}\' AND page=\'{}\' AND number=\'{}\';'.format(book_id, page, number)
-            self.writeLog("LOCAL", query)
+            #self.writeLog("LOCAL", query)
             cur.execute(query)
             result = cur.fetchall()
             if len(result): return [False, result[0][0]]
@@ -251,7 +323,7 @@ class DB:
 
         try:
             query = 'SELECT book_id, page, number FROM problem WHERE problem_id=\'{}\';'.format(pid)
-            self.writeLog("LOCAL", query)
+            #self.writeLog("LOCAL", query)
             cur.execute(query)
             result = cur.fetchall()
             if len(result): return [False, result[0]]
@@ -267,7 +339,7 @@ class DB:
 
         try:
             query = 'SELECT url FROM solution_video WHERE problem_id=\'{}\';'.format(pid)
-            self.writeLog("LOCAL", query)
+            #self.writeLog("LOCAL", query)
             cur.execute(query)
             result = cur.fetchall()
             if len(result): return [False, result[0][0]]
@@ -277,19 +349,35 @@ class DB:
             print(ex)
             return [True, str(ex)]
 
+    def checkDuplicated(self, pid, requester):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT status FROM question WHERE student_id=\'{}\' and problem_id=\'{}\';'.format(requester, pid)
+            cur.execute(query)
+            result = cur.fetchall()
+            return [False, len(result)]
+        except Exception as ex:
+            raise ex
+            print(ex)
+            return [True, str(ex)]
+
     def submitmyQuestion(self, _requester, subj, bookseries, year, page, no, ip):
         cur = self.getCursor()
 
         try:
+            duplicated = False
             err, bookid = self.getBook(subj, bookseries, year)
             if err: raise Exception(bookid)
             err, pid = self.getProblemId(book_id=bookid, page=page, number=no)
             if err: raise Exception(pid)
+
             if pid:
                 print("Already Uploaded Question-Problem")
-                query = 'INSERT INTO question (problem_id, student_id) VALUES ({}, \'{}\') RETURNING question_id;'.format(pid, _requester)
-                self.writeLog(ip, query)
-                cur.execute(query)
+                err, ret = self.checkDuplicated(pid, _requester)
+                if err: pass
+                elif ret:
+                        duplicated = True
             else:
                 print("Adding New Question-Problem")
                 query = 'INSERT INTO problem (book_id, page, number) VALUES ({}, \'{}\', {}) RETURNING problem_id;'.format(bookid, page, no)
@@ -297,12 +385,18 @@ class DB:
                 cur.execute(query)
                 pid = cur.fetchall()[0][0]
 
-                query = 'INSERT INTO question (problem_id, student_id) VALUES ({}, \'{}\') RETURNING question_id;'.format(pid, _requester)
-                self.writeLog(ip, query)
-                cur.execute(query)
+            query = 'INSERT INTO question (problem_id, student_id) VALUES ({}, \'{}\') RETURNING question_id;'.format(pid, _requester)
+            self.writeLog(ip, query)
+            cur.execute(query)
 
             qid = cur.fetchall()[0][0]
             err, data = self.getVideo(pid)
+
+            self._send_webhook("질문등록",
+                               "Problem: {}\nQuestionID:{}\n교재번호: {}\n페이지(챕터): {}\n문항번호: {}\n신청자: {}\n\n새로운 질문이 접수되었습니다."
+                               .format(pid, qid, bookid, page, no, _requester),
+                               _requester, "DB.submitmyQuestion", ip
+                               )
             if err: pass
             else:
                 if data is False: pass
@@ -311,7 +405,15 @@ class DB:
                     self.writeLog("AUTOMATION", query)
                     cur.execute(query)
 
-            return [False, "질문이 등록되었습니다."]
+                    if not duplicated:
+                        query = 'UPDATE users SET point = point - {} WHERE id=\'{}\';'.format(self.gSet.question_cost, _requester)
+                        self.writeLog(ip, query)
+                        cur.execute(query)
+
+                    self._send_webhook("자동답변", "ProblemID: {}\nQuestionID: {}\n\n에 대한 해설영상이 자동으로 등록되었습니다.".format(pid, qid), _requester, "DB.submitmyQuestion", ip, colour=10539945)
+
+            if duplicated: return [False, "중복질문으로 인해 포인트 차감없이 질문이 등록되었습니다."]
+            else: return [False, "질문이 등록되었습니다."]
         except Exception as ex:
             raise ex
             return [True, str(ex)]
@@ -369,7 +471,7 @@ class DB:
         cur = self.getCursor()
 
         try:
-            query = 'SELECT rate_limit FROM users WHERE id=\'{}\';'.format(User['id'])
+            query = 'SELECT daily_limit FROM users WHERE id=\'{}\';'.format(User['id'])
             self.writeLog(ip, query)
 
             cur.execute(query)
@@ -432,7 +534,7 @@ class DB:
             print(ex)
             return [True, str(ex)]
 
-    def insertVideo(self, id, vid, pid):
+    def insertVideo(self, id, vid, pid, nick, ip):
         cur = self.getCursor()
 
         try:
@@ -440,6 +542,9 @@ class DB:
             self.writeLog("ADMIN", query)
 
             cur.execute(query)
+
+            self._send_webhook("영상 등록", "ProblemID: {}\nVideo Hash: {}\nUploader:{}\n\n새로운 영상이 업로드되었습니다.".format(pid, vid, id),
+                               "{}".format(nick), "DB.insertVideo", ip, colour=3092790)
 
             return [False, None]
 
@@ -451,10 +556,17 @@ class DB:
         cur = self.getCursor()
 
         try:
-            query = 'UPDATE question SET status=1, message=\'지연답변\', p_time = current_date, p_time_ = now() WHERE problem_id={}'.format(pid)
+            query = 'UPDATE question SET status=1, message=\'지연답변\', p_time = current_date, p_time_ = now() WHERE problem_id={} RETURNING (SELECT email FROM users WHERE id=question.student_id);;'.format(pid)
             self.writeLog("ADMIN", query)
 
             cur.execute(query)
+            emails = [ x[0] for x in cur.fetchall()]
+
+            for email in emails:
+                self.send_email(email, "회원님의 질문에 대한 영상이 준비되었습니다.", """
+                <p>회원님의 질문에 대한 해설영상이 방금 업로드되었습니다.</p>
+                <br />
+                <a target='_blank' href='http://onpool.kr/'>온풀 방문하기</a>""")
 
             return [False, None]
 
@@ -479,7 +591,7 @@ class DB:
         except Exception as ex:
             return [True, str(ex)]
 
-    def updateQuestionMessage(self, qid, msg):
+    def updateQuestionMessage(self, qid, msg, nick, ip):
         cur = self.getCursor()
 
         try:
@@ -487,11 +599,14 @@ class DB:
             self.writeLog("ADMIN", query)
             cur.execute(query)
 
+            self._send_webhook("질문 문구수정", "QuestionID: {}\nNewMessage:{}\n\n관리자에 의해 질문의 상태메세지가 수정되었습니다.".format(qid, msg),
+                               "{}".format(nick), "DB.updateQuestionMessage", ip, colour=3092790)
+
             return [False, None]
         except Exception as ex:
             return [True, str(ex)]
 
-    def markQuestion(self, qid):
+    def markQuestion(self, qid, nick, ip):
         cur = self.getCursor()
 
         try:
@@ -499,11 +614,14 @@ class DB:
             self.writeLog("ADMIN", query)
             cur.execute(query)
 
+            self._send_webhook("질문수정", "QuestionID: {}\n\n관리자에 의해 질문이 오류로 표기되었습니다.".format(qid),
+                               "{}".format(nick), "DB.markQuestion", ip, colour=3092790)
+
             return [False, None]
         except Exception as ex:
             return [True, str(ex)]
 
-    def deleteQuestion(self, qid):
+    def deleteQuestion(self, qid, nick, ip):
         cur = self.getCursor()
 
         try:
@@ -511,11 +629,14 @@ class DB:
             self.writeLog("ADMIN", query)
             cur.execute(query)
 
+            self._send_webhook("질문삭제", "QuestionID: {}\n\n관리자에 의해 질문이 삭제되었습니다.".format(qid),
+                               "{}".format(nick), "DB.deleteQuestion", ip, colour=13369344)
+
             return [False, None]
         except Exception as ex:
             return [True, str(ex)]
 
-    def deleteProblem(self, pid):
+    def deleteProblem(self, pid, nick, ip):
         cur = self.getCursor()
 
         try:
@@ -523,17 +644,23 @@ class DB:
             self.writeLog("ADMIN", query)
             cur.execute(query)
 
+            self._send_webhook("문항삭제", "QuestionID: {}\n\n관리자에 의해 질문이 삭제되었습니다.".format(pid),
+                               "{}".format(nick), "DB.deleteProblem", ip, colour=13369344)
+
             return [False, None]
         except Exception as ex:
             return [True, str(ex)]
 
-    def deleteVideo(self, pid):
+    def deleteVideo(self, pid, nick, ip):
         cur = self.getCursor()
 
         try:
             query = 'DELETE FROM solution_video WHERE problem_id=\'{}\';'.format(pid)
             self.writeLog("ADMIN", query)
             cur.execute(query)
+
+            self._send_webhook("영상삭제", "ProblemID: {}\n\n관리자에 의해 영상이 삭제되었습니다.".format(pid),
+                               "{}".format(nick), "DB.deleteVideo", ip, colour=13369344)
 
             return [False, None]
         except Exception as ex:

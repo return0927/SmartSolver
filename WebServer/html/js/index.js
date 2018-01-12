@@ -1,8 +1,6 @@
 var Doc = window.document;
 
-window.onload = onReady();
-
-function onReady() {
+$(document).ready(function(){
     console.log("Script enabled");
 
     getQuestions();
@@ -10,31 +8,25 @@ function onReady() {
     getPoint();
     getDayLimit();
     getBooks();
-}
+});
 
-function getBooks(self) {
+function getBooks() {
     $.get("/api/get_bookseries", function (response) {
-        var data = JSON.parse(response);
+        var result = JSON.parse(response);
 
-        if (data.code === "ERR") {
+        if (result.code === "ERR") {
             console.log("Error on Getting BookSeries.");
         } else {
-            var select = Doc.getElementById("book_series");
-            select.length = 0;
-            var index;
-
-            for (index=0; index<data.data.length; index++) {
-                var elem = Doc.createElement("option");
-                elem.value = data.data[index];
-                elem.innerHTML = data.data[index];
-                select.add(elem, null);
+            $("#book_series").empty();
+            for (var i=0; i<result.data.length; i++) {
+                $("#book_series").append(new Option(result.data[i], result.data[i]));
             }
         }
+        getYears();
     });
-    setInterval(getYears(null), 5000);
 }
 
-function getYears(self) {
+function getYears() {
     var subject = Doc.getElementById("subject").value;
     var bookseries = Doc.getElementById("book_series").value;
 
@@ -56,6 +48,8 @@ function getYears(self) {
                 elem.innerHTML = data.data[index];
                 select.add(elem, null);
             }
+
+            Doc.getElementById("message").innerHTML = data.msg;
         }
     });
 }
@@ -82,14 +76,20 @@ function submit() {
     $.post("/submit", {"subject": subject, "bookseries": bookseries, "year": year, "page": page, "q_no": q_no}, function(response){
         var data = JSON.parse(response);
 
-       if (data.code === "ERR") {
+       if (data.code === "ERR") { // 오류
            console.log("Error on Submit Question.");
            alert("질문을 등록하는 중에 오류가 발생하였습니다.");
            alert(data.data);
            location.reload();
-       } else {
-           alert(data.data);
-           location.reload();
+       } else { // 성공
+           alert(data.data); // 결과값 리턴메세지 표시
+
+           page = ''; // 제출 성공 후 제출창 리폼
+           q_no = '';
+
+           getQuestions(); // 질문리스트 새로고침
+           getTodayQuestions(); // 오늘 질문 새로고침
+           getPoint(); // 현재 포인트 새로고침
        }
     });
 }
@@ -103,6 +103,7 @@ function getQuestions(){
        } else {
            Doc.getElementById("total_questions").innerHTML = data.data.length +"개";
            var table = Doc.getElementById("questions").getElementsByTagName("tbody")[0];
+           table.innerHTML = '';
            // table.remove();
            console.log(data.data);
             var n;
@@ -115,7 +116,7 @@ function getQuestions(){
                var page = row.insertCell(3);
                var number = row.insertCell(4);
                var status = row.insertCell(5);
-               
+
                date.innerHTML = data.data[n][0];
                curr.innerHTML = data.data[n][1];
                book.innerHTML = data.data[n][2];

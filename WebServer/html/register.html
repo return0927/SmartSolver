@@ -1,105 +1,122 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-    <!-- Metadata Settings -->
-    <meta charset="UTF-8" http-equiv="Content-Type" content="text/html;"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="theme-color" content="#353535"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta http-equiv="X-Content-Type-Options=nosniff"/>
-    <meta http-equiv="Content-Security-Policy" content="child-src 'none'; object-src 'none'"/>
-    <meta http-equiv="content-language" content="ko"/>
+  <!-- Metadata Settings -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>회원가입 : 온풀</title>
+  <title>회원가입 : 온풀</title>
 
-    <!-- Scripts -->
-    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
 
-    <!-- BootStrap -->
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f8f8f8;
+      padding: 60px 0;
+    }
 
-    <style>
-        body {
-            background: #f8f8f8;
-            padding: 60px 0;
-        }
+    #login-form>div {
+      margin: 15px 0;
+    }
 
-        #login-form > div {
-            margin: 15px 0;
-        }
+    .topLogo {
+      height: 100px;
+      margin: auto;
+    }
 
-        .topLogo {
-            height: 100px;
-            margin: auto;
-        }
+    .modal {
+      position: relative;
+      top: auto;
+      right: auto;
+      bottom: auto;
+      left: auto;
+      z-index: 1;
+      display: block;
+    }
 
-    </style>
+    button {
+      width: 100%;
+    }
+  </style>
 
 </head>
 
 <body style="background: #f2f2f2;">
-
-<div class="container">
-    <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-        <div class="panel panel-success">
-            <div class="panel-body text-center">
-                <a href="/">
-                    <img class="topLogo" src="img/logo.png"/>
-                </a>
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <img class="topLogo" src="img/logo.png" />
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form" method="POST" action="">
+            <div class="form-group">
+              <label for="name">이름</label>
+              <input type="text" class="form-control" name="name" placeholder="홍길동" autofocus maxlength="5">
             </div>
-            <div class="panel-body">
-                <form id="login-form" method="POST" action="">
-                    <div>
-                        <input type="text" class="form-control" name="name" placeholder="성명" autofocus maxlength="5">
-                    </div>
-                    <div>
-                        <input type="date" class="form-control" name="birthday" placeholder="생년월일(2000-00-00)">
-                    </div>
-                    <div>
-                        <select name="school" >
-                            <option value="0">중학교</option>
-                            <option value="1">고등학교</option>
-                            <option value="2">기타</option>
-                        </select>
-                        <select name="grade" >
-                            <option value="1">1학년</option>
-                            <option value="2">2학년</option>
-                            <option value="3">3학년</option>
-                        </select>
-                    </div>
+            <div class="form-group">
+              <label for="name">생년월일</label>
+              <input type="date" class="form-control" name="birthday" placeholder="생년월일(2000-00-00)">
+            </div>
+            <div class="form-group">
+              <label>학력</label>
+              <div class="form-row">
+                <div class="col">
+                  <select name="school" class="form-control">
+                    <option value="0">중학교</option>
+                    <option value="1">고등학교</option>
+                    <option value="2">기타</option>
+                  </select>
+                </div>
+                <div class="col">
+                  <select name="grade" class="form-control">
+                    <option value="1">1학년</option>
+                    <option value="2">2학년</option>
+                    <option value="3">3학년</option>
+                  </select>
+                </div>
+              </div>
+            </div>
 
-                    <hr />
+            <hr>
 
-                    <div>
-                        <input type="email" class="form-control" name="email" placeholder="이메일" maxlength="40">
-                    </div>
-                    <div>
-                        <input type="text" class="form-control" name="id" placeholder="아이디" maxlength="20">
-                    </div>
-                    <div>
-                        <input type="password" class="form-control" name="pw" placeholder="비밀번호" maxlength="64">
-                    </div>
-                    <div>
-                        <input type="password" class="form-control" name="pw-confirm" placeholder="비밀번호 확인" maxlength="64">
-                    </div>
+            <div class="form-group">
+              <input type="email" class="form-control" name="email" placeholder="이메일" maxlength="40">
+              <small class="form-text text-muted">올바른 이메일이여야 합니다.</small>
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" name="id" placeholder="아이디" maxlength="20">
+              <small class="form-text text-muted">6글자 이상 20글자 이하</small>
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-control" name="pw" placeholder="비밀번호" maxlength="64">
+              <small class="form-text text-muted">8글자 이상 64글자 이하</small>
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-control" name="pw-confirm" placeholder="비밀번호 확인" maxlength="64">
+            </div>
 
-                    <hr />
+            <hr />
 
-                    <!--
+            <!--
                     <div>
                         <input type="text" class="form-control" name="code" placeholder="베타테스터 인증코드" maxlength="64">
                     </div> -->
 
-                    <div>
-                        <button type="submit" class="form-control btn btn-primary">회원가입</button>
-                    </div>
-                </form>
-                <a href="/login">이미 회원이신가요?</a>
-            </div>
+            <button type="submit" class="btn btn-primary">회원가입</button>
+          </form>
         </div>
+        <div class="modal-footer">
+          <a href="/login">이미 회원이신가요?</a>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 
 </body>
 

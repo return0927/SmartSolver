@@ -1,188 +1,151 @@
-@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+@import url(https://cdn.rawgit.com/moonspam/NanumSquare/master/nanumsquare.css);
+html {
+  font-size: 14px;
+}
 
 body {
-    height: 97%;
-    width: 97%;
-
-    overflow: hidden;
-
-    background-color: #fefff4;
-    font-family: "Nanum Gothic", sans-serif;
-
-    word-break: keep-all;
+  overflow: hidden;
+  height: 100vh;
+  background-color: #fefff4;
+  font-family: "NanumSquare", sans-serif;
+  word-break: keep-all;
+  display: flex;
 }
 
 body::-webkit-scrollbar {
-    width: 1em;
+  width: 1em;
 }
 
 a {
-    text-decoration: none !important;
-    color: purple;
-}
-
-.center {
-    text-align: center;
+  text-decoration: none !important;
+  color: purple;
 }
 
 #top_logo {
-    display: block;
-    height: 50px;
-
-    margin-top: 2px;
-    margin-left: auto;
-    margin-right: auto;
+  display: block;
+  height: 50px;
+  margin-top: 2px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-div.questions {
-    border: 1px solid #808080;
-
-    position: absolute;
-    width: 65%;
-    height: 90%;
+.box-head {
+  font-size: 1.6rem;
+  font-weight: 600;
+  display: flex;
+  margin-bottom: 0.1rem;
+}
+.box-head * {
+  -webkit-flex: 3;
+  -ms-flex: 3;
+  flex: 3;
 }
 
-div.questions > * {
-    margin-top: 15px;
-    margin-left: 15px;
-}
-
-div.questions {
-    width: 70%;
-    height: 96%;
-
-    min-width: 830px;
-    min-height: 680px;
+.questions {
+  -webkit-flex: 3;
+  -ms-flex: 3;
+  flex: 3;
+  border: 1px solid #808080;
+  margin: 1rem;
+  padding: 0.6rem;
 }
 
 #questions {
-    margin-left: auto;
-    margin-right: auto;
-    width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
 }
 
 #questions tr td {
-    text-align: center;
+  text-align: center;
 }
 
 #questions tbody tr td:nth-child(6) {
-    text-align: left;
+  text-align: left;
 }
 
-div.panel {
-    position: absolute;
-    margin-bottom: 0;
-    margin-left: 71%;
-    height: 100%;
-    width: 28%;
-
-    min-height: 723px;
-    max-width: 330px;
+.panel {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0;
 }
 
-div.panel > div {
-    border: 1px solid #808080;
-    position: relative;
-    /* margin-left: 66%; */
-
-    min-width: 300px;
-    margin-bottom: 3%;
-
-    width: 97%;
-    height: 30%;
+.panel>div {
+  border: 1px solid #808080;
+  min-width: 300px;
+  margin-bottom: 3%;
+  padding: 0.6rem;
+  margin: 0.5rem 1rem 0.5rem 0;
 }
 
-div.panel div > p {
-    margin: 15px;
+#submit_question{
+  -webkit-flex: 3;
+  -ms-flex: 3;
+  flex: 3;
 }
 
-div.panel div > h2 {
-    margin: 15px;
+#user_info{
+  -webkit-flex: 2;
+  -ms-flex: 2;
+  flex: 2;
 }
 
-div.panel div > table {
-    margin: 15px;
+#notice{
+  -webkit-flex: 2;
+  -ms-flex: 2;
+  flex: 2;
 }
 
-div.panel h4 {
-    margin-top: 0;
-    margin-bottom: 0;
+.panel ul {
+  padding: 0.5rem;
+  margin: 0;
 }
 
-div.panel ul {
-    list-style: none;
-    padding-left: 25px;
+.panel li {
+  display: block;
 }
 
-div.panel li {
-    padding-left: 10px;
-    text-indent: -.7em;
+.panel li::before {
+  content: "• ";
+  color: black;
 }
 
-div.panel li::before {
-    content: "• ";
-    color: black;
+#user_info .table td, #user_info .table th {
+  padding: .55rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
 }
 
-div#submit_question {
-    min-height: 200px;
+.userinfo-head {
+  display: flex;
 }
 
-div#submit_question > table {
-    margin-bottom: 0;
-    margin-right: 0;
+.userinfo-head * {
+  -webkit-flex: 3;
+  -ms-flex: 3;
+  flex: 3;
 }
 
-div#submit_question > table select {
-    width: 100px;
+#notice {
+  overflow-y: scroll;
 }
 
-div#submit_question > input {
-    position: absolute;
-    right: 0;
-    bottom: 5px;
+#notice::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #F5F5F5;
 }
 
-div#submit_question table input {
-    width: 100px;
+#notice::-webkit-scrollbar {
+  width: 0.7rem;
+  background-color: #F5F5F5;
 }
 
-div#submit_question table tr > td:nth-child(1) {
-    text-align: right;
-}
-
-div#user_info {
-    min-height: 220px;
-}
-
-div#user_info table tr > td:nth-child(1) {
-    text-align: right;
-}
-
-div#user_info table tr > td:nth-child(2) {
-    text-align: center;
-    width: 150px;
-}
-
-div#notice {
-    word-break: initial;
-    min-height: 160px;
-
-    overflow-x: hidden;
-}
-
-.status {
-    overflow: auto;
-}
-
-.success {
-    color: #009050;
-}
-
-.pending {
-    color: #FFC000;
-}
-
-.error {
-    color: #C00000;
+#notice::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #555;
 }
