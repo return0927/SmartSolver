@@ -7,6 +7,7 @@ class Html:
         self.login = self.Loader("html/login.html")
         self.register = self.Loader("html/register.html")
         self.verify = self.Loader("html/verify.html")
+        self.resend = self.Loader("html/resend.html")
         self.promotion = self.Loader("html/promotion.html")
         self.flowplayer = self.Loader("html/players/index.html")
 

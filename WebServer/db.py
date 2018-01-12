@@ -184,6 +184,20 @@ class DB:
         except Exception as ex:
             return [True, str(ex)]
 
+    def getUserCode(self, id, ip):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT email, email_verified FROM users WHERE id=\'{}\';'.format(id)
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+
+            return [False, result[0]]
+        except Exception as ex:
+            return [True, str(ex)]
+
     def getBookSeries(self, ip, selection="*"):
         cur = self.getCursor()
 

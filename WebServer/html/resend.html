@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <!-- Metadata Settings -->
+    <meta charset="UTF-8" http-equiv="Content-Type" content="text/html;"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#353535"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="X-Content-Type-Options=nosniff"/>
+    <meta http-equiv="Content-Security-Policy" content="child-src 'none'; object-src 'none'"/>
+    <meta http-equiv="content-language" content="ko"/>
+
+    <title>이메일 인증 : 온풀</title>
+
+    <!-- Scripts -->
+    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- BootStrap -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f8f8f8;
+            padding: 60px 0;
+        }
+
+        #login-form > div {
+            margin: 15px 0;
+        }
+
+        .topLogo {
+            height: 100px;
+            margin: auto;
+        }
+
+    </style>
+
+</head>
+
+<body style="background: #f2f2f2;">
+
+<div class="container">
+    <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="panel panel-success">
+            <div class="panel-body text-center">
+                <a href="/">
+                    <img class="topLogo" src="img/logo.png"/>
+                </a>
+            </div>
+            <div class="panel-body">
+                <form id="login-form" method="GET" action="">
+                    <div>
+                        <p>정상적인 서비스를 이용하시려면 이메일 인증을 하셔야합니다.</p>
+                        <input type="text" class="form-control" name="id" placeholder="아이디" autofocus>
+                    </div>
+                    <div>
+                        <button type="submit" class="form-control btn btn-primary">재전송</button>
+                    </div>
+                </form>
+                <a href="/login">이미 인증을 하셨습니까?</a>
+                <a href="/verify" style="float: right;">이메일 인증</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
