@@ -11,7 +11,7 @@
     <title>온풀 : 수학을 쉽게</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="css/index.css?v=4"/>
+    <link rel="stylesheet" type="text/css" href="css/index.css?v={{ version }}"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css">
 </head>
 
@@ -48,7 +48,7 @@
               <div style="text-align:right;"><button onclick="javascript: submit();" class="btn btn-sm btn-primary" style="vertical-align:top;">질문 등록하기</button></div>
             </div>
 
-            <table>
+            <table class="table">
                 <tr>
                     <td>과목</td>
                     <td width="5"><!-- WhieSpace --></td>
@@ -99,14 +99,16 @@
                     </td>
                 </tr>
             </table>
-            <p id="message"><!--WhiteSpace --></p>
+            <center id="message"><!--WhiteSpace --></center>
         </div>
 
         <div id="user_info">
-            <div class="box-head">회원정보</div>
+            <div class="box-head">
+                <span>회원정보</span>
+            </div>
 <!--		<a style="position: absolute; right:0; top:0;" href='/logout'>로그아웃</a> -->
             <div class="userinfo-head">
-              <div>OOO님 안녕하세요!</div>
+              <div id="welcome">{{ name }}님 안녕하세요!</div>
               <a href="/logout" style="text-align:right;width:100%;">로그아웃</a>
             </div>
             <table class="table">
@@ -131,10 +133,12 @@
         </div>
 
         <div id="notice">
-            <div class="box-head">공지사항</div>
+            <div class="box-head">
+                <span>공지사항</span>
+            </div>
 <!--            <p>현재는 베타테스트 기간입니다. 베타테스트 문의는 <a href="https://discord.gg/7YxYAv8" target="_blank">여기</a>로 해주시기 바랍니다.</p> -->
             <p style="">&nbsp;현재는 베타테스트 기간입니다. 베타테스트 제보/건의/문의 는 <a href="https://sites.google.com/sunskyedu.net/mathonpool" target="_blank">이곳의 게시판에서</a> 해주세요. <a href="https://discord.gg/7YxYAv8" target="_blank">디스코드 대화채널</a>도 열려있습니다.</p>
-            <h3>업데이트</h3>
+            <span>업데이트</span>
 
             <ul>
                 <h4><strong>[ 2018.01.12 ]</strong><br></h4>
@@ -177,5 +181,5 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
-<script src="js/index.js?v=4"></script>
+<script src="js/index.js?v={{ version }}"></script>
 </html>
