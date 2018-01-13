@@ -96,7 +96,10 @@ def root():
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
     if not session['User']['login']: return "<meta http-equiv='refresh' content='0; url=/login' />"
 
-    return send_from_directory("html", "index.html")
+    _, _, name = session["Info"]
+
+    #return send_from_directory("html", "index.html")
+    return render_template_string(gSet.html.root, version=gSet.version, name=name)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -232,6 +235,27 @@ def register():
         return send_from_directory("html", "register.html")
         #return gSet.html.register
 
+
+@app.route("/resend")
+def resend_code():
+    id = None
+    try: id = request.args.get("id")
+    except: pass
+
+    if id is None:
+        return gSet.html.resend
+    elif len(id):
+        err, data = DB.getUserCode(id, request.environ['REMOTE_ADDR'])
+        if err: return "<script>alert('계정 정보를 불러오는 중 오류가 발생하였습니다.');location.history(-1);</script>"
+        else:
+            if not len(data):
+                return "<script>alert('아이디를 입력해주세요.');</script>"
+            else:
+                email, code = data
+                if code == "VERIFIED": return """<script>alert('이미 코드를 인증하셨습니다!');alert('로그인페이지로 이동합니다.');
+                document.write("<meta http-equiv='refresh' content='0; url=/login' />");</script>"""
+                threading.Thread(target=email_verification.send, args=(email, code,)).start()
+                return "<script>alert('재전송이 요청되었습니다. 장시간 미도착시 service@onpool.kr 로 문의해주세요.');location.href='/';</script>"
 
 # --- Admin Panel ---
 @app.route("/panel", methods=["GET"])

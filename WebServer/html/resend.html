@@ -51,16 +51,15 @@
             <div class="panel-body">
                 <form id="login-form" method="GET" action="">
                     <div>
-                        <h4 style="margin-bottom: 0;">이메일로 인증코드를 보내드렸습니다.</h4>
                         <p>정상적인 서비스를 이용하시려면 이메일 인증을 하셔야합니다.</p>
-                        <input type="text" class="form-control" name="code" placeholder="인증코드(32자리)" autofocus>
+                        <input type="text" class="form-control" name="id" placeholder="아이디" autofocus>
                     </div>
                     <div>
-                        <button type="submit" class="form-control btn btn-primary">인증</button>
+                        <button type="submit" class="form-control btn btn-primary">재전송</button>
                     </div>
                 </form>
                 <a href="/login">이미 인증을 하셨습니까?</a>
-                <a href="/resend" style="float: right;">코드 재전송</a>
+                <a href="/verify" style="float: right;">이메일 인증</a>
             </div>
         </div>
     </div>

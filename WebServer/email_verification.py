@@ -1,10 +1,12 @@
 # -*- coding:utf-8 -*-
 import smtplib
-from email.mime.text import MIMEText
+from datetime import datetime
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 Host = "smtp.daum.net"
 Port = 465
+
 
 def send(email, code):
     try:
@@ -12,6 +14,7 @@ def send(email, code):
         return [False, None]
     except Exception as ex:
         return [True, str(ex)]
+
 
 def _send(code, email):
     msg = MIMEMultipart('alternative')
@@ -29,15 +32,17 @@ def _send(code, email):
 
     msg['From'] = "service@onpool.kr"
     msg['To'] = email
-    msg['Subject'] = "[온풀] 이메일 인증 / %s님의 이메일 인증코드입니다."%msg['To']
-
+    msg['Subject'] = "[온풀] 이메일 인증 / %s님의 이메일 인증코드입니다." % msg['To']
 
     smtp = smtplib.SMTP_SSL(Host, Port)
     smtp.login("bc1916", "leh81090306")
     print(msg['From'], msg['To'])
     result = smtp.sendmail(msg['From'], msg['To'], msg.as_string())
     print(result)
+    open("email.log", "a", encoding="UTF-8").write(
+        "Time: {} | To: {} | Title: {}".format(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"), msg['To'], msg['Subject']))
     smtp.quit()
+
 
 def _send_notify(email, title, notice):
     msg = MIMEMultipart('alternative')
@@ -54,10 +59,11 @@ def _send_notify(email, title, notice):
     msg['To'] = email
     msg['Subject'] = "[온풀] {}".format(title)
 
-
     smtp = smtplib.SMTP_SSL(Host, Port)
     smtp.login("bc1916", "leh81090306")
     print(msg['From'], msg['To'])
     result = smtp.sendmail(msg['From'], msg['To'], msg.as_string())
     print(result)
+    open("email.log", "a", encoding="UTF-8").write(
+        "Time: {} | To: {} | Title: {}".format(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"), msg['To'], msg['Subject']))
     smtp.quit()
