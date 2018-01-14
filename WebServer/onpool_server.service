@@ -1,0 +1,12 @@
+[Unit]
+Description=Onpool Python WebServer
+
+[Service]
+Type=simple
+WorkingDirectory=/root/SmartSolver/WebServer
+ExecStart=/usr/local/bin/python3.6 /root/SmartSolver/WebServer/server.py
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
