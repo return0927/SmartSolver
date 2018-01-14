@@ -99,7 +99,8 @@ def root():
     _, _, name = session["Info"]
 
     #return send_from_directory("html", "index.html")
-    return render_template_string(gSet.html.root, version=gSet.version, name=name)
+    #return render_template_string(gSet.html.root, version=gSet.version, name=name)
+    return render_template_string(open("html/index.html","r",encoding="UTF-8").read(), version=gSet.version, name=name)
 
 
 @app.route("/login", methods=["GET", "POST"])
