@@ -1,0 +1,91 @@
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
+html {
+    font-size: 14px;
+}
+
+body {
+    height: 100vh;
+    background-color: #fefff4;
+    font-family: "NanumSquare", sans-serif;
+    word-break: keep-all;
+    display: flex;
+}
+
+a {
+    text-decoration: none;
+}
+
+dl {
+    display: block;
+    -webkit-margin-before: 1em;
+    -webkit-margin-after: 1em;
+    -webkit-margin-start: 0;
+    -webkit-margin-end: 0;
+}
+
+nav {
+    margin-bottom: 15px;
+    list-style: none;
+    background-color: #fff;
+    border: 1px solid #d1d5da;
+    border-radius: 3px;
+}
+
+.container {
+    margin: 10px;
+}
+
+.content {
+    margin-bottom: 15px;
+    list-style: none;
+    background-color: #fff;
+    border: 1px solid #d1d5da;
+    border-radius: 3px;
+}
+
+.p-top {
+    padding-top: 10px;
+}
+
+.user-profile-picture {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.user-profile-name {
+    font-size: 26px;
+    line-height: 30px;
+    margin-bottom: 5px;
+}
+
+.user-profile-bio {
+    margin-left: 10px;
+    color: gray;
+    font-size: 14px;
+}
+
+.body-nav-item {
+    position: relative;
+    display: block;
+    padding: 8px 10px;
+    border-bottom: 1px solid #e1e4e8;
+}
+
+.body-nav-item.selected {
+    font-weight: 600;
+    color: #24292e;
+    cursor: default;
+    background-color: #fff;
+}
+
+.body-nav-item.selected::before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    content: "";
+    background-color: #e36209;
+}

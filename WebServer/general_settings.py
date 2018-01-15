@@ -6,6 +6,8 @@ class Settings:
         self.webhost = "0.0.0.0"
         self.webport = 80
 
+        self.version = 16
+
         self.html = htmls.Html()
 
         self.hostKey = "Onpool.kr-2018-R3turnDev-Leh852901-2017!@#"

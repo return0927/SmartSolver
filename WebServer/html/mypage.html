@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109853919-1"></script>
+    <script src="js/header.js"></script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>온풀 : 수학을 쉽게</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="css/mypage.css?v={{ version }}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css">
+</head>
+
+<body>
+<header>
+
+</header>
+<div class="container">
+    <div class="row">
+        <!-- Navigation -->
+        <div class="col-2" role="navigation">
+            <nav>
+                <div class="body-nav-item {% if now_page == 'summary' %}selected{% endif %}" aria-selected="{% if now_page == 'summary' %}true{% else %}false{% endif %}">
+                    <a href="?col=summary">개요</a>
+                </div>
+                <div class="body-nav-item {% if now_page == 'mypage' %}selected{% endif %}" aria-selected="{% if now_page == 'mypage' %}true{% else %}false{% endif %}">
+                    <a href="?col=mypage">개인정보</a>
+                </div>
+                <div class="body-nav-item {% if now_page == 'point' %}selected{% endif %}" aria-selected="{% if now_page == 'point' %}true{% else %}false{% endif %}">
+                    <a href="?col=point">포인트</a>
+                </div>
+            </nav>
+        </div>
+        <!-- Content -->
+        <div class="col content p-top">
+            {% if now_page == 'mypage' %}
+            <!-- Profile -->
+            <div>
+                <form action="/my_page/change_information" method="POST">
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="form-group">
+                                <dt>
+                                    <label>이름</label>
+                                </dt>
+                                <div>
+                                    <div>이름은 변경하실 수 없습니다.</div>
+                                    <input class="form-control" name="name" value="{{ session['Info'][2] }}" disabled/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <dt>
+                                    <label>아아디</label>
+                                </dt>
+                                <dl class="form-group">
+                                    <div>아이디는 변경하실 수 없습니다.</div>
+                                    <input class="form-control" name="id" value="{{ session['User']['id'] }}" disabled/>
+                                </dl>
+                            </div>
+                            <div class="form-group">
+                                <dt>
+                                    <label>학적사항</label>
+                                </dt>
+                                <div>
+                                    <div class="form-row">
+                                        <div class="col">
+                                            <select name="school" class="form-control">
+                                                <option value="0">중학교</option>
+                                                <option value="1">고등학교</option>
+                                                <option value="2">기타</option>
+                                            </select>
+                                        </div>
+                                        <div class="col">
+                                            <select name="grade" class="form-control">
+                                                <option value="1">1학년</option>
+                                                <option value="2">2학년</option>
+                                                <option value="3">3학년</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col">
+                                            <input class="form-control" name="school" value="{{ school }}" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <!-- Center margin -->
+                        </div>
+                        <div class="col-5">
+                            <div class="form-group">
+                                <dt>
+                                    <label>프로필 사진</label>
+                                </dt>
+                                <div>
+                                    <img class="user-profile-picture" width="150" height="150" src="img/profile_photos/{{ session['User']['id'] }}.jpg"/>
+                                    <input class="form-control" type="file" value="사진 변경"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="form-group">
+                                <dt>
+                                    <label>비밀번호</label>
+                                </dt>
+                                <div>
+                                    <div>꼭 입력해주세요.</div>
+                                    <input type="password" class="form-control" name="pw"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <dt>
+                                    <label>상태 메세지</label>
+                                </dt>
+                                <div>
+                                    <div>사람들에게 공개될 메세지입니다.</div>
+                                    <textarea class="form-control">{{ bio }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <!-- Center margin -->
+                        </div>
+                        <div class="col-5">
+                            <div class="form-group">
+                                <dt>
+                                    <label>비밀번호 변경</label>
+                                </dt>
+                                <div>
+                                    <div>비밀번호를 변경할 때만 적어주세요.</div>
+                                    <input type="password" class="form-control" name="pw-change"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% elif now_page == "point" %}
+            <div>
+                <div class="row">
+                    <div class="col form-group">
+                        <dt>
+                            <label>내 포인트</label>
+                        </dt>
+                        <div id="point_detail">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <td>일자</td>
+                                        <td>내용</td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>0000-00-00 00:00:00</td>
+                                        <td>WHITESPACE</td>
+                                        <td>+10,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% elif now_page == "summary" %}
+            <div>
+                <h1>마이페이지</h1>
+                <div class="row">
+                    <div class="col-8">
+                        <div>
+                            <span>서비스 이용</span>
+                            <
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <span>내 프로필</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
+<script src="js/mypage.js?v={{ version }}"></script>
+</html>
+
