@@ -383,6 +383,10 @@ class DB:
             duplicated = False
             err, bookid = self.getBook(subj, bookseries, year)
             if err: raise Exception(bookid)
+            # getBookInfo() 에서 chapter_indication 정보를 가져와서
+            # if chapter_idication == 0:
+            #     page = ''
+            # 다만, 이렇게 하려면 getBookInfo() 함수에서 chapter_indication 까지 가져오는 것으로 수정해야 한다.
             err, pid = self.getProblemId(book_id=bookid, page=page, number=no)
             if err: raise Exception(pid)
 
