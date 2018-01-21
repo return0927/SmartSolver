@@ -582,19 +582,22 @@ def get_bookseries():
     else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data ]})
 
 
-@app.route("/api/get_year", methods=["POST"])
-def get_year():
+@app.route("/api/get_bookinfo", methods=["POST"])
+def get_bookinfo():
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
 
     subject = request.form.get("subject")
     book = request.form.get("bookseries")
 
-    err, data = DB.getYear(subject, book, request.environ["REMOTE_ADDR"])
+    err, data = DB.getInfo(subject, book, request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code":"ERR"})
     else:
         err, msg = DB.getBookMessage(book)
         if err: return json.dumps({"code":"ERR"})
-        else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data], "msg":msg})
+        else:
+            print(data)
+            print([[x[0], x[1]] for x in data])
+            return json.dumps({"code": "SUC", "data": [[x[0], x[1]] for x in data], "msg": msg})
 
 
 @app.route("/api/me/my_point", methods=["GET"])

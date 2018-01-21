@@ -1,15 +1,21 @@
-import psycopg2
-import re
 import json
-import requests
-import random, string
-import validater
+import random
+import re
+import string
 import threading
-import general_settings
-import email_verification
 from datetime import datetime
 
-rand = lambda len: ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(len)).upper()
+import psycopg2
+import requests
+
+import email_verification
+import general_settings
+import validater
+
+rand = lambda len: ''.join(
+    random.SystemRandom().choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in
+    range(len)).upper()
+
 
 class DB:
     def __init__(self):
@@ -31,7 +37,7 @@ class DB:
         self.getConn()
 
     def send_email(self, email, title, message):
-        threading.Thread(target=email_verification._send_notify, args=(email, title, message, )).start()
+        threading.Thread(target=email_verification._send_notify, args=(email, title, message,)).start()
 
     def _send_webhook(self, title, content, user, url, ip, colour=3447003):
         data = {
@@ -50,7 +56,10 @@ class DB:
                     "description": "{}".format(content),
                     "url": "http://onpool.kr",
                     "fields": [
-                        {"name": "/ {} /".format(user), "value": "URL: {}\nIP: {}\nTIME:{}".format(url, ip, datetime.now().strftime("%Y-%m-%d_%H:%M:%S")), "inline": False},
+                        {"name": "/ {} /".format(user), "value": "URL: {}\nIP: {}\nTIME:{}".format(url, ip,
+                                                                                                   datetime.now().strftime(
+                                                                                                       "%Y-%m-%d_%H:%M:%S")),
+                         "inline": False},
                     ],
                     "footer": {
                         'text': "ⓒ 이은학 (이은학#9299) \\ Github @R3turn0927 \\ KakaoTalk @bc1916"
@@ -59,8 +68,9 @@ class DB:
             ]
         }
 
-        return requests.post("https://discordapp.com/api/webhooks/400916071290372106/_BGMidyEj35vyLBzBQ2k-ILjBrVCVJDtpHBA940EznQDjO-eIqlTxhNEpNVkBGgoSILH", data=json.dumps(data), headers={"Content-type":"multipart/form-data"}).text
-
+        return requests.post(
+            "https://discordapp.com/api/webhooks/400916071290372106/_BGMidyEj35vyLBzBQ2k-ILjBrVCVJDtpHBA940EznQDjO-eIqlTxhNEpNVkBGgoSILH",
+            data=json.dumps(data), headers={"Content-type": "multipart/form-data"}).text
 
     def hardfilter(self, string, r=re.compile("[a-zA-Z0-9]{1,}")):
         print(string)
@@ -68,7 +78,6 @@ class DB:
         if res is None: return False
         if string == res.group(): return True
         return False
-
 
     def getConn(self):
         self.conn = psycopg2.connect(
@@ -83,8 +92,8 @@ class DB:
         return self.conn
 
     def writeLog(self, _ip, query):
-        open(self.logfile%datetime.now().strftime("%Y-%m-%d"), "a", encoding="UTF-8")\
-            .write("%s\t%s\t%s\n"%(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"), _ip, query))
+        open(self.logfile % datetime.now().strftime("%Y-%m-%d"), "a", encoding="UTF-8") \
+            .write("%s\t%s\t%s\n" % (datetime.now().strftime("%Y-%m-%d_%H:%M:%S"), _ip, query))
 
     def getCursor(self):
         thread_id = threading.get_ident().__int__()
@@ -158,7 +167,7 @@ class DB:
     def submitRecentIP(self, _id, _ip):
         cur = self.getCursor()
         try:
-            query = 'UPDATE users SET recent_ip = \'%s\' WHERE id = \'%s\';'%(_ip, _id)
+            query = 'UPDATE users SET recent_ip = \'%s\' WHERE id = \'%s\';' % (_ip, _id)
             self.writeLog(_ip, query)
 
             cur.execute(query)
@@ -173,7 +182,7 @@ class DB:
 
         cur = self.getCursor()
         try:
-            query = 'SELECT name, email_verified FROM users WHERE id=\'%s\' and pw=\'%s\''%(_id,_pw)
+            query = 'SELECT name, email_verified FROM users WHERE id=\'%s\' and pw=\'%s\'' % (_id, _pw)
             self.writeLog(_ip, query)
 
             cur.execute(query)
@@ -231,7 +240,7 @@ class DB:
 
         try:
             query = 'SELECT name FROM curriculum WHERE id=\'{}\';'.format(subjid)
-            #self.writeLog("LOCAL", query)
+            # self.writeLog("LOCAL", query)
 
             cur.execute(query)
             result = cur.fetchall()
@@ -240,11 +249,11 @@ class DB:
             print(ex)
             return [True, str(ex)]
 
-    def getYear(self, subj, book, ip):
+    def getInfo(self, subj, book, ip):
         cur = self.getCursor()
 
         try:
-            query = 'SELECT year FROM book WHERE bookname=\'{1}\' AND curr_id=\'{0}\';'.format(subj, book)
+            query = 'SELECT year, chapter_indication FROM book WHERE bookname=\'{1}\' AND curr_id=\'{0}\';'.format(subj, book)
             self.writeLog(ip, query)
 
             cur.execute(query)
@@ -258,8 +267,10 @@ class DB:
         cur = self.getCursor()
 
         try:
-            query = 'SELECT book_id FROM book WHERE bookname=\'{1}\' AND curr_id=\'{0}\' AND year=\'{2}\';'.format(subj, book, year)
-            #self.writeLog("LOCAL", query)
+            query = 'SELECT book_id FROM book WHERE bookname=\'{1}\' AND curr_id=\'{0}\' AND year=\'{2}\';'.format(subj,
+                                                                                                                   book,
+                                                                                                                   year)
+            # self.writeLog("LOCAL", query)
 
             cur.execute(query)
             result = cur.fetchall()
@@ -273,7 +284,7 @@ class DB:
 
         try:
             query = 'SELECT message FROM bookseries WHERE name=\'{}\';'.format(book)
-            #self.writeLog("LOCAL", query)
+            # self.writeLog("LOCAL", query)
 
             cur.execute(query)
             result = cur.fetchall()
@@ -287,7 +298,7 @@ class DB:
 
         try:
             query = 'SELECT curr_id, bookname, year FROM book WHERE book_id=\'{}\';'.format(bid)
-            #self.writeLog("LOCAL", query)
+            # self.writeLog("LOCAL", query)
 
             cur.execute(query)
             result = cur.fetchall()
@@ -321,12 +332,15 @@ class DB:
         cur = self.getCursor()
 
         try:
-            query = 'SELECT problem_id FROM problem WHERE book_id=\'{}\' AND page=\'{}\' AND number=\'{}\';'.format(book_id, page, number)
-            #self.writeLog("LOCAL", query)
+            query = 'SELECT problem_id FROM problem WHERE book_id=\'{}\' AND page=\'{}\' AND number=\'{}\';'.format(
+                book_id, page, number)
+            # self.writeLog("LOCAL", query)
             cur.execute(query)
             result = cur.fetchall()
-            if len(result): return [False, result[0][0]]
-            else: return [False, False]
+            if len(result):
+                return [False, result[0][0]]
+            else:
+                return [False, False]
         except Exception as ex:
             raise ex
             print(ex)
@@ -337,11 +351,13 @@ class DB:
 
         try:
             query = 'SELECT book_id, page, number FROM problem WHERE problem_id=\'{}\';'.format(pid)
-            #self.writeLog("LOCAL", query)
+            # self.writeLog("LOCAL", query)
             cur.execute(query)
             result = cur.fetchall()
-            if len(result): return [False, result[0]]
-            else: return [False, False]
+            if len(result):
+                return [False, result[0]]
+            else:
+                return [False, False]
         except Exception as ex:
             raise ex
             print(ex)
@@ -353,11 +369,13 @@ class DB:
 
         try:
             query = 'SELECT url FROM solution_video WHERE problem_id=\'{}\';'.format(pid)
-            #self.writeLog("LOCAL", query)
+            # self.writeLog("LOCAL", query)
             cur.execute(query)
             result = cur.fetchall()
-            if len(result): return [False, result[0][0]]
-            else: return [False, False]
+            if len(result):
+                return [False, result[0][0]]
+            else:
+                return [False, False]
         except Exception as ex:
             raise ex
             print(ex)
@@ -389,17 +407,20 @@ class DB:
             if pid:
                 print("Already Uploaded Question-Problem")
                 err, ret = self.checkDuplicated(pid, _requester)
-                if err: pass
+                if err:
+                    pass
                 elif ret:
-                        duplicated = True
+                    duplicated = True
             else:
                 print("Adding New Question-Problem")
-                query = 'INSERT INTO problem (book_id, page, number) VALUES ({}, \'{}\', {}) RETURNING problem_id;'.format(bookid, page, no)
+                query = 'INSERT INTO problem (book_id, page, number) VALUES ({}, \'{}\', {}) RETURNING problem_id;'.format(
+                    bookid, page, no)
                 self.writeLog(ip, query)
                 cur.execute(query)
                 pid = cur.fetchall()[0][0]
 
-            query = 'INSERT INTO question (problem_id, student_id) VALUES ({}, \'{}\') RETURNING question_id;'.format(pid, _requester)
+            query = 'INSERT INTO question (problem_id, student_id) VALUES ({}, \'{}\') RETURNING question_id;'.format(
+                pid, _requester)
             self.writeLog(ip, query)
             cur.execute(query)
 
@@ -411,23 +432,31 @@ class DB:
                                .format(pid, qid, bookid, page, no, _requester),
                                _requester, "DB.submitmyQuestion", ip
                                )
-            if err: pass
+            if err:
+                pass
             else:
-                if data is False: pass
+                if data is False:
+                    pass
                 else:
-                    query = 'UPDATE question SET status = 1, message = \'자동답변\', p_time = current_date, p_time_ = now() WHERE question_id=\'{}\';'.format(qid)
+                    query = 'UPDATE question SET status = 1, message = \'자동답변\', p_time = current_date, p_time_ = now() WHERE question_id=\'{}\';'.format(
+                        qid)
                     self.writeLog("AUTOMATION", query)
                     cur.execute(query)
 
                     if not duplicated:
-                        query = 'UPDATE users SET point = point - {} WHERE id=\'{}\';'.format(self.gSet.question_cost, _requester)
+                        query = 'UPDATE users SET point = point - {} WHERE id=\'{}\';'.format(self.gSet.question_cost,
+                                                                                              _requester)
                         self.writeLog(ip, query)
                         cur.execute(query)
 
-                    self._send_webhook("자동답변", "ProblemID: {}\nQuestionID: {}\n\n에 대한 해설영상이 자동으로 등록되었습니다.".format(pid, qid), _requester, "DB.submitmyQuestion", ip, colour=10539945)
+                    self._send_webhook("자동답변",
+                                       "ProblemID: {}\nQuestionID: {}\n\n에 대한 해설영상이 자동으로 등록되었습니다.".format(pid, qid),
+                                       _requester, "DB.submitmyQuestion", ip, colour=10539945)
 
-            if duplicated: return [False, "중복질문으로 인해 포인트 차감없이 질문이 등록되었습니다."]
-            else: return [False, "질문이 등록되었습니다."]
+            if duplicated:
+                return [False, "중복질문으로 인해 포인트 차감없이 질문이 등록되었습니다."]
+            else:
+                return [False, "질문이 등록되었습니다."]
         except Exception as ex:
             raise ex
             return [True, str(ex)]
@@ -437,7 +466,8 @@ class DB:
         cur = self.getCursor()
 
         try:
-            query = 'SELECT problem_id, TO_CHAR(q_time, \'YYYY-MM-DD\'), status, message FROM question WHERE student_id=\'{}\' AND q_time >= {} ORDER BY question_id;'.format(User['id'], timestr)
+            query = 'SELECT problem_id, TO_CHAR(q_time, \'YYYY-MM-DD\'), status, message FROM question WHERE student_id=\'{}\' AND q_time >= {} ORDER BY question_id;'.format(
+                User['id'], timestr)
             self.writeLog(ip, query)
 
             cur.execute(query)
@@ -454,7 +484,8 @@ class DB:
         cur = self.getCursor()
 
         try:
-            query = 'SELECT count(problem_id) FROM question WHERE student_id=\'{}\' AND q_time >= {}'.format(User['id'], timestr)
+            query = 'SELECT count(problem_id) FROM question WHERE student_id=\'{}\' AND q_time >= {}'.format(User['id'],
+                                                                                                             timestr)
             self.writeLog(ip, query)
 
             cur.execute(query)
@@ -502,7 +533,8 @@ class DB:
 
         try:
             print(limit)
-            query = 'SELECT question_id, problem_id, student_id,TO_CHAR(q_time, \'YYYY-MM-DD\'), q_time_, status, message FROM question ORDER BY question_id DESC LIMIT {};'.format(limit)
+            query = 'SELECT question_id, problem_id, student_id,TO_CHAR(q_time, \'YYYY-MM-DD\'), q_time_, status, message FROM question ORDER BY question_id DESC LIMIT {};'.format(
+                limit)
             self.writeLog("ADMIN", query)
 
             cur.execute(query)
@@ -519,7 +551,8 @@ class DB:
 
         try:
             print(limit)
-            query = 'SELECT problem_id, url, tutor, hit FROM solution_video ORDER BY problem_id;-- LIMIT={};'.format(limit)
+            query = 'SELECT problem_id, url, tutor, hit FROM solution_video ORDER BY problem_id;-- LIMIT={};'.format(
+                limit)
             self.writeLog("ADMIN", query)
 
             cur.execute(query)
@@ -536,7 +569,8 @@ class DB:
 
         try:
             print(limit)
-            query = 'SELECT problem_id, book_id, page, number FROM problem ORDER BY problem_id;-- LIMIT={};'.format(limit)
+            query = 'SELECT problem_id, book_id, page, number FROM problem ORDER BY problem_id;-- LIMIT={};'.format(
+                limit)
             self.writeLog("ADMIN", query)
 
             cur.execute(query)
@@ -552,12 +586,15 @@ class DB:
         cur = self.getCursor()
 
         try:
-            query = 'INSERT INTO solution_video VALUES (\'{}\',\'/video/flowplayer/play?vid={}\',\'{}\',0);'.format(pid, vid, id)
+            query = 'INSERT INTO solution_video VALUES (\'{}\',\'/video/flowplayer/play?vid={}\',\'{}\',0);'.format(pid,
+                                                                                                                    vid,
+                                                                                                                    id)
             self.writeLog("ADMIN", query)
 
             cur.execute(query)
 
-            self._send_webhook("영상 등록", "ProblemID: {}\nVideo Hash: {}\nUploader:{}\n\n새로운 영상이 업로드되었습니다.".format(pid, vid, id),
+            self._send_webhook("영상 등록",
+                               "ProblemID: {}\nVideo Hash: {}\nUploader:{}\n\n새로운 영상이 업로드되었습니다.".format(pid, vid, id),
                                "{}".format(nick), "DB.insertVideo", ip, colour=3092790)
 
             return [False, None]
@@ -570,11 +607,12 @@ class DB:
         cur = self.getCursor()
 
         try:
-            query = 'UPDATE question SET status=1, message=\'지연답변\', p_time = current_date, p_time_ = now() WHERE problem_id={} RETURNING (SELECT email FROM users WHERE id=question.student_id);;'.format(pid)
+            query = 'UPDATE question SET status=1, message=\'지연답변\', p_time = current_date, p_time_ = now() WHERE problem_id={} RETURNING (SELECT email FROM users WHERE id=question.student_id);;'.format(
+                pid)
             self.writeLog("ADMIN", query)
 
             cur.execute(query)
-            emails = [ x[0] for x in cur.fetchall()]
+            emails = [x[0] for x in cur.fetchall()]
 
             for email in emails:
                 self.send_email(email, "회원님의 질문에 대한 영상이 준비되었습니다.", """
@@ -613,7 +651,8 @@ class DB:
             self.writeLog("ADMIN", query)
             cur.execute(query)
 
-            self._send_webhook("질문 문구수정", "QuestionID: {}\nNewMessage:{}\n\n관리자에 의해 질문의 상태메세지가 수정되었습니다.".format(qid, msg),
+            self._send_webhook("질문 문구수정",
+                               "QuestionID: {}\nNewMessage:{}\n\n관리자에 의해 질문의 상태메세지가 수정되었습니다.".format(qid, msg),
                                "{}".format(nick), "DB.updateQuestionMessage", ip, colour=3092790)
 
             return [False, None]
