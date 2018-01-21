@@ -131,14 +131,14 @@ class DB:
         _data = cur.fetchall()
         return _data
 
-    def addUser(self, _id, _pw, _name, _bir, _gra, _email, _ip, _code):
+    def addUser(self, _id, _pw, _name, _bir, _gra, _email, _ip, _code, _org):
         if not self.hardfilter(_id): return "Invalid Query"
         if validater.email(_email)[0]: return "Invalid Query"
 
         cur = self.getCursor()
         try:
-            cur.execute('INSERT INTO users VALUES(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\')' % (
-                _id, _pw, _name, _gra, _bir, _email, _code, _ip, _ip))
+            cur.execute('INSERT INTO users VALUES(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\')' % (
+                _id, _pw, _name, _gra, _bir, _email, _code, _ip, _ip, _org))
             self.conn.commit()
             return False
         except Exception as ex:
@@ -204,6 +204,34 @@ class DB:
             result = cur.fetchall()
 
             return [False, result[0]]
+        except Exception as ex:
+            return [True, str(ex)]
+
+    def getUserOrg(self, id):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT organization FROM users WHERE id=\'{}\';'.format(id)
+            self.writeLog("LOCAL", query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+
+            return [False, result[0][0]]
+        except Exception as ex:
+            return [True, str(ex)]
+
+    def getUserGrade(self, id):
+        cur = self.getCursor()
+
+        try:
+            query = 'SELECT grade FROM users WHERE id=\'{}\';'.format(id)
+            self.writeLog("LOCAL", query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+
+            return [False, result[0][0]]
         except Exception as ex:
             return [True, str(ex)]
 
