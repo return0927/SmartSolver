@@ -1,17 +1,18 @@
 import hashlib
 import json
-import validater
-import string
 import random
+import string
 import threading
-from urllib.parse import parse_qs
 from datetime import datetime
+from urllib.parse import parse_qs
+
 from OpenSSL import SSL
+from flask import *
 
 import db
-import general_settings
 import email_verification
-from flask import *
+import general_settings
+import validater
 
 gSet = general_settings.Settings()
 DB = db.DB()
@@ -24,10 +25,12 @@ context = SSL.Context(SSL.SSLv23_METHOD)
 context.use_certificate_file("ssl.crt")
 context.use_privatekey_file("ssl.key")
 
+
 class Tools():
     def getNick(self, session):
         _, _, nick = session['Info']
         return nick
+
 
 User = {
     "id": "",
@@ -39,6 +42,7 @@ ALLOWED_EXTENSIONS = {"mp4"}
 UPLOAD_FOLDER = "/var/www/vid.onpool.kr/public_html"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+
 def makeUserDict(id='', ip='', login=False):
     _temp = User.copy()
     _temp['id'] = id
@@ -46,12 +50,14 @@ def makeUserDict(id='', ip='', login=False):
     _temp['login'] = login
     return _temp
 
+
 tool = Tools()
+
 
 def event_logger(string, type='web'):
     try:
         open("logs/%s/%s.txt" % (type, datetime.now().strftime("%Y-%m-%d")), "a", encoding="UTF-8") \
-            .write(string+"\n")
+            .write(string + "\n")
     except Exception as ex:
         print(" --- 로깅시스템에 문제가 있습니다. ---")
         print(ex)
@@ -66,13 +72,15 @@ def page_not_found(e):
         message_two="주소를 다시 확인하시고 다시 요청하시기 바랍니다."
     )
 
+
 @app.errorhandler(500)
 def internal_error(e):
     return render_template_string(
         gSet.html.error,
         code="500 Internal Server Error",
         message_one="서버의 내부적 문제로 페이지를 표시할 수 없습니다.",
-        message_two="현재 상태가 지속되면 "+Markup("<a href='https://discord.gg/7YxYAv8' target='_blank'>여기</a>")+"로 문의주시기 바랍니다.".strip('"')
+        message_two="현재 상태가 지속되면 " + Markup(
+            "<a href='https://discord.gg/7YxYAv8' target='_blank'>여기</a>") + "로 문의주시기 바랍니다.".strip('"')
     )
 
 
@@ -88,7 +96,7 @@ def req():
 
     event_logger("\t".join([datetime.now().strftime("%Y-%m-%d_%H:%M:%S"), url, method, ip, str(logon), info]))
 
-    #print(threading.get_ident())
+    # print(threading.get_ident())
 
 
 @app.route("/")
@@ -98,9 +106,10 @@ def root():
 
     _, _, name = session["Info"]
 
-    #return send_from_directory("html", "index.html")
-    #return render_template_string(gSet.html.root, version=gSet.version, name=name)
-    return render_template_string(open("html/index.html","r",encoding="UTF-8").read(), version=gSet.version, name=name)
+    # return send_from_directory("html", "index.html")
+    # return render_template_string(gSet.html.root, version=gSet.version, name=name)
+    return render_template_string(open("html/index.html", "r", encoding="UTF-8").read(), version=gSet.version,
+                                  name=name)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -111,8 +120,8 @@ def login():
     isPost = request.method == "POST"
 
     if not isPost:
-        return send_from_directory("html","login.html")
-        #return gSet.html.login
+        return send_from_directory("html", "login.html")
+        # return gSet.html.login
 
     else:
         postData = parse_qs(request.get_data().decode())
@@ -122,7 +131,7 @@ def login():
     result, info = DB.getAccount(_id, _pw, ip)
 
     if result:
-        return "오류가 발생했습니다.<br/><br/>%s"%info
+        return "오류가 발생했습니다.<br/><br/>%s" % info
     else:
         if len(info):
             name = info[0][0]
@@ -132,11 +141,12 @@ def login():
 
             session["Info"] = _id, _pw, name
 
-            if DB.submitRecentIP(_id, ip): return "<script>alert('서버에 오류가 발생하였습니다. \nCODE:L_UPD_Ad');history.go(-1);</script>"
+            if DB.submitRecentIP(_id,
+                                 ip): return "<script>alert('서버에 오류가 발생하였습니다. \nCODE:L_UPD_Ad');history.go(-1);</script>"
 
             session['User']['id'] = _id
             session['User']['login'] = True
-            return "<script>alert('환영합니다, %s님!');location.href='/';</script>"%name
+            return "<script>alert('환영합니다, %s님!');location.href='/';</script>" % name
         else:
             return "<script>alert('아이디 혹은 비밀번호를 확인해주세요.');history.go(-1);</script>"
 
@@ -144,8 +154,10 @@ def login():
 @app.route("/verify", methods=["GET"])
 def verify_email():
     code = None
-    try: code = request.args.get("code")
-    except: pass
+    try:
+        code = request.args.get("code")
+    except:
+        pass
 
     if code is None:
         return gSet.html.verify
@@ -154,7 +166,8 @@ def verify_email():
     elif len(code) == 32:
         err, data = DB.verifyCode(code, request.environ['REMOTE_ADDR'])
         print(err, data)
-        if err: return "<script>alert('코드 인증 중 오류가 발생하였습니다.');location.history(-1);</script>"
+        if err:
+            return "<script>alert('코드 인증 중 오류가 발생하였습니다.');location.history(-1);</script>"
         else:
             if data is False:
                 return "<script>alert('인증코드를 입력해주세요.');</script>"
@@ -162,6 +175,7 @@ def verify_email():
                 return "<script>alert('성공적으로 인증이 완료되었습니다.');location.href='/';</script>"
 
     return gSet.html.verify
+
 
 @app.route("/go")
 def go():
@@ -191,39 +205,42 @@ def register():
             if pw != pw_confirm: return "<script>alert('비밀번호, 비밀번호 확인이 일치하지 않습니다.');history.go(-1);</script>"
             del pw_confirm
 
-
             # --- Parse data --- #
             _name = postData['name'][0]
             _birthday = postData['birthday'][0]
-            _grade = int(postData['school'][0])*10 + int(postData['grade'][0])
+            _grade = int(postData['school'][0]) * 10 + int(postData['grade'][0])
             _email = postData['email'][0]
             _id = postData['id'][0]
-            #_code = postData['code'][0]
+            _org = postData['organization'][0]
+            _org = __import__("re").sub("[^가-힣a-zA-Z0-9]", "", _org)
+            # _code = postData['code'][0]
             _pw = pw
             del pw, postData
 
             # --- Check Validation --- #
             if DB.checkIDExist(_id, ip): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
-            if any(word in _id.lower() for word in ['admin', 'webmaster', 'onpool', 'sunsky']): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
+            if any(word in _id.lower() for word in ['admin', 'webmaster', 'onpool',
+                                                    'sunsky']): return "<script>alert('사용할 수 없는 아이디입니다!');history.go(-1);</script>"
             if DB.checkEmailExist(_email, ip): return "<script>alert('이미 등록되어있는 이메일입니다!');history.go(-1);</script>"
-            if _grade not in [1, 2, 3, 11, 12, 13, 21, 22, 23]: return "<script>alert('학교/학년을 다시 한 번 확인해주세요.');history.go(-1);</script>"
-            #if len(_code) != 64: return "<script>alert('올바르지 않은 인증키입니다!');history.go(-1);</script>"
-            #if not DB.checkBetaCode(_code, ip): return "<script>alert('올바르지 않은 인증키입니다!');history.go(-1);</script>"
+            if _grade not in [1, 2, 3, 11, 12, 13, 21, 22,
+                              23]: return "<script>alert('학교/학년을 다시 한 번 확인해주세요.');history.go(-1);</script>"
+            # if len(_code) != 64: return "<script>alert('올바르지 않은 인증키입니다!');history.go(-1);</script>"
+            # if not DB.checkBetaCode(_code, ip): return "<script>alert('올바르지 않은 인증키입니다!');history.go(-1);</script>"
 
             err, data = validater.birthday(_birthday)
-            if err: return "<script>alert('%s');history.go(-1);</script>"%data
+            if err: return "<script>alert('%s');history.go(-1);</script>" % data
 
             err, data = validater.email(_email)
-            if err: return "<script>alert('%s');history.go(-1);</script>"%data
+            if err: return "<script>alert('%s');history.go(-1);</script>" % data
 
             _code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(32))
             # --- IP Info Update --- #
-            result = DB.addUser(_id, _pw, _name, _birthday, _grade, _email, ip, _code)
+            result = DB.addUser(_id, _pw, _name, _birthday, _grade, _email, ip, _code, _org)
             if result:
-                return "오류가 발생하였습니다!<br /><br />%s"%result
+                return "오류가 발생하였습니다!<br /><br />%s" % result
 
-            #err, data = validater.sendVerf(_email, _code)
-            #print(err, data)
+            # err, data = validater.sendVerf(_email, _code)
+            # print(err, data)
 
             threading.Thread(target=email_verification.send, args=(_email, _code,)).start()
             return "<script>alert('가입에 성공하였습니다!\\n이메일 인증을 진행한 후 로그인해주세요.');location.href='/login';</script>"
@@ -234,20 +251,23 @@ def register():
             # return "<script>alert(\"입력한 정보를 다시 한 번 확인해주세요.\"); history.go(-1);</script>"
     else:
         return send_from_directory("html", "register.html")
-        #return gSet.html.register
+        # return gSet.html.register
 
 
 @app.route("/resend")
 def resend_code():
     id = None
-    try: id = request.args.get("id")
-    except: pass
+    try:
+        id = request.args.get("id")
+    except:
+        pass
 
     if id is None:
         return gSet.html.resend
     elif len(id):
         err, data = DB.getUserCode(id, request.environ['REMOTE_ADDR'])
-        if err: return "<script>alert('계정 정보를 불러오는 중 오류가 발생하였습니다.');location.history(-1);</script>"
+        if err:
+            return "<script>alert('계정 정보를 불러오는 중 오류가 발생하였습니다.');location.history(-1);</script>"
         else:
             if not len(data):
                 return "<script>alert('아이디를 입력해주세요.');</script>"
@@ -257,6 +277,7 @@ def resend_code():
                 document.write("<meta http-equiv='refresh' content='0; url=/login' />");</script>"""
                 threading.Thread(target=email_verification.send, args=(email, code,)).start()
                 return "<script>alert('재전송이 요청되었습니다. 장시간 미도착시 service@onpool.kr 로 문의해주세요.');location.href='/';</script>"
+
 
 # --- Admin Panel ---
 @app.route("/panel", methods=["GET"])
@@ -273,7 +294,7 @@ def get_all_questions():
     print(count)
     if count is None: count = 20
     err, data = DB.getAllQuestions(limit=count)
-    if err: return json.dumps({"code":"ERR"})
+    if err: return json.dumps({"code": "ERR"})
 
     ret = []
     for pid, qid, sid, date, t, status, message in data:
@@ -287,9 +308,12 @@ def get_all_questions():
         if err: return json.dumps({"code": "ERR"})
 
         # 처리번호(qid)	등록자(sid)	등록일시(date+time)	과목(curr)	교재(bookname+year)	페이지(page)	번호(number)	상태(status) 메세지(message)
-        ret.append([pid, qid, sid, date+t.strftime(" %H:%M:%S"), curr, "{}({})".format(bookname, year), page, number, status, message])
+        ret.append(
+            [pid, qid, sid, date + t.strftime(" %H:%M:%S"), curr, "{}({})".format(bookname, year), page, number, status,
+             message])
 
-    return json.dumps({"code":"SUC", "data": ret})
+    return json.dumps({"code": "SUC", "data": ret})
+
 
 @app.route("/panel/api/videos", methods=["GET"])
 def get_all_videos():
@@ -299,7 +323,7 @@ def get_all_videos():
     print(count)
     if count is None: count = 20
     err, data = DB.getAllVideos(limit=count)
-    if err: return json.dumps({"code":"ERR"})
+    if err: return json.dumps({"code": "ERR"})
 
     ret = []
     for pid, url, tutor, hit in data:
@@ -317,6 +341,7 @@ def get_all_videos():
 
     return json.dumps({"code": "SUC", "data": ret})
 
+
 @app.route("/panel/api/problems", methods=["GET"])
 def get_all_problems():
     if not session['User']['id'] in gSet.admins: return page_not_found(None)
@@ -325,7 +350,7 @@ def get_all_problems():
     print(count)
     if count is None: count = 20
     err, data = DB.getAllProblems(limit=count)
-    if err: return json.dumps({"code":"ERR"})
+    if err: return json.dumps({"code": "ERR"})
 
     ret = []
     for pid, bid, page, number in data:
@@ -337,7 +362,8 @@ def get_all_problems():
 
         ret.append([pid, curr, "{}({})".format(bookname, year), page, number])
 
-    return json.dumps({"code":"SUC", "data": ret})
+    return json.dumps({"code": "SUC", "data": ret})
+
 
 @app.route("/panel/api/make", methods=["GET", "POST"])
 def make_problem():
@@ -357,7 +383,7 @@ def make_problem():
                 prompt("문제를 만드는 중 오류가 생겼습니다.", "{}";
                 location.history(-1);
             </script>
-            """.format(data.replcae("\n"," "))
+            """.format(data.replcae("\n", " "))
 
             return """
             <script>
@@ -366,7 +392,7 @@ def make_problem():
             </script>
             """.format(data)
         except Exception as ex:
-            return json.dumps({"code":"ERR", "data":str(ex)})
+            return json.dumps({"code": "ERR", "data": str(ex)})
     elif request.method == "GET":
         return """
     <!doctype html>
@@ -399,12 +425,13 @@ def make_problem():
     </form>
     """
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-@app.route("/panel/api/upload", methods=["GET","POST"])
+@app.route("/panel/api/upload", methods=["GET", "POST"])
 def upload_video():
     if not session['User']['id'] in gSet.admins: return page_not_found(None)
 
@@ -417,14 +444,14 @@ def upload_video():
         pid = request.form.get("pid")
         print(vid)
 
-        if not vid.isnumeric(): return json.dumps({"code":"ERR"})
+        if not vid.isnumeric(): return json.dumps({"code": "ERR"})
 
         if file and allowed_file(file.filename):
             m = hashlib.sha256()
-            m.update( str((int(vid)+38)**2).encode() )
+            m.update(str((int(vid) + 38) ** 2).encode())
             filename = m.hexdigest() + ".mp4"
             print(vid, filename)
-            d = file.save(app.config['UPLOAD_FOLDER']+"/"+filename)
+            d = file.save(app.config['UPLOAD_FOLDER'] + "/" + filename)
             print(d)
             print("success")
 
@@ -434,14 +461,14 @@ def upload_video():
                             prompt('업로드에 실패하였습니다.','{}');
                             window.close();
                         </script>
-                        """.format(data.replace("\n"," "))
+                        """.format(data.replace("\n", " "))
             err, data = DB.updateStatus(pid)
             if err: return """
                         <script>
                             prompt('업로드는 성공하였으나, 자동처리에 문제가 있습니다..','{}');
                             window.close();
                         </script>
-                        """.format(filename[:4]+"|"+data.replace("\n"," "))
+                        """.format(filename[:4] + "|" + data.replace("\n", " "))
 
             return """
             <script>
@@ -450,7 +477,7 @@ def upload_video():
             </script>
             """.format(filename[:-4])
 
-        return json.dumps({"code":"ERR"})
+        return json.dumps({"code": "ERR"})
 
     elif request.method == "GET":
         return """
@@ -472,8 +499,8 @@ def panel_edit_message():
     msg = request.form.get("msg")
 
     err, data = DB.updateQuestionMessage(qid, msg, session['User']['id'], request.environ["REMOTE_ADDR"])
-    if err: return json.dumps({"code":"ERR", "data": data})
-    return json.dumps({"code":"SUC"})
+    if err: return json.dumps({"code": "ERR", "data": data})
+    return json.dumps({"code": "SUC"})
 
 
 @app.route("/panel/api/delQuestion", methods=["POST"])
@@ -481,8 +508,8 @@ def panel_del_question():
     qid = request.form.get("qid")
 
     err, data = DB.deleteQuestion(qid, session['User']['id'], request.environ["REMOTE_ADDR"])
-    if err: return json.dumps({"code":"ERR", "data": data})
-    return json.dumps({"code":"SUC"})
+    if err: return json.dumps({"code": "ERR", "data": data})
+    return json.dumps({"code": "SUC"})
 
 
 @app.route("/panel/api/markQuestion", methods=["POST"])
@@ -490,8 +517,8 @@ def panel_mark_question():
     qid = request.form.get("qid")
 
     err, data = DB.markQuestion(qid, session['User']['id'], request.environ["REMOTE_ADDR"])
-    if err: return json.dumps({"code":"ERR", "data": data})
-    return json.dumps({"code":"SUC"})
+    if err: return json.dumps({"code": "ERR", "data": data})
+    return json.dumps({"code": "SUC"})
 
 
 @app.route("/panel/api/delProblem", methods=["POST"])
@@ -499,8 +526,8 @@ def panel_del_problem():
     pid = request.form.get("pid")
 
     err, data = DB.deleteProblem(pid, session['User']['id'], request.environ["REMOTE_ADDR"])
-    if err: return json.dumps({"code":"ERR", "data": data})
-    return json.dumps({"code":"SUC"})
+    if err: return json.dumps({"code": "ERR", "data": data})
+    return json.dumps({"code": "SUC"})
 
 
 @app.route("/panel/api/delVideo", methods=["POST"])
@@ -508,8 +535,9 @@ def panel_del_video():
     pid = request.form.get("vid")
 
     err, data = DB.deleteVideo(pid, session['User']['id'], request.environ["REMOTE_ADDR"])
-    if err: return json.dumps({"code":"ERR", "data": data})
-    return json.dumps({"code":"SUC"})
+    if err: return json.dumps({"code": "ERR", "data": data})
+    return json.dumps({"code": "SUC"})
+
 
 # --- Function ---
 """"@app.route("/submit", methods=["POST"])
@@ -537,17 +565,18 @@ def submitQuestion():
     return "<script>alert('등록되었습니다!');location.reload();</script>"
 """
 
+
 @app.route("/submit", methods=["POST"])
 def submitQuestion():
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
 
-    err, limit = DB.getMyDayRateLimit(session['User'], "AUTOMATION:"+request.environ["REMOTE_ADDR"])
+    err, limit = DB.getMyDayRateLimit(session['User'], "AUTOMATION:" + request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code": "ERR", "data": limit})
 
-    err, count = DB.getMyQuestionTodayCount(session['User'], 'AUTOMATION:'+request.environ["REMOTE_ADDR"])
+    err, count = DB.getMyQuestionTodayCount(session['User'], 'AUTOMATION:' + request.environ["REMOTE_ADDR"])
     if err: return json.dumps({"code": "ERR", "data": count})
 
-    print("Day Limitation",count, limit)
+    print("Day Limitation", count, limit)
 
     if count >= limit:
         return json.dumps({"code": "ERR", "data": "하루한도 초과 ({}개)".format(limit)})
@@ -555,7 +584,7 @@ def submitQuestion():
     now_point = get_my_point(simple=True, user=session['User']['id'])[0]
     print(now_point, gSet.question_cost)
     if now_point < gSet.question_cost:
-        return json.dumps({"code":"ERR", "data": "포인트가 부족합니다! (개당 {}포인트)".format(gSet.question_cost)})
+        return json.dumps({"code": "ERR", "data": "포인트가 부족합니다! (개당 {}포인트)".format(gSet.question_cost)})
 
     subject = request.form.get("subject")
     bookseries = request.form.get("bookseries")
@@ -563,13 +592,16 @@ def submitQuestion():
     page = request.form.get("page")
     q_no = request.form.get("q_no")
 
-    if not year.isnumeric(): return json.dumps({"code":"ERR"})
-    if not q_no.isnumeric(): return json.dumps({"code":"ERR"})
-    if "-" in subject + bookseries + year + page + q_no: return json.dumps({"code":"ERR"})
+    if not year.isnumeric(): return json.dumps({"code": "ERR"})
+    if not q_no.isnumeric(): return json.dumps({"code": "ERR"})
+    if "-" in subject + bookseries + year + page + q_no: return json.dumps({"code": "ERR"})
 
-    err, data = DB.submitmyQuestion(session['User']['id'], subject, bookseries, year, page ,q_no, request.environ["REMOTE_ADDR"])
-    if err: return json.dumps({"code":"ERR", "data": data})
-    else: return json.dumps({"code":"SUC", "data": data})
+    err, data = DB.submitmyQuestion(session['User']['id'], subject, bookseries, year, page, q_no,
+                                    request.environ["REMOTE_ADDR"])
+    if err:
+        return json.dumps({"code": "ERR", "data": data})
+    else:
+        return json.dumps({"code": "SUC", "data": data})
 
 
 # --- API Controller ---
@@ -578,8 +610,10 @@ def get_bookseries():
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
 
     err, data = DB.getBookSeries(request.environ["REMOTE_ADDR"])
-    if err: return json.dumps({"code":"ERR"})
-    else: return json.dumps({"code":"SUC", "data": [ x[0] for x in data ]})
+    if err:
+        return json.dumps({"code": "ERR"})
+    else:
+        return json.dumps({"code": "SUC", "data": [x[0] for x in data]})
 
 
 @app.route("/api/get_bookinfo", methods=["POST"])
@@ -590,10 +624,12 @@ def get_bookinfo():
     book = request.form.get("bookseries")
 
     err, data = DB.getInfo(subject, book, request.environ["REMOTE_ADDR"])
-    if err: return json.dumps({"code":"ERR"})
+    if err:
+        return json.dumps({"code": "ERR"})
     else:
         err, msg = DB.getBookMessage(book)
-        if err: return json.dumps({"code":"ERR"})
+        if err:
+            return json.dumps({"code": "ERR"})
         else:
             print(data)
             print([[x[0], x[1]] for x in data])
@@ -615,8 +651,10 @@ def get_my_point(simple=False, local=True, user=''):
     user = session["User"]["id"]
 
     err, data = DB.get_point(user, request.environ["REMOTE_ADDR"])
-    if err: return json.dumps({"code":"ERR"})
-    else: return json.dumps({"code":"SUC", "data": data})
+    if err:
+        return json.dumps({"code": "ERR"})
+    else:
+        return json.dumps({"code": "SUC", "data": data})
 
 
 @app.route("/api/me/questions", methods=["GET"])
@@ -624,27 +662,31 @@ def get_my_questions():
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
 
     err, data = DB.getMyQuestion(session['User'], request.environ['REMOTE_ADDR'])
-    if err: return json.dumps({"code":"ERR"})
+    if err:
+        return json.dumps({"code": "ERR"})
     else:
         ret = []
         for pid, date, status, message in data:
             err, [bookid, page, number] = DB.getProblemInfo(pid)
-            if err: return json.dumps({"code":"ERR"})
+            if err: return json.dumps({"code": "ERR"})
 
             err, data = DB.getVideo(pid)
-            if err: url = 'javascript: alert("오류로 인해 영상을 불러오지 못했습니다.");'
+            if err:
+                url = 'javascript: alert("오류로 인해 영상을 불러오지 못했습니다.");'
             else:
-                if data is False: url = ''
-                else: url = data
+                if data is False:
+                    url = ''
+                else:
+                    url = data
 
             err, [currid, bookname, year] = DB.getBookInfo(bookid)
-            if err: return json.dumps({"code":"ERR"})
+            if err: return json.dumps({"code": "ERR"})
 
             err, curr = DB.getSub(currid)
-            if err: return json.dumps({"code":"ERR"})
+            if err: return json.dumps({"code": "ERR"})
 
             ret.append([date, curr, "{}({})".format(bookname, year), page, number, status, message, url])
-        return json.dumps({"code":"SUC", "data": ret})
+        return json.dumps({"code": "SUC", "data": ret})
 
 
 @app.route("/api/me/questions_today", methods=["GET"])
@@ -653,8 +695,10 @@ def get_my_today_questions():
 
     err, data = DB.getMyQuestion(session['User'], request.environ["REMOTE_ADDR"], timestr='current_date')
 
-    if err: return json.dumps({"code":"ERR"})
-    else: return json.dumps({"code":"SUC", "data": data})
+    if err:
+        return json.dumps({"code": "ERR"})
+    else:
+        return json.dumps({"code": "SUC", "data": data})
 
 
 @app.route("/api/me/day_rate_limit", methods=["GET"])
@@ -663,8 +707,10 @@ def get_my_date_rate():
 
     err, data = DB.getMyDayRateLimit(session['User'], request.environ["REMOTE_ADDR"])
 
-    if err: return json.dumps({"code":"ERR"})
-    else: return json.dumps({"code":"SUC", "data": data})
+    if err:
+        return json.dumps({"code": "ERR"})
+    else:
+        return json.dumps({"code": "SUC", "data": data})
 
 
 # --- File hosts ---
@@ -698,19 +744,21 @@ def fplayer():
     try:
         vid = request.args.get("vid")
         id, pw, name = session["Info"]
-        print(id+name+ip)
-        token = encrypt(id+name+ip+str(vid))
+        print(id + name + ip)
+        token = encrypt(id + name + ip + str(vid))
         print(token)
 
-        return gSet.html.flowplayer%(str(vid), token, str(vid))
+        return gSet.html.flowplayer % (str(vid), token, str(vid))
 
     except Exception as ex:
         print(ex)
         return "<script>alert('플레이중 오류가 생겼습니다!');history.go(-1);</script>"
 
+
 @app.route("/video/flowplayer/<path:filename>")
 def flowplayer(filename):
     return send_from_directory(gSet.htmlDir + "/players/", filename)
+
 
 @app.route("/video/flowplayer/img/<path:filename>")
 def flowplayer_IMG(filename):
@@ -756,4 +804,25 @@ def validation():
         return "{'code':'fail'}"
 
 
-app.run(gSet.webhost, gSet.webport, debug=False, threaded=True)#, 443, ssl_context = ('ssl.crt', 'ssl.key'), debug=True, threaded=True)
+# --- MyPage ---
+@app.route("/my_page", methods=["GET"])
+def mypage():
+    print(session)
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+    if not session['User']['login']: return "<meta http-equiv='refresh' content='0; url=/login' />"
+
+    page = request.args.get("col")
+    _, org = DB.getUserOrg(session['User']['id'])
+    _, grade = DB.getUserGrade(session['User']['id'])
+    _, (email, _) = DB.getUserCode(session['User']['id'], "LOCAL")
+    sch, grd = grade // 10, grade % 10
+    if page in ["summary", "mypage", "point"]:
+        return render_template_string(open("html/mypage.html", encoding='UTF-8').read(), version=gSet.version,
+                                      now_page=page, session=session, organization=org, school=sch, grade=grd, email=email)
+
+    page = "mypage"
+    return redirect("my_page?col={}".format(page))
+
+
+app.run(gSet.webhost, gSet.webport, debug=False,
+        threaded=True)  # , 443, ssl_context = ('ssl.crt', 'ssl.key'), debug=True, threaded=True)
