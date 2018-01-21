@@ -16,167 +16,177 @@
 </head>
 
 <body>
-    <!-- Header START -->
-    <!-- <img id="top_logo" src="img/logo.png" /> -->
-    <!-- Header END -->
+<!-- Header START -->
+<!-- <img id="top_logo" src="img/logo.png" /> -->
+<!-- Header END -->
 
-    <!-- Questions START -->
-    <div class="questions">
-        <div class="box-head">나의 질문</div>
-        <table id="questions">
-            <thead>
+<!-- Questions START -->
+<div class="questions">
+    <div class="box-head">나의 질문</div>
+    <table id="questions">
+        <thead>
+        <tr>
+            <td style="min-width: 100px;">질문일자</td>
+            <td style="min-width: 70px;">과목</td>
+            <td style="min-width: 200px;">교재</td>
+            <td style="min-width: 70px;">페이지</td>
+            <td style="min-width: 70px;">번호</td>
+            <td style="min-width: 150px;">상태</td>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+<!-- Questions END -->
+
+<!-- Panel START -->
+<div class="panel">
+    <div id="submit_question">
+        <div class="box-head">
+            <span>질문등록</span>
+        </div>
+
+        <table class="table">
             <tr>
-                <td style="min-width: 100px;">질문일자</td>
-                <td style="min-width: 70px;">과목</td>
-                <td style="min-width: 200px;">교재</td>
-                <td style="min-width: 70px;">페이지</td>
-                <td style="min-width: 70px;">번호</td>
-                <td style="min-width: 150px;">상태</td>
+                <td>과목</td>
+                <td width="5"><!-- WhieSpace --></td>
+                <td>
+                    <select class="form-control" id="subject" onchange="getBooks(this);">
+                        <option disabled>2009개정 교육과정</option>
+                        <option value="1">수학I</option>
+                        <option value="2">수학II</option>
+                        <option value="3">미적분I</option>
+                        <option value="4">미적분II</option>
+                        <option value="5">확률과통계</option>
+                        <option value="6">기하와벡터</option>
+                        <option disabled>2015개정 교육과정</option>
+                        <option value="7">수학</option>
+                        <option value="8">수학(상)</option>
+                        <option value="9">수학(하)</option>
+                    </select>
+                </td>
             </tr>
-            </thead>
-            <tbody>
-            </tbody>
+            <tr>
+                <td>교재</td>
+                <td width="5"><!-- WhieSpace --></td>
+                <td>
+                    <select class="form-control" id="book_series" onload="getYears(this);" onchange="getYears(this);">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>출판년도</td>
+                <td width="5"><!-- WhieSpace --></td>
+                <td>
+                    <select class="form-control" id="year">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>페이지(단원)</td>
+                <td width="5"><!-- WhieSpace --></td>
+                <td>
+                    <input class="form-control" id="page"/>
+                </td>
+            </tr>
+            <tr>
+                <td>문항번호</td>
+                <td width="5"><!-- WhieSpace --></td>
+                <td>
+                    <input class="form-control" id="q_no"/>
+                </td>
+            </tr>
         </table>
-    </div>
-    <!-- Questions END -->
-
-    <!-- Panel START -->
-    <div class="panel">
-        <div id="submit_question">
-            <div class="box-head">
-              <span>질문등록</span>
-              <div style="text-align:right;"><button onclick="javascript: submit();" class="btn btn-sm btn-primary" style="vertical-align:top;">질문 등록하기</button></div>
+        <div class="row">
+            <div class="col">
+                <div id="message" style="text-align: center;"><!--WhiteSpace --></div>
             </div>
-
-            <table class="table">
-                <tr>
-                    <td>과목</td>
-                    <td width="5"><!-- WhieSpace --></td>
-                    <td>
-                        <select class="form-control" id="subject" onchange="getBooks(this);">
-                            <option disabled>2009개정 교육과정</option>
-                            <option value="1">수학I</option>
-                            <option value="2">수학II</option>
-                            <option value="3">미적분I</option>
-                            <option value="4">미적분II</option>
-                            <option value="5">확률과통계</option>
-                            <option value="6">기하와벡터</option>
-                            <option disabled>2015개정 교육과정</option>
-                            <option value="7">수학</option>
-                            <option value="8">수학(상)</option>
-                            <option value="9">수학(하)</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>교재</td>
-                    <td width="5"><!-- WhieSpace --></td>
-                    <td>
-                        <select class="form-control" id="book_series" onload="getYears(this);" onchange="getYears(this);">
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>출판년도</td>
-                    <td width="5"><!-- WhieSpace --></td>
-                    <td>
-                        <select class="form-control" id="year">
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>페이지(단원)</td>
-                    <td width="5"><!-- WhieSpace --></td>
-                    <td>
-                        <input class="form-control" id="page" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>문항번호</td>
-                    <td width="5"><!-- WhieSpace --></td>
-                    <td>
-                        <input class="form-control" id="q_no"/>
-                    </td>
-                </tr>
-            </table>
-            <center id="message"><!--WhiteSpace --></center>
-        </div>
-
-        <div id="user_info">
-            <div class="box-head">
-                <span>회원정보</span>
+            <div class="col-4" style="text-align: right;">
+                <button onclick="javascript: submit();" class="btn btn-sm btn-primary" style="vertical-align:top;">
+                    등록하기
+                </button>
             </div>
-<!--		<a style="position: absolute; right:0; top:0;" href='/logout'>로그아웃</a> -->
-            <div class="userinfo-head">
-              <div id="welcome">{{ name }}님 안녕하세요!</div>
-              <a href="/logout" style="text-align:right;width:100%;">로그아웃</a>
-            </div>
-            <table class="table">
-                <tr>
-                    <td stlye="width: 160px;">남은포인트</td>
-                    <td id="now_point">Loading..</td>
-                </tr>
-                <tr>
-                    <td>총 질문 수</td>
-                    <td id="total_questions">Loading..</td>
-                </tr>
-                <tr>
-                    <td>오늘 질문 수</td>
-                    <td id="today_questions">Loading..</td>
-                </tr>
-                <tr>
-                    <td>최대 질문 수</td>
-                    <td id="max_questions">Loading..</td>
-                </tr>
-            </table>
-            <center>자세한 내용은 <a href="javascript: alert('준비중입니다.');">마이페이지</a>에서 확인하실 수 있습니다.</center>
-        </div>
-
-        <div id="notice">
-            <div class="box-head">
-                <span>공지사항</span>
-            </div>
-<!--            <p>현재는 베타테스트 기간입니다. 베타테스트 문의는 <a href="https://discord.gg/7YxYAv8" target="_blank">여기</a>로 해주시기 바랍니다.</p> -->
-<!--            <p style="">&nbsp;현재는 베타테스트 기간입니다. 베타테스트 제보/건의/문의 는 <a href="https://sites.google.com/sunskyedu.net/mathonpool" target="_blank">이곳의 게시판에서</a> 해주세요. <a href="https://discord.gg/7YxYAv8" target="_blank">디스코드 대화채널</a>도 열려있습니다.</p> -->
-            <span>제보/건의/문의 는 <a href="https://sites.google.com/sunskyedu.net/mathonpool" target="_blank">게시판에서</a> 해주세요.</span><br />
-            <span>대화채널 : <a href="https://open.kakao.com/o/gnzxI3y" target="_blank">카톡 오픈채팅</a>, <a href="https://discord.gg/7YxYAv8" target="_blank">디스코드</a></span>
-            <div class="box-head"><span>업데이트</span></div>
-
-            <ul>
-                <h4><strong>[ 2018.01.12 ]</strong><br></h4>
-                <li>이메일 인증이 활성화되었습니다.</li>
-                <li>지연답변 시 영상이 등록되면 이메일로 알림을 보내드립니다.</li>
-            </ul>
-            <style>
-                h4 {
-                    margin-bottom: 5px;
-                }
-            </style>
-            <ul>
-                <h4><strong>[ 2018.01.11 ]</strong><br></h4>
-                <li>질문을 등록한 뒤에 선택한 교재정보가 사라지지 않도록 하였습니다.</li>
-            </ul>
-            <ul>
-                <h4><strong>[ 2018.01.10 ]</strong><br></h4>
-                <li>Internet Explorer에서 스크립트가 작동하지 않은 버그를 패치하였습니다.</li>
-            </ul>
-            <ul>
-                <h4><strong>[ 2018.01.10 ]</strong><br></h4>
-                <li>베타테스트를 위한 안정화 작업을 완료했습니다.<br>
-                <li>질문 개수 일일제한이 생겼습니다. (기본 5개/일)</li>
-                <li>효율적인 관리를 위한 관리패널과 연동작업을 진행하였습니다.</li>
-            </ul>
-
-            <ul>
-                <h4><strong>[ 2018.01.09 ]</strong><br></h4>
-                <li><strong>온풀 베타서비스가 시작되었습니다.</strong></li>
-                <li>베타테스트를 위한 기능이 거의 완성되었습니다.</li>
-                <li>이제 질문을 올리면 자동으로 영상을 연결해줍니다.</li>
-                <li>영상을 재생하기 위한 웹플레이어가 완성되었습니다.</li>
-            </ul>
         </div>
     </div>
-    <!-- Panel END -->
+
+    <div id="user_info">
+        <div class="box-head">
+            <span>회원정보</span>
+        </div>
+        <!--		<a style="position: absolute; right:0; top:0;" href='/logout'>로그아웃</a> -->
+        <div class="userinfo-head">
+            <div id="welcome">{{ name }}님 안녕하세요!</div>
+            <a href="/logout" style="text-align:right;width:100%;">로그아웃</a>
+        </div>
+        <table class="table">
+            <tr>
+                <td stlye="width: 160px;">남은포인트</td>
+                <td id="now_point">Loading..</td>
+            </tr>
+            <tr>
+                <td>총 질문 수</td>
+                <td id="total_questions">Loading..</td>
+            </tr>
+            <tr>
+                <td>오늘 질문 수</td>
+                <td id="today_questions">Loading..</td>
+            </tr>
+            <tr>
+                <td>최대 질문 수</td>
+                <td id="max_questions">Loading..</td>
+            </tr>
+        </table>
+        <center>자세한 내용은 <a href="javascript: alert('준비중입니다.');">마이페이지</a>에서 확인하실 수 있습니다.</center>
+    </div>
+
+    <div id="notice">
+        <div class="box-head">
+            <span>공지사항</span>
+        </div>
+        <!--            <p>현재는 베타테스트 기간입니다. 베타테스트 문의는 <a href="https://discord.gg/7YxYAv8" target="_blank">여기</a>로 해주시기 바랍니다.</p> -->
+        <!--            <p style="">&nbsp;현재는 베타테스트 기간입니다. 베타테스트 제보/건의/문의 는 <a href="https://sites.google.com/sunskyedu.net/mathonpool" target="_blank">이곳의 게시판에서</a> 해주세요. <a href="https://discord.gg/7YxYAv8" target="_blank">디스코드 대화채널</a>도 열려있습니다.</p> -->
+        <span>제보/건의/문의 는 <a href="https://sites.google.com/sunskyedu.net/mathonpool"
+                            target="_blank">게시판에서</a> 해주세요.</span><br/>
+        <span>대화채널 : <a href="https://open.kakao.com/o/gnzxI3y" target="_blank">카톡 오픈채팅</a>, <a
+                href="https://discord.gg/7YxYAv8" target="_blank">디스코드</a></span>
+        <div class="box-head"><span>업데이트</span></div>
+
+        <ul>
+            <h4><strong>[ 2018.01.12 ]</strong><br></h4>
+            <li>이메일 인증이 활성화되었습니다.</li>
+            <li>지연답변 시 영상이 등록되면 이메일로 알림을 보내드립니다.</li>
+        </ul>
+        <style>
+            h4 {
+                margin-bottom: 5px;
+            }
+        </style>
+        <ul>
+            <h4><strong>[ 2018.01.11 ]</strong><br></h4>
+            <li>질문을 등록한 뒤에 선택한 교재정보가 사라지지 않도록 하였습니다.</li>
+        </ul>
+        <ul>
+            <h4><strong>[ 2018.01.10 ]</strong><br></h4>
+            <li>Internet Explorer에서 스크립트가 작동하지 않은 버그를 패치하였습니다.</li>
+        </ul>
+        <ul>
+            <h4><strong>[ 2018.01.10 ]</strong><br></h4>
+            <li>베타테스트를 위한 안정화 작업을 완료했습니다.<br>
+            <li>질문 개수 일일제한이 생겼습니다. (기본 5개/일)</li>
+            <li>효율적인 관리를 위한 관리패널과 연동작업을 진행하였습니다.</li>
+        </ul>
+
+        <ul>
+            <h4><strong>[ 2018.01.09 ]</strong><br></h4>
+            <li><strong>온풀 베타서비스가 시작되었습니다.</strong></li>
+            <li>베타테스트를 위한 기능이 거의 완성되었습니다.</li>
+            <li>이제 질문을 올리면 자동으로 영상을 연결해줍니다.</li>
+            <li>영상을 재생하기 위한 웹플레이어가 완성되었습니다.</li>
+        </ul>
+    </div>
+</div>
+<!-- Panel END -->
 
 </body>
 
