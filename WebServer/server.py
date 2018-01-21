@@ -748,6 +748,8 @@ def fplayer():
         token = encrypt(id + name + ip + str(vid))
         print(token)
 
+        DB.videoHit("/video/flowplayer/play?vid="+vid)
+
         return gSet.html.flowplayer % (str(vid), token, str(vid))
 
     except Exception as ex:

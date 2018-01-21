@@ -409,6 +409,20 @@ class DB:
             print(ex)
             return [True, str(ex)]
 
+    def videoHit(self, url):
+        cur = self.getCursor()
+
+        try:
+            query = 'UPDATE solution_video SET hit=hit+1 WHERE url=\'{}\';'.format(url)
+            # self.writeLog("LOCAL", query)
+            cur.execute(query)
+            self.writeLog("LOCAL", query)
+
+            return [False, None]
+        except Exception as ex:
+            #raise ex
+            return [True, str(ex)]
+
     def checkDuplicated(self, pid, requester):
         cur = self.getCursor()
 
