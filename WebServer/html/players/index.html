@@ -53,7 +53,7 @@
 <table border=0 width='100%%' cellspacing='0' cellpadding='0'>
     <tr>
         <td width="1000">
-            <table border=0 width="100%%" cellspacing="0" cellpadding="0">
+            <table border=0 width="1000" cellspacing="0" cellpadding="0">
                 <tr>
                     <td align="left" height="580" width="1000">
                         <script>
@@ -216,9 +216,9 @@
                                 flowplayer(0).speed(s);
                                 for (var p = 0; p <= 5; p++) {
                                     if (p == i) {
-                                        document.getElementById("timebar_" + p).src = "img/timebar_" + p + "_on.jpg";
+                                        $("#timebar_" + p).addClass("sp-selected");
                                     } else {
-                                        document.getElementById("timebar_" + p).src = "img/timebar_" + p + "_off.jpg";
+                                        $("#timebar_" + p).removeClass("sp-selected");
                                     }
                                 }
                             }
@@ -290,8 +290,7 @@
                                                                  onclick="forward(30);" alt=""
                                                                  style="cursor:pointer;vertical-align:middle;"/>
                                                         </td>
-                                                        <td style="padding:0 0 0 5px;"><img
-                                                                src="img/st_speed.png" alt="Speed"/></td>
+                                                        <td style="padding:0 0 0 5px;"></td>
                                                         <td style="padding:0 0 3px 5px;">
                                                             <!--select name="speed" onchange="speed(this.value);">
                                                             <option value="0.8">0.8</option>
@@ -300,29 +299,62 @@
                                                             <option value="1.5">1.5</option>
                                                             <option value="2.0">2.0</option>
                                                             </select-->
-                                                            <img id="timebar_0"
-                                                                 src="img/timebar_0_off.jpg" alt="0.6"
+                                                            <!--<img id="timebar_0"
+                                                                 src="img/timebar_0_off.png" alt="0.6"
                                                                  onclick="speed(0, '0.6');"
-                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                                 style="cursor:pointer;vertical-align:middle;height:16px;"/>
                                                             <img id="timebar_1"
-                                                                 src="img/timebar_1_off.jpg" alt="0.8"
+                                                                 src="img/timebar_1_off.png" alt="0.8"
                                                                  onclick="speed(1, '0.8');"
-                                                                 style="cursor:pointer;vertical-align:middle;"/>
-                                                            <img id="timebar_2" src="img/timebar_2_on.jpg"
+                                                                 style="cursor:pointer;vertical-align:middle;height:16px;"/>
+                                                            <img id="timebar_2" src="img/timebar_2_on.png"
                                                                  alt="1.0" onclick="speed(2, '1.0');"
-                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                                 style="cursor:pointer;vertical-align:middle;height:16px;"/>
                                                             <img id="timebar_3"
-                                                                 src="img/timebar_3_off.jpg" alt="1.4"
-                                                                 onclick="speed(3, '1.4');"
-                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                                 src="img/timebar_3_off.png" alt="1.2"
+                                                                 onclick="speed(3, '1.2');"
+                                                                 style="cursor:pointer;vertical-align:middle;height:16px;"/>
                                                             <img id="timebar_4"
-                                                                 src="img/timebar_4_off.jpg" alt="1.6"
-                                                                 onclick="speed(4, '1.6');"
-                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                                 src="img/timebar_4_off.png" alt="1.4"
+                                                                 onclick="speed(4, '1.4');"
+                                                                 style="cursor:pointer;vertical-align:middle;height:16px;"/>
                                                             <img id="timebar_5"
-                                                                 src="img/timebar_5_off.jpg" alt="2.0"
-                                                                 onclick="speed(5, '2.0');"
-                                                                 style="cursor:pointer;vertical-align:middle;"/>
+                                                                 src="img/timebar_5_off.png" alt="1.5"
+                                                                 onclick="speed(5, '1.5');"
+                                                                 style="cursor:pointer;vertical-align:middle;height:16px;"/>
+                                                            <img id="timebar_6"
+                                                                 src="img/timebar_6_off.png" alt="1.7"
+                                                                 onclick="speed(6, '1.7');"
+                                                                 style="cursor:pointer;vertical-align:middle;height:16px;"/>
+                                                            <img id="timebar_7"
+                                                                 src="img/timebar_7_off.png" alt="2.0"
+                                                                 onclick="speed(7, '2.0');"
+                                                                 style="cursor:pointer;vertical-align:middle;height:16px;"/>-->
+                                                            <style>
+                                                                .speed {
+                                                                    height: 16px;
+                                                                    width: 31px;
+                                                                    color: white;
+                                                                    border-radius: 3px;
+                                                                    font-size: 11px;
+                                                                    background-color: #365B5D;
+                                                                }
+                                                                .sp-selected {
+                                                                    background-color: #3597D8;
+                                                                }
+                                                            </style>
+                                                            <div class="row">
+                                                                <div class="col"><img
+                                                                src="img/st_speed.png" alt="Speed"/></div>
+                                                                <div class="col speed m-1" id="timebar_0" onclick="speed(0, '0.6');">0.6</div>
+                                                                <div class="col speed m-1" id="timebar_1" onclick="speed(1, '0.8');">0.8</div>
+                                                                <div class="col speed m-1 sp-selected" id="timebar_2" onclick="speed(2, '1.0');">1.0</div>
+                                                                <div class="col speed m-1" id="timebar_3" onclick="speed(3, '1.2');">1.2</div>
+                                                                <div class="col speed m-1" id="timebar_4" onclick="speed(4, '1.4');">1.4</div>
+                                                                <div class="col speed m-1" id="timebar_5" onclick="speed(5, '1.5');">1.5</div>
+                                                                <div class="col speed m-1" id="timebar_6" onclick="speed(6, '1.7');">1.7</div>
+                                                                <div class="col speed m-1" id="timebar_7" onclick="speed(7, '2.0');">2.0</div>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -361,12 +393,16 @@
             </table>
 
         </td>
-        <td style="padding:2px;" valign="top">
+        <!--<td style="padding:2px;" valign="top">
             <iframe src="about:blank" frameborder="0" width="330"
                     height="670" scrolling="auto"></iframe>
-        </td>
+        </td>-->
     </tr>
 </table>
 </body>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
 </html>
 
