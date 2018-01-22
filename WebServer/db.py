@@ -137,7 +137,7 @@ class DB:
 
         cur = self.getCursor()
         try:
-            cur.execute('INSERT INTO users VALUES(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\')' % (
+            cur.execute('INSERT INTO users (id,pw,name,grade,birthday,email,email_verified,registered_ip,recent_ip,organization) VALUES(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\')' % (
                 _id, _pw, _name, _gra, _bir, _email, _code, _ip, _ip, _org))
             self.conn.commit()
             return False
@@ -525,7 +525,7 @@ class DB:
     def getMyLastestQuestion(self, User, ip):
         cur = self.getCursor()
         try:
-            query = 'SELECT curr_id, bookname, year FROM book WHERE book.book_id=(SELECT book_id FROM problem WHERE problem.problem_id=(SELECT problem_id FROM question WHERE student_id=\'{}\' ORDER BY problem_id DESC LIMIT 1));'.format(User['id'])
+            query = 'SELECT curr_id, bookname, year FROM book WHERE book.book_id=(SELECT book_id FROM problem WHERE problem.problem_id=(SELECT problem_id FROM question WHERE student_id=\'{}\' ORDER BY question_id DESC LIMIT 1));'.format(User['id'])
             self.writeLog(ip, query)
 
             cur.execute(query)
