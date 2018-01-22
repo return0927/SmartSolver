@@ -46,6 +46,7 @@
     <div id="submit_question">
         <div class="box-head">
             <span>질문등록</span>
+            <div class="col-4" style="padding-right:0;"><button class="btn btn-sm btn-primary float-right" style="vertical-align: middle;" onclick="javascript: getLastestQuestion();">불러오기</button></div>
         </div>
 
         <table class="table">
@@ -104,7 +105,7 @@
                 <div id="message" style="text-align: center;"><!--WhiteSpace --></div>
             </div>
             <div class="col-4" style="text-align: right;">
-                <button onclick="javascript: submit();" class="btn btn-sm btn-primary" style="vertical-align:top;">
+                <button id="submit" onclick="javascript: submit();" class="btn btn-sm btn-primary" style="vertical-align:top;">
                     등록하기
                 </button>
             </div>

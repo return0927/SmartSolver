@@ -657,6 +657,14 @@ def get_my_point(simple=False, local=True, user=''):
         return json.dumps({"code": "SUC", "data": data})
 
 
+@app.route("/api/me/lastest_question", methods=["GET"])
+def get_my_lastest_question():
+    if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"
+
+    err, data = DB.getMyLastestQuestion(session['User'], request.environ['REMOTE_ADDR'])
+    if err: return json.dumps({"code":"ERR"})
+    else: return json.dumps({"code":"SUC", "data": {"curr":data[0], "bookname":data[1], "year":data[2]}})
+
 @app.route("/api/me/questions", methods=["GET"])
 def get_my_questions():
     if not "Info" in session.keys(): return "<meta http-equiv='refresh' content='0; url=/login' />"

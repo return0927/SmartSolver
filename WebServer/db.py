@@ -443,10 +443,6 @@ class DB:
             duplicated = False
             err, bookid = self.getBook(subj, bookseries, year)
             if err: raise Exception(bookid)
-            # getBookInfo() 에서 chapter_indication 정보를 가져와서
-            # if chapter_idication == 0:
-            #     page = ''
-            # 다만, 이렇게 하려면 getBookInfo() 함수에서 chapter_indication 까지 가져오는 것으로 수정해야 한다.
             err, pid = self.getProblemId(book_id=bookid, page=page, number=no)
             if err: raise Exception(pid)
 
@@ -525,6 +521,20 @@ class DB:
         except Exception as ex:
             print(ex)
             return [True, str(ex)]
+
+    def getMyLastestQuestion(self, User, ip):
+        cur = self.getCursor()
+        try:
+            query = 'SELECT curr_id, bookname, year FROM book WHERE book.book_id=(SELECT book_id FROM problem WHERE problem.problem_id=(SELECT problem_id FROM question WHERE student_id=\'{}\' ORDER BY problem_id DESC LIMIT 1));'.format(User['id'])
+            self.writeLog(ip, query)
+
+            cur.execute(query)
+            result = cur.fetchall()
+
+            return [False, result[0]]
+        except Exception as ex:
+            return [True, str(ex)]
+            
 
     def getMyQuestionTodayCount(self, User, ip, timestr="current_date"):
         cur = self.getCursor()

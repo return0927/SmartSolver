@@ -8,7 +8,22 @@ $(document).ready(function () {
     getPoint();
     getDayLimit();
     getBooks();
+//    getLastestQuestion();
 });
+
+function getLastestQuestion() {
+    $.get("/api/me/lastest_question", function(response){
+        var result = JSON.parse(response);
+
+        if(result.code === "ERR"){
+            console.log("ERR on fetching Lastest Question");
+        } else {
+            setTimeout(function(){$("select#subject").val(result.data.curr);getBooks();}, 100);
+            setTimeout(function(){$("select#book_series").val(result.data.bookname);getYears();}, 200);
+            setTimeout(function(){$("select#year").val(result.data.year);}, 300);
+        }
+    });
+}
 
 function getBooks() {
     $.get("/api/get_bookseries", function (response) {
